@@ -125,6 +125,8 @@ final class WSRefUtils {
            builder.setHandlerChain(jbossServiceRefMD.getHandlerChain());
         }
 
+        builder.setType(ServiceRefType.JAXWS);
+
         return builder.build();
     }
 

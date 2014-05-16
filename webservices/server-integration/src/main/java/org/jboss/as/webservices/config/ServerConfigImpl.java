@@ -52,6 +52,7 @@ public final class ServerConfigImpl extends AbstractServerConfig implements Abst
     private final DMRSynchCheckHandler webServicePortUCH = new DMRSynchCheckHandler();
     private final DMRSynchCheckHandler webServiceSecurePortUCH = new DMRSynchCheckHandler();
     private final DMRSynchCheckHandler modifySOAPAddressUCH = new DMRSynchCheckHandler();
+    private final DMRSynchCheckHandler webServicePathUCH = new DMRSynchCheckHandler();
 
     private ServerConfigImpl() {
         // forbidden inheritance
@@ -87,6 +88,15 @@ public final class ServerConfigImpl extends AbstractServerConfig implements Abst
     public void setWebServiceHost(String host) throws UnknownHostException {
         //prevent any change if the DMR configuration is not in synch anymore with the runtime
         setWebServiceHost(host, webServiceHostUCH);
+    }
+
+    public void setWebServicePath(String path, boolean forceUpdate) {
+        setWebServicePath(path, forceUpdate ? null : webServicePathUCH);
+    }
+
+    @Override
+    public void setWebServicePath(String path) {
+        setWebServicePath(path, webServicePathUCH);
     }
 
     public void setWebServicePort(int port, boolean forceUpdate) {

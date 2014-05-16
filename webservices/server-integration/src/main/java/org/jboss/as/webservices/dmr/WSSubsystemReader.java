@@ -140,6 +140,11 @@ final class WSSubsystemReader implements XMLElementReader<List<ModelNode>> {
                             Attributes.WSDL_SECURE_PORT.parseAndSetParameter(value, subsystem, reader);
                             break;
                         }
+                        case PATH: {
+                            final String value = parseElementNoAttributes(reader);
+                            Attributes.PATH.parseAndSetParameter(value, subsystem, reader);
+                            break;
+                        }
                         case ENDPOINT_CONFIG: {
                             readConfig(reader, address, endpointConfigs, false);
                             break;

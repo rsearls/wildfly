@@ -39,6 +39,7 @@ enum Element {
     WSDL_HOST(Constants.WSDL_HOST),
     WSDL_PORT(Constants.WSDL_PORT),
     WSDL_SECURE_PORT(Constants.WSDL_SECURE_PORT),
+    PATH(Constants.PATH),
     CLIENT_CONFIG(Constants.CLIENT_CONFIG),
     ENDPOINT_CONFIG(Constants.ENDPOINT_CONFIG),
     CONFIG_NAME(Constants.CONFIG_NAME),

@@ -27,6 +27,7 @@ package org.jboss.as.webservices.dmr;
 import org.jboss.as.controller.SimpleAttributeDefinition;
 import org.jboss.as.controller.SimpleAttributeDefinitionBuilder;
 import org.jboss.as.controller.operations.validation.IntRangeValidator;
+// rls import org.jboss.as.controller.operations.validation.StringLengthValidator;
 import org.jboss.dmr.ModelNode;
 import org.jboss.dmr.ModelType;
 
@@ -61,7 +62,15 @@ interface Attributes {
             .setDefaultValue(new ModelNode(true))
             .setAllowExpression(true)
             .build();
-    SimpleAttributeDefinition[] SUBSYSTEM_ATTRIBUTES = {MODIFY_WSDL_ADDRESS, WSDL_HOST, WSDL_PORT, WSDL_SECURE_PORT};
+
+    SimpleAttributeDefinition PATH = new SimpleAttributeDefinitionBuilder(Constants.PATH, ModelType.STRING)
+        .setAllowNull(true)
+            // rls .setMinSize(1)
+        .setAllowExpression(true)  //rls false
+            // rls .setValidator(new StringLengthValidator(1, Integer.MAX_VALUE, true, true))
+        .build();
+
+    SimpleAttributeDefinition[] SUBSYSTEM_ATTRIBUTES = {MODIFY_WSDL_ADDRESS, WSDL_HOST, WSDL_PORT, WSDL_SECURE_PORT, PATH};
 
     SimpleAttributeDefinition VALUE = new SimpleAttributeDefinitionBuilder(Constants.VALUE, ModelType.STRING)
             .setAllowNull(true)
@@ -76,6 +85,5 @@ interface Attributes {
             .setAllowNull(true)
             .setAllowExpression(true)
             .build();
-
 
 }

@@ -105,17 +105,20 @@
           </xs:documentation>
         </xs:annotation>
       </xs:element>
-      <xs:element name="path" type="xs:string" minOccurs="0" maxOccurs="1">
+      <xs:element name="wsdl-path-rewrite-rule" type="xs:string" minOccurs="0" maxOccurs="1">
         <xs:annotation>
-          <xs:documentation>
+          <xs:documentation><![CDATA[
 
-            Set this property to explicitly define the path that will be
-            substituted in the defined SOAP address.
-            When "modify-wsdl-address" is set to "true" this element is ignored.
-            When the SOAP address is definded as "jbossws.undefined.host" or
-            "REPLACE_WITH_ACTUAL_URL" this element is ignored.
+            This property defines a SED substitution command (e.g., 's/regexp/replacement/g')
+            that JBossWS executes against the path component of each <soap:address> URL published
+            from the server.
 
-          </xs:documentation>
+            When wsdl-path-rewrite-rule is not defined, JBossWS retains the original path component
+            of each <soap:address> URL.
+
+            When 'modify-wsdl-address' is set to "false" this element is ignored.
+
+        ]]></xs:documentation>
         </xs:annotation>
       </xs:element>
       <xs:element name="endpoint-config" type="endpointConfigType" minOccurs="0" maxOccurs="unbounded"/>

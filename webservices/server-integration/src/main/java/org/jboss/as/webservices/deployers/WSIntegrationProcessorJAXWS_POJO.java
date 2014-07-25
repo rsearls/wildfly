@@ -126,38 +126,47 @@ public class WSIntegrationProcessorJAXWS_POJO extends AbstractIntegrationProcess
             String serviceName = null;
             String urlPattern = null;
 
-            // #1 use serviceName declared in a class annotation
-            final ClassAnnotationInformation<WebService, WebServiceAnnotationInfo> annotationInfo = classDescription
-                    .getAnnotationInformation(WebService.class);
-            if (annotationInfo != null) {
-                WebServiceAnnotationInfo wsInfo = annotationInfo.getClassLevelAnnotations().get(0);
-                serviceName = wsInfo.getServiceName();
-                classInfo = (ClassInfo)wsInfo.getTarget();
-                urlPattern = UrlPatternUtils.getUrlPattern(classInfo.name().local(), serviceName, wsInfo.getName());
-            }
-            final ClassAnnotationInformation<WebServiceProvider, WebServiceProviderAnnotationInfo> annotationProviderInfo = classDescription
-                        .getAnnotationInformation(WebServiceProvider.class);
-            if (annotationProviderInfo != null) {
-                WebServiceProviderAnnotationInfo wsInfo = annotationProviderInfo.getClassLevelAnnotations().get(0);
-                serviceName = wsInfo.getServiceName();
-                classInfo = (ClassInfo)wsInfo.getTarget();
-            }
-
-            // #2 Override serviceName with @WebContext.urlPattern
-            final ClassAnnotationInformation<WebContext, WebContextAnnotationInfo> annotationWebContext =
-                classDescription.getAnnotationInformation(WebContext.class);
-            if (annotationWebContext != null) {
-                WebContextAnnotationInfo wsInfo = annotationWebContext.getClassLevelAnnotations().get(0);
-                if (wsInfo != null && wsInfo.getUrlPattern().length() > 0) {
-                    urlPattern = wsInfo.getUrlPattern();
-                }
-            }
-
-            // #3 Override serviceName with the explicit urlPattern from port-component/port-component-uri in jboss-webservices.xml
+            // #1 Override serviceName with the explicit urlPattern from port-component/port-component-uri in jboss-webservices.xml
             EJBEndpoint ejbEndpoint = getWebserviceMetadataEJBEndpoint(jaxwsDeployment, classDescription.getClassName());
             if (ejbEndpoint != null) {
                 urlPattern = UrlPatternUtils.getUrlPatternByPortComponentURI(
                     getJBossWebserviceMetaDataPortComponent(unit, ejbEndpoint.getName()));
+            }
+
+            // #2 Override serviceName with @WebContext.urlPattern
+            if (urlPattern == null) {
+                final ClassAnnotationInformation<WebContext, WebContextAnnotationInfo> annotationWebContext =
+                    classDescription.getAnnotationInformation(WebContext.class);
+                if (annotationWebContext != null) {
+                    WebContextAnnotationInfo wsInfo = annotationWebContext.getClassLevelAnnotations().get(0);
+                    if (wsInfo != null && wsInfo.getUrlPattern().length() > 0) {
+                        urlPattern = wsInfo.getUrlPattern();
+                    }
+                }
+            }
+
+            // #3 use serviceName declared in a class annotation
+            if (urlPattern == null) {
+                final ClassAnnotationInformation<WebService, WebServiceAnnotationInfo> annotationInfo = classDescription
+                    .getAnnotationInformation(WebService.class);
+                if (annotationInfo != null) {
+                    WebServiceAnnotationInfo wsInfo = annotationInfo.getClassLevelAnnotations().get(0);
+                    serviceName = wsInfo.getServiceName();
+                    classInfo = (ClassInfo)wsInfo.getTarget();
+
+                    urlPattern = UrlPatternUtils.getUrlPattern(classInfo.name().local(), serviceName);
+                    if (jaxwsDeployment.contains(urlPattern)){
+                        urlPattern = UrlPatternUtils.getUrlPattern(classInfo.name().local(), serviceName, wsInfo.getName());
+                    }
+                }
+
+                final ClassAnnotationInformation<WebServiceProvider, WebServiceProviderAnnotationInfo> annotationProviderInfo = classDescription
+                    .getAnnotationInformation(WebServiceProvider.class);
+                if (annotationProviderInfo != null) {
+                    WebServiceProviderAnnotationInfo wsInfo = annotationProviderInfo.getClassLevelAnnotations().get(0);
+                    serviceName = wsInfo.getServiceName();
+                    classInfo = (ClassInfo)wsInfo.getTarget();
+                }
             }
 
             if (classInfo != null) {

@@ -57,4 +57,5 @@ interface Constants {
     String HANDLER_CLASS="handler-class";
     String VALUE = "value";
     String STATISTICS_ENABLED = "statistics-enabled";
+    String WSDL_PATH_REWRITE_RULE = "wsdl-path-rewrite-rule";
 }

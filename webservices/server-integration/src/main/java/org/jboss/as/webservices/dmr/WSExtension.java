@@ -160,6 +160,7 @@ public final class WSExtension implements Extension {
                 .addReadWriteAttribute(Attributes.WSDL_PORT, null, new WSServerConfigAttributeHandler(Attributes.WSDL_PORT))
                 .addReadWriteAttribute(Attributes.WSDL_SECURE_PORT, null, new WSServerConfigAttributeHandler(Attributes.WSDL_SECURE_PORT))
                 .addReadWriteAttribute(Attributes.WSDL_URI_SCHEME, null, new WSServerConfigAttributeHandler(Attributes.WSDL_URI_SCHEME))
+                .addReadWriteAttribute(Attributes.WSDL_PATH_REWRITE_RULE, null, new WSServerConfigAttributeHandler(Attributes.WSDL_PATH_REWRITE_RULE))
                 .addReadWriteAttribute(Attributes.MODIFY_WSDL_ADDRESS, null, new WSServerConfigAttributeHandler(Attributes.MODIFY_WSDL_ADDRESS))
                 .addReadWriteAttribute(Attributes.STATISTICS_ENABLED, null, new WSServerConfigAttributeHandler(Attributes.STATISTICS_ENABLED))
                 .build();
@@ -215,6 +216,7 @@ public final class WSExtension implements Extension {
         ResourceTransformationDescriptionBuilder builder = TransformationDescriptionBuilder.Factory.createSubsystemInstance();
         builder.getAttributeBuilder().setDiscard(DiscardAttributeChecker.ALWAYS, Attributes.STATISTICS_ENABLED);
         builder.getAttributeBuilder().setDiscard(DiscardAttributeChecker.ALWAYS, Attributes.WSDL_URI_SCHEME);
+        builder.getAttributeBuilder().setDiscard(DiscardAttributeChecker.ALWAYS, Attributes.WSDL_PATH_REWRITE_RULE);
         TransformationDescription.Tools.register(builder.build(), registration, version);
     }
 }

@@ -51,7 +51,7 @@ enum Namespace {
     /**
      * The current namespace version.
      */
-    static final Namespace CURRENT = WEBSERVICES_1_2;
+    static final Namespace CURRENT = WEBSERVICES_1_3;
 
     private final String name;
 

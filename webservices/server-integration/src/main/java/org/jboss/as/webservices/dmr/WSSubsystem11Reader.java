@@ -112,11 +112,6 @@ class WSSubsystem11Reader implements XMLElementReader<List<ModelNode>> {
                     list.addAll(configs);
                     break;
                 }
-                case WSDL_PATH_REWRITE_RULE: {
-                    final String value = parseElementNoAttributes(reader);
-                    Attributes.WSDL_PATH_REWRITE_RULE.parseAndSetParameter(value, subsystem, reader);
-                    break;
-                }
                 default: {
                     handleUnknownElement(reader, address, element, list);
                 }

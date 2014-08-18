@@ -79,6 +79,11 @@ class WSSubSystem13Reader extends WSSubSystem12Reader {
                 Attributes.WSDL_URI_SCHEME.parseAndSetParameter(value, operation, reader);
                 break;
             }
+            case WSDL_PATH_REWRITE_RULE: {
+                final String value = parseElementNoAttributes(reader);
+                Attributes.WSDL_PATH_REWRITE_RULE.parseAndSetParameter(value, operation, reader);
+                break;
+            }
             default: {
                 super.handleUnknownElement(reader, parentAddress, element, list);
             }

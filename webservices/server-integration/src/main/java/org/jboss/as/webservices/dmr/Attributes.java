@@ -72,9 +72,9 @@ interface Attributes {
             .build();
 
     SimpleAttributeDefinition WSDL_PATH_REWRITE_RULE = new SimpleAttributeDefinitionBuilder(Constants.WSDL_PATH_REWRITE_RULE, ModelType.STRING)
-        .setAllowNull(true)
-        .setAllowExpression(false)
-        .build();
+            .setAllowNull(true)
+            .setAllowExpression(false)
+            .build();
 
     SimpleAttributeDefinition STATISTICS_ENABLED = new SimpleAttributeDefinitionBuilder(Constants.STATISTICS_ENABLED, ModelType.BOOLEAN)
             .setAllowNull(true)

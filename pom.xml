@@ -298,6 +298,7 @@
         <module>servlet-feature-pack</module>
         <module>webservices</module>
         <module>weld</module>
+        <module>wise</module>
         <module>xts</module>
         <module>rts</module>
         <module>testsuite/shared</module>
@@ -6411,6 +6412,13 @@
                         <artifactId>xml-apis</artifactId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+
+                <!-- rls added -->
+            <dependency>
+                <groupId>org.jboss.wise</groupId>
+                <artifactId>wise-service</artifactId>
+                <version>1.0-SNAPSHOT</version>
             </dependency>
 
         </dependencies>

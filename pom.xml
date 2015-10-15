@@ -112,7 +112,11 @@
         <version.net.jcip>1.0</version.net.jcip>
         <version.org.antlr-34>3.4</version.org.antlr-34>
         <version.org.apache.avro>1.7.6</version.org.apache.avro>
-        <version.org.apache.cxf>3.0.5</version.org.apache.cxf>
+	<!-- rls
+		Must build a local version https://github.com/rsearls/cxf-1.git,
+		branch 3.0.x-fixes-CXF-6413-backport-cxf-6552
+	-->
+        <version.org.apache.cxf>3.0.7-SNAPSHOT</version.org.apache.cxf>
         <version.org.apache.cxf.xjcplugins>3.0.3</version.org.apache.cxf.xjcplugins>
         <version.org.apache.ds>2.0.0-M15</version.org.apache.ds>
         <version.org.apache.httpcomponents.httpclient>4.3.6</version.org.apache.httpcomponents.httpclient>

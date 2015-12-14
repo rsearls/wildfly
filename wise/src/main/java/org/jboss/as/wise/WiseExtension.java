@@ -22,7 +22,6 @@
 package org.jboss.as.wise;
 
 import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.ADD;
-import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.DESCRIBE;
 import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.OP;
 import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.OP_ADDR;
 import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.SUBSYSTEM;
@@ -37,7 +36,6 @@ import javax.xml.stream.XMLStreamException;
 import org.jboss.as.controller.Extension;
 import org.jboss.as.controller.ExtensionContext;
 import org.jboss.as.controller.PathElement;
-import org.jboss.as.controller.ReloadRequiredRemoveStepHandler;
 import org.jboss.as.controller.ResourceDefinition;
 import org.jboss.as.controller.SimpleResourceDefinition;
 import org.jboss.as.controller.SubsystemRegistration;
@@ -47,7 +45,6 @@ import org.jboss.as.controller.operations.common.GenericSubsystemDescribeHandler
 import org.jboss.as.controller.parsing.ExtensionParsingContext;
 import org.jboss.as.controller.persistence.SubsystemMarshallingContext;
 import org.jboss.as.controller.registry.ManagementResourceRegistration;
-import org.jboss.as.controller.registry.OperationEntry;
 import org.jboss.dmr.ModelNode;
 import org.jboss.staxmapper.XMLElementReader;
 import org.jboss.staxmapper.XMLElementWriter;
@@ -96,14 +93,14 @@ public class WiseExtension implements Extension {
    /** {@inheritDoc} */
    @Override
    public void initialize(final ExtensionContext context) {
-      WiseLogger.ROOT_LOGGER.debug("Activating Wise Extension");
+      WiseLogger.ROOT_LOGGER.activatingWiseExtension();
       final SubsystemRegistration subsystem = context.registerSubsystem(
          SUBSYSTEM_NAME, MANAGEMENT_API_MAJOR_VERSION,
          MANAGEMENT_API_MINOR_VERSION, MANAGEMENT_API_MICRO_VERSION);
       final ManagementResourceRegistration registration = subsystem.registerSubsystemModel(
          WISE_SUBSYSTEM_RESOURCE);
-      registration.registerOperationHandler(DESCRIBE, GenericSubsystemDescribeHandler.INSTANCE,
-         GenericSubsystemDescribeHandler.INSTANCE, false, OperationEntry.EntryType.PRIVATE);
+      registration.registerOperationHandler(GenericSubsystemDescribeHandler.DEFINITION,
+         GenericSubsystemDescribeHandler.INSTANCE, false);
       subsystem.registerXMLElementWriter(parser);
    }
 

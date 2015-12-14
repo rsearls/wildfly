@@ -23,16 +23,24 @@ package org.jboss.as.wise;
 
 import org.jboss.logging.BasicLogger;
 import org.jboss.logging.Logger;
-import org.jboss.logging.MessageLogger;
+import org.jboss.logging.annotations.LogMessage;
+import org.jboss.logging.annotations.Message;
+import org.jboss.logging.annotations.MessageLogger;
+
+import static org.jboss.logging.Logger.Level.INFO;
 
 /**
  *
  */
-@MessageLogger(projectCode = "JBWS")
+@MessageLogger(projectCode = "WFLYWSW", length = 4)
 public interface WiseLogger extends BasicLogger {
 
    /**
     * A logger with a category of the package name.
     */
    WiseLogger ROOT_LOGGER = Logger.getMessageLogger(WiseLogger.class, "org.jboss.as.wise");
+
+   @LogMessage(level = INFO)
+   @Message(id = 1, value = "Activating Wise Extension")
+   void activatingWiseExtension();
 }

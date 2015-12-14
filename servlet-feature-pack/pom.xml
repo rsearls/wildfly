@@ -381,7 +381,18 @@
             <groupId>xalan</groupId>
             <artifactId>xalan</artifactId>
         </dependency>
-        
+<!-- rls -->
+        <dependency>
+            <groupId>org.wildfly</groupId>
+            <artifactId>jboss-as-wise</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+ 
     </dependencies>
 
     <build>
@@ -433,6 +444,35 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.10</version>
+                <executions>
+                    <execution>
+                        <id>copy</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.jboss.wise</groupId>
+                                    <artifactId>wise-gwt-gui</artifactId>
+                                    <version>${version.wise-gwt-gui}</version>
+                                    <type>war</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${project.build.directory}/wildfly-servlet-${project.version}/modules/system/layers/base/org/jboss/as/wise/main/deployments</outputDirectory>
+                                    <destFileName>wise.war</destFileName>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
     </build>
 

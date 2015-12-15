@@ -26,7 +26,7 @@ import org.jboss.logging.Messages;
 
 /**
  */
-@MessageBundle(projectCode = "JBWS") //????? rls
+@MessageBundle(projectCode = "JBWS") 
 public interface WiseMessages {
 
    /**

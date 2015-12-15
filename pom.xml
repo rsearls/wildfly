@@ -230,8 +230,7 @@
         <version.jacoco.plugin>0.6.3.201306030806</version.jacoco.plugin> <!-- Needs to be set explicitely to match with org.jacoco:org.jacoco.ant - see testsuite. -->
         <version.properties.plugin>2.0.1</version.properties.plugin>
         <version.xml.plugin>1.0</version.xml.plugin>
-	<version.jboss.as.wise>1.0-SNAPSHOT</version.jboss.as.wise> <!-- rls -->
-        <version.wise-gwt-gui>1.0-SNAPSHOT</version.wise-gwt-gui> <!-- rls -->
+        <version.wise-gwt-gui>1.0-SNAPSHOT</version.wise-gwt-gui>
 
         <!-- Surefire args -->
         <surefire.jpda.args/>

@@ -1,0 +1,7 @@
+Archive:  xJaxrs-multiple-servlets.zip
+  Length      Date    Time    Name
+---------  ---------- -----   ----
+    17195  02-13-2017 15:13   jaxrs/src/main/java/org/jboss/as/jaxrs/deployment/JaxrsScanningProcessor.java
+    19690  02-13-2017 15:33   jaxrs/src/main/java/org/jboss/as/jaxrs/deployment/ConfigApplicationClassAsServletUtil.java
+---------                     -------
+    36885                     2 files

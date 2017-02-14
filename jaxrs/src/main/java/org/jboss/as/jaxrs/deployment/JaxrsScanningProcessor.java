@@ -146,12 +146,14 @@ public class JaxrsScanningProcessor implements DeploymentUnitProcessor {
         if (webdata.getServlets() != null) {
             for (ServletMetaData servlet : webdata.getServlets()) {
                 String servletClass = servlet.getServletClass();
+
                 if (BOOT_CLASSES.contains(servletClass))
                     return true;
             }
         }
         if (webdata.getFilters() != null) {
             for (FilterMetaData filter : webdata.getFilters()) {
+
                 if (BOOT_CLASSES.contains(filter.getFilterClass()))
                     return true;
             }
@@ -168,15 +170,25 @@ public class JaxrsScanningProcessor implements DeploymentUnitProcessor {
         boolean hasBoot = hasBootClasses(webdata);
         resteasyDeploymentData.setBootClasses(hasBoot);
 
-        Class<?> declaredApplicationClass = checkDeclaredApplicationClassAsServlet(webdata, classLoader);
-        // Assume that checkDeclaredApplicationClassAsServlet created the dispatcher
-        if (declaredApplicationClass != null) {
-            resteasyDeploymentData.setDispatcherCreated(true);
+        // rls test
+        boolean test_NEW_CODE = true;   // force test of new code
+        if (test_NEW_CODE) {
+            ConfigApplicationClassAsServletUtil cApp = new ConfigApplicationClassAsServletUtil();
+            boolean isDeclaredApplicationClass = cApp.checkDeclaredApplicationClassAsServlet(
+                webdata, classLoader, resteasyDeploymentData,
+                du.getAttachment(Attachments.COMPOSITE_ANNOTATION_INDEX));
+        } else {
+            Class<?> declaredApplicationClass = checkDeclaredApplicationClassAsServlet(
+                webdata, classLoader);
+            // Assume that checkDeclaredApplicationClassAsServlet created the dispatcher
+            if (declaredApplicationClass != null) {
+                resteasyDeploymentData.setDispatcherCreated(true);
 
-            // Instigate creation of resteasy configuration switches for
-            // found provider and resource classes
-            resteasyDeploymentData.setScanProviders(true);
-            resteasyDeploymentData.setScanResources(true);
+                // Instigate creation of resteasy configuration switches for
+                // found provider and resource classes
+                resteasyDeploymentData.setScanProviders(true);
+                resteasyDeploymentData.setScanResources(true);
+            }
         }
 
         // set scanning on only if there are no boot classes
@@ -229,74 +241,76 @@ public class JaxrsScanningProcessor implements DeploymentUnitProcessor {
             }
         }
 
-        List<AnnotationInstance> resources = null;
-        List<AnnotationInstance> providers = null;
-        if (resteasyDeploymentData.isScanResources()) {
-            resources = index.getAnnotations(JaxrsAnnotations.PATH.getDotName());
-        }
-        if (resteasyDeploymentData.isScanProviders()) {
-            providers = index.getAnnotations(JaxrsAnnotations.PROVIDER.getDotName());
-        }
-
-        if ((resources == null || resources.isEmpty()) && (providers == null || providers.isEmpty()))
-            return;
-        final Set<ClassInfo> pathInterfaces = new HashSet<ClassInfo>();
-        if (resources != null) {
-            for (AnnotationInstance e : resources) {
-                final ClassInfo info;
-                if (e.target() instanceof ClassInfo) {
-                    info = (ClassInfo) e.target();
-                } else if (e.target() instanceof MethodInfo) {
-                    //ignore
-                    continue;
-                } else {
-                    JAXRS_LOGGER.classOrMethodAnnotationNotFound("@Path", e.target());
-                    continue;
-                }
-                if(info.annotations().containsKey(DECORATOR)) {
-                    //we do not add decorators as resources
-                    //we can't pick up on programatically added decorators, but that is such an edge case it should not really matter
-                    continue;
-                }
-                if (!Modifier.isInterface(info.flags())) {
-                    resteasyDeploymentData.getScannedResourceClasses().add(info.name().toString());
-                } else {
-                    pathInterfaces.add(info);
-                }
+        if (!resteasyDeploymentData.isDispatcherCreated()) { // TODO  rls added this
+            List<AnnotationInstance> resources = null;
+            List<AnnotationInstance> providers = null;
+            if (resteasyDeploymentData.isScanResources()) {
+                resources = index.getAnnotations(JaxrsAnnotations.PATH.getDotName());
             }
-        }
-        if (providers != null) {
-            for (AnnotationInstance e : providers) {
-                if (e.target() instanceof ClassInfo) {
-                    ClassInfo info = (ClassInfo) e.target();
+            if (resteasyDeploymentData.isScanProviders()) {
+                providers = index.getAnnotations(JaxrsAnnotations.PROVIDER.getDotName());
+            }
 
-                    if(info.annotations().containsKey(DECORATOR)) {
-                        //we do not add decorators as providers
+            if ((resources == null || resources.isEmpty()) && (providers == null || providers.isEmpty()))
+                return;
+            final Set<ClassInfo> pathInterfaces = new HashSet<ClassInfo>();
+            if (resources != null) {
+                for (AnnotationInstance e : resources) {
+                    final ClassInfo info;
+                    if (e.target() instanceof ClassInfo) {
+                        info = (ClassInfo) e.target();
+                    } else if (e.target() instanceof MethodInfo) {
+                        //ignore
+                        continue;
+                    } else {
+                        JAXRS_LOGGER.classOrMethodAnnotationNotFound("@Path", e.target());
+                        continue;
+                    }
+                    if (info.annotations().containsKey(DECORATOR)) {
+                        //we do not add decorators as resources
                         //we can't pick up on programatically added decorators, but that is such an edge case it should not really matter
                         continue;
                     }
                     if (!Modifier.isInterface(info.flags())) {
-                        resteasyDeploymentData.getScannedProviderClasses().add(info.name().toString());
+                        resteasyDeploymentData.getScannedResourceClasses().add(info.name().toString());
+                    } else {
+                        pathInterfaces.add(info);
                     }
-                } else {
-                    JAXRS_LOGGER.classAnnotationNotFound("@Provider", e.target());
                 }
             }
-        }
+            if (providers != null) {
+                for (AnnotationInstance e : providers) {
+                    if (e.target() instanceof ClassInfo) {
+                        ClassInfo info = (ClassInfo) e.target();
 
-        // look for all implementations of interfaces annotated @Path
-        for (final ClassInfo iface : pathInterfaces) {
-            final Set<ClassInfo> implementors = index.getAllKnownImplementors(iface.name());
-            for (final ClassInfo implementor : implementors) {
-
-                if(implementor.annotations().containsKey(DECORATOR)) {
-                    //we do not add decorators as resources
-                    //we can't pick up on programatically added decorators, but that is such an edge case it should not really matter
-                    continue;
+                        if (info.annotations().containsKey(DECORATOR)) {
+                            //we do not add decorators as providers
+                            //we can't pick up on programatically added decorators, but that is such an edge case it should not really matter
+                            continue;
+                        }
+                        if (!Modifier.isInterface(info.flags())) {
+                            resteasyDeploymentData.getScannedProviderClasses().add(info.name().toString());
+                        }
+                    } else {
+                        JAXRS_LOGGER.classAnnotationNotFound("@Provider", e.target());
+                    }
                 }
-                resteasyDeploymentData.getScannedResourceClasses().add(implementor.name().toString());
             }
-        }
+
+            // look for all implementations of interfaces annotated @Path
+            for (final ClassInfo iface : pathInterfaces) {
+                final Set<ClassInfo> implementors = index.getAllKnownImplementors(iface.name());
+                for (final ClassInfo implementor : implementors) {
+
+                    if (implementor.annotations().containsKey(DECORATOR)) {
+                        //we do not add decorators as resources
+                        //we can't pick up on programatically added decorators, but that is such an edge case it should not really matter
+                        continue;
+                    }
+                    resteasyDeploymentData.getScannedResourceClasses().add(implementor.name().toString());
+                }
+            }
+        } // TODO  rls added this
     }
 
     protected Class<?> checkDeclaredApplicationClassAsServlet(JBossWebMetaData webData,

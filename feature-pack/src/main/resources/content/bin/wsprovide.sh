@@ -2,6 +2,24 @@
 
 GREP="grep"
 
+# Process passed in parameters
+while [ "$#" -gt 0 ]
+do
+    case "$1" in
+      -secmgr)
+          SECMGR="true"
+          ;;
+      -Djava.security.manager=*)
+          echo "ERROR: The use of -Djava.security.manager has been removed. Please use the -secmgr command line argument or SECMGR=true environment variable."
+          exit 1
+          ;;
+      *)
+          SERVER_OPTS="$SERVER_OPTS '$1'"
+          ;;
+    esac
+    shift
+done
+
 # Extract the directory and the program name
 # takes care of symlinks
 PRG="$0"
@@ -98,4 +116,4 @@ eval \"$JAVA\" $JAVA_OPTS \
     $MODULE_OPTS \
     -mp \""${JBOSS_MODULEPATH}"\" \
     org.jboss.ws.tools.wsprovide \
-    '"$@"'
+    "$SERVER_OPTS"

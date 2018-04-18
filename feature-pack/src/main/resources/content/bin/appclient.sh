@@ -3,7 +3,6 @@
 DIRNAME=`dirname "$0"`
 PROGNAME=`basename "$0"`
 GREP="grep"
-SERVER_OPTS=""
 
 # Parsing incoming parameters
 while [ "$#" -gt 0 ]

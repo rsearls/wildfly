@@ -2,6 +2,8 @@
 
 @if not "%ECHO%" == ""  echo %ECHO%
 @if "%OS%" == "Windows_NT" setlocal
+rem Set to all parameters by default
+set SERVER_OPTS=%*
 
 if "%OS%" == "Windows_NT" (
   set "DIRNAME=%~dp0%"
@@ -17,6 +19,18 @@ if not errorlevel == 1 (
     GOTO :EOF
 )
 setlocal DisableDelayedExpansion
+
+rem Read command-line args.
+:READ-ARGS
+if "%~1" == "" (
+   goto MAIN
+) else if "%~1" == "-secmgr" (
+   set SECMGR=true
+)
+shift
+goto READ-ARGS
+
+:MAIN
 
 rem check for secmgr property
 setlocal EnableDelayedExpansion
@@ -54,13 +68,24 @@ if "x%JAVA_HOME%" == "x" (
   echo JAVA_HOME is not set. Unexpected results may occur.
   echo Set JAVA_HOME to the directory of your local JDK to avoid this message.
 ) else (
-  set "JAVA=%JAVA_HOME%\bin\java"
+  if not exist "%JAVA_HOME%" (
+    echo JAVA_HOME "%JAVA_HOME%" path doesn't exist
+    goto END
+   ) else (
+     if not exist "%JAVA_HOME%\bin\java.exe" (
+       echo "%JAVA_HOME%\bin\java.exe" does not exist
+       goto END_NO_PAUSE
+     )
+      echo Setting JAVA property to "%JAVA_HOME%\bin\java"
+    set "JAVA=%JAVA_HOME%\bin\java"
+  )
 )
 
 rem Find jboss-modules.jar, or we can't continue
-set "JBOSS_RUNJAR=%JBOSS_HOME%\jboss-modules.jar"
-if not exist "%JBOSS_RUNJAR%" (
-  echo Could not locate "%JBOSS_RUNJAR%".
+if exist "%JBOSS_HOME%\jboss-modules.jar" (
+    set "JBOSS_RUNJAR=%JBOSS_HOME%\jboss-modules.jar"
+) else (
+  echo Could not locate "%JBOSS_HOME%\jboss-modules.jar".
   echo Please check that you are in the bin directory when running this script.
   goto END
 )

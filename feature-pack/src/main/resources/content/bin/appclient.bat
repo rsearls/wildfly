@@ -80,7 +80,17 @@ if "x%JAVA_HOME%" == "x" (
   echo JAVA_HOME is not set. Unexpected results may occur.
   echo Set JAVA_HOME to the directory of your local JDK to avoid this message.
 ) else (
-  set "JAVA=%JAVA_HOME%\bin\java"
+  if not exist "%JAVA_HOME%" (
+    echo JAVA_HOME "%JAVA_HOME%" path doesn't exist
+    goto END
+   ) else (
+     if not exist "%JAVA_HOME%\bin\java.exe" (
+       echo "%JAVA_HOME%\bin\java.exe" does not exist
+       goto END_NO_PAUSE
+     )
+      echo Setting JAVA property to "%JAVA_HOME%\bin\java"
+    set "JAVA=%JAVA_HOME%\bin\java"
+  )
 )
 
 rem Add -server to the JVM options, if supported

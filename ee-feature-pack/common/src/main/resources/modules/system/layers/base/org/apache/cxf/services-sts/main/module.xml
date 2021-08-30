@@ -25,7 +25,7 @@
 <module xmlns="urn:jboss:module:1.9" name="org.apache.cxf.services-sts">
 
     <resources>
-        <artifact name="${org.apache.cxf.services.sts:cxf-services-sts-core}"/>
+        <artifact name="${org.apache.cxf.services.sts:cxf-services-sts-core::jakarta}"/>
     </resources>
 
     <dependencies>

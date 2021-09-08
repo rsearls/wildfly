@@ -51,7 +51,6 @@
     </licenses>
 
     <modules>
-        <!-- rls  -->
         <module>appclient</module>
         <module>batch-jberet</module>
         <module>bean-validation</module>
@@ -63,14 +62,15 @@
         <module>connector</module>
         <module>datasources-agroal</module>
         <module>dist</module>
-
         <module>ee</module>
         <module>ee-build</module>
         <module>ee-dist</module>
+        <!-- rls
         <module>ee-feature-pack</module>
+        -->
         <module>ee-security</module>
+
         <module>ee-9</module>
-        <!-- rls -->
         <module>ejb3</module>
         <module>galleon-pack</module>
         <module>health</module>
@@ -108,13 +108,9 @@
         <module>weld</module>
         <module>xts</module>
         <module>rts</module>
-
-        <!-- rls   ... testsuite requires version info
-                testsuite/integration/smoke/pom.xml
         <module>testsuite/shared</module>
         <module>testsuite/test-feature-pack</module>
         <module>testsuite</module>
-        -->
     </modules>
 
     <scm>
@@ -367,9 +363,6 @@
         <version.org.apache.activemq.artemis.native>1.0.2</version.org.apache.activemq.artemis.native>
         <version.org.apache.avro>1.7.6</version.org.apache.avro>
         <version.org.apache.cxf>3.5.0-SNAPSHOT</version.org.apache.cxf>
-        <!--
-        <version.org.apache.cxf>3.4.4</version.org.apache.cxf>
-        -->
         <version.org.apache.cxf.xjcplugins>3.3.1</version.org.apache.cxf.xjcplugins>
         <version.org.apache.ds>2.0.0-M24</version.org.apache.ds>
         <version.org.apache.httpcomponents.httpasyncclient>4.1.4</version.org.apache.httpcomponents.httpasyncclient>
@@ -3085,7 +3078,6 @@
                 <groupId>org.apache.cxf</groupId>
                 <artifactId>cxf-core</artifactId>
                 <version>${version.org.apache.cxf}</version>
-                <classifier>jakarta</classifier>
                 <exclusions>
                     <exclusion>
                         <groupId>org.apache.ws.xmlschema</groupId>
@@ -3126,7 +3118,6 @@
                 <groupId>org.apache.cxf</groupId>
                 <artifactId>cxf-rt-features-logging</artifactId>
                 <version>${version.org.apache.cxf}</version>
-                <classifier>jakarta</classifier>
                 <exclusions>
                     <exclusion>
                         <groupId>org.slf4j</groupId>
@@ -3183,7 +3174,6 @@
                 <groupId>org.apache.cxf</groupId>
                 <artifactId>cxf-rt-bindings-coloc</artifactId>
                 <version>${version.org.apache.cxf}</version>
-                <classifier>jakarta</classifier>
                 <exclusions>
                     <exclusion>
                         <groupId>org.apache.cxf</groupId>
@@ -3276,7 +3266,6 @@
                 <groupId>org.apache.cxf</groupId>
                 <artifactId>cxf-rt-bindings-soap</artifactId>
                 <version>${version.org.apache.cxf}</version>
-                <classifier>jakarta</classifier>
                 <exclusions>
                     <exclusion>
                         <groupId>org.apache.cxf</groupId>
@@ -3341,7 +3330,6 @@
                 <groupId>org.apache.cxf</groupId>
                 <artifactId>cxf-rt-bindings-xml</artifactId>
                 <version>${version.org.apache.cxf}</version>
-                <classifier>jakarta</classifier>
                 <exclusions>
                     <exclusion>
                         <groupId>org.apache.cxf</groupId>
@@ -3402,7 +3390,6 @@
                 <groupId>org.apache.cxf</groupId>
                 <artifactId>cxf-rt-databinding-aegis</artifactId>
                 <version>${version.org.apache.cxf}</version>
-                <classifier>jakarta</classifier>
                 <exclusions>
                     <exclusion>
                         <groupId>org.apache.cxf</groupId>
@@ -3463,7 +3450,6 @@
                 <groupId>org.apache.cxf</groupId>
                 <artifactId>cxf-rt-databinding-jaxb</artifactId>
                 <version>${version.org.apache.cxf}</version>
-                <classifier>jakarta</classifier>
                 <exclusions>
                     <exclusion>
                         <groupId>com.sun.xml.bind</groupId>
@@ -3525,7 +3511,6 @@
                 <groupId>org.apache.cxf</groupId>
                 <artifactId>cxf-rt-features-clustering</artifactId>
                 <version>${version.org.apache.cxf}</version>
-                <classifier>jakarta</classifier>
                 <exclusions>
                     <exclusion>
                         <groupId>org.osgi</groupId>
@@ -3590,7 +3575,6 @@
                 <groupId>org.apache.cxf</groupId>
                 <artifactId>cxf-rt-frontend-jaxws</artifactId>
                 <version>${version.org.apache.cxf}</version>
-                <classifier>jakarta</classifier>
                 <exclusions>
                     <exclusion>
                         <groupId>org.ow2.asm</groupId>
@@ -3687,7 +3671,6 @@
                 <groupId>org.apache.cxf</groupId>
                 <artifactId>cxf-rt-frontend-simple</artifactId>
                 <version>${version.org.apache.cxf}</version>
-                <classifier>jakarta</classifier>
                 <exclusions>
                     <exclusion>
                         <groupId>xalan</groupId>
@@ -3740,7 +3723,6 @@
                 <groupId>org.apache.cxf</groupId>
                 <artifactId>cxf-rt-management</artifactId>
                 <version>${version.org.apache.cxf}</version>
-                <classifier>jakarta</classifier>
                 <exclusions>
                     <exclusion>
                         <groupId>org.apache.cxf</groupId>
@@ -3829,7 +3811,6 @@
                 <groupId>org.apache.cxf</groupId>
                 <artifactId>cxf-rt-security</artifactId>
                 <version>${version.org.apache.cxf}</version>
-                <classifier>jakarta</classifier>
                 <exclusions>
                     <exclusion>
                         <groupId>org.apache.cxf</groupId>
@@ -3886,7 +3867,6 @@
                 <groupId>org.apache.cxf</groupId>
                 <artifactId>cxf-rt-security-saml</artifactId>
                 <version>${version.org.apache.cxf}</version>
-                <classifier>jakarta</classifier>
                 <exclusions>
                     <exclusion>
                         <groupId>xalan</groupId>
@@ -3943,7 +3923,6 @@
                 <groupId>org.apache.cxf</groupId>
                 <artifactId>cxf-rt-transports-http</artifactId>
                 <version>${version.org.apache.cxf}</version>
-                <classifier>jakarta</classifier>
                 <exclusions>
                     <exclusion>
                         <groupId>org.apache.geronimo.specs</groupId>
@@ -4036,7 +4015,6 @@
                 <groupId>org.apache.cxf</groupId>
                 <artifactId>cxf-rt-transports-http-hc</artifactId>
                 <version>${version.org.apache.cxf}</version>
-                <classifier>jakarta</classifier>
                 <exclusions>
                     <exclusion>
                         <groupId>org.apache.cxf</groupId>
@@ -4137,7 +4115,6 @@
                 <groupId>org.apache.cxf</groupId>
                 <artifactId>cxf-rt-transports-jms</artifactId>
                 <version>${version.org.apache.cxf}</version>
-                <classifier>jakarta</classifier>
                 <exclusions>
                     <exclusion>
                         <groupId>org.apache.cxf</groupId>
@@ -4242,7 +4219,6 @@
                 <groupId>org.apache.cxf</groupId>
                 <artifactId>cxf-rt-transports-local</artifactId>
                 <version>${version.org.apache.cxf}</version>
-                <classifier>jakarta</classifier>
                 <exclusions>
                     <exclusion>
                         <groupId>org.apache.cxf</groupId>
@@ -4303,7 +4279,6 @@
                 <groupId>org.apache.cxf</groupId>
                 <artifactId>cxf-rt-ws-addr</artifactId>
                 <version>${version.org.apache.cxf}</version>
-                <classifier>jakarta</classifier>
                 <exclusions>
                     <exclusion>
                         <groupId>xalan</groupId>
@@ -4356,7 +4331,6 @@
                 <groupId>org.apache.cxf</groupId>
                 <artifactId>cxf-rt-ws-mex</artifactId>
                 <version>${version.org.apache.cxf}</version>
-                <classifier>jakarta</classifier>
                 <exclusions>
                     <exclusion>
                         <groupId>xalan</groupId>
@@ -4409,7 +4383,6 @@
                 <groupId>org.apache.cxf</groupId>
                 <artifactId>cxf-rt-ws-policy</artifactId>
                 <version>${version.org.apache.cxf}</version>
-                <classifier>jakarta</classifier>
                 <exclusions>
                     <exclusion>
                         <groupId>org.apache.cxf</groupId>
@@ -4510,7 +4483,6 @@
                 <groupId>org.apache.cxf</groupId>
                 <artifactId>cxf-rt-ws-rm</artifactId>
                 <version>${version.org.apache.cxf}</version>
-                <classifier>jakarta</classifier>
                 <exclusions>
                     <exclusion>
                         <groupId>org.apache.cxf</groupId>
@@ -4615,7 +4587,6 @@
                 <groupId>org.apache.cxf</groupId>
                 <artifactId>cxf-rt-ws-security</artifactId>
                 <version>${version.org.apache.cxf}</version>
-                <classifier>jakarta</classifier>
                 <exclusions>
                     <exclusion>
                         <groupId>net.sf.ehcache</groupId>
@@ -4720,7 +4691,6 @@
                 <groupId>org.apache.cxf</groupId>
                 <artifactId>cxf-rt-wsdl</artifactId>
                 <version>${version.org.apache.cxf}</version>
-                <classifier>jakarta</classifier>
                 <exclusions>
                     <exclusion>
                         <groupId>org.apache.cxf</groupId>
@@ -4781,7 +4751,6 @@
                 <groupId>org.apache.cxf</groupId>
                 <artifactId>cxf-tools-common</artifactId>
                 <version>${version.org.apache.cxf}</version>
-                <classifier>jakarta</classifier>
                 <exclusions>
                     <exclusion>
                         <groupId>com.sun.xml.bind</groupId>
@@ -4850,7 +4819,6 @@
                 <groupId>org.apache.cxf</groupId>
                 <artifactId>cxf-tools-java2ws</artifactId>
                 <version>${version.org.apache.cxf}</version>
-                <classifier>jakarta</classifier>
                 <exclusions>
                     <exclusion>
                         <groupId>org.apache.cxf</groupId>
@@ -4991,7 +4959,6 @@
                 <groupId>org.apache.cxf</groupId>
                 <artifactId>cxf-tools-validator</artifactId>
                 <version>${version.org.apache.cxf}</version>
-                <classifier>jakarta</classifier>
                 <exclusions>
                     <exclusion>
                         <groupId>org.apache.cxf</groupId>
@@ -5140,7 +5107,6 @@
                 <groupId>org.apache.cxf</groupId>
                 <artifactId>cxf-tools-wsdlto-core</artifactId>
                 <version>${version.org.apache.cxf}</version>
-                <classifier>jakarta</classifier>
                 <exclusions>
                     <exclusion>
                         <groupId>com.sun.xml.bind</groupId>
@@ -5257,7 +5223,6 @@
                 <groupId>org.apache.cxf</groupId>
                 <artifactId>cxf-tools-wsdlto-databinding-jaxb</artifactId>
                 <version>${version.org.apache.cxf}</version>
-                <classifier>jakarta</classifier>
                 <exclusions>
                     <exclusion>
                         <groupId>com.sun.xml.bind</groupId>
@@ -5354,7 +5319,6 @@
                 <groupId>org.apache.cxf</groupId>
                 <artifactId>cxf-tools-wsdlto-frontend-jaxws</artifactId>
                 <version>${version.org.apache.cxf}</version>
-                <classifier>jakarta</classifier>
                 <exclusions>
                     <exclusion>
                         <groupId>org.apache.cxf</groupId>
@@ -5451,7 +5415,6 @@
                 <groupId>org.apache.cxf.services.sts</groupId>
                 <artifactId>cxf-services-sts-core</artifactId>
                 <version>${version.org.apache.cxf}</version>
-                <classifier>jakarta</classifier>
                 <exclusions>
                     <exclusion>
                         <groupId>org.apache.cxf</groupId>
@@ -5512,7 +5475,6 @@
                 <groupId>org.apache.cxf.services.ws-discovery</groupId>
                 <artifactId>cxf-services-ws-discovery-api</artifactId>
                 <version>${version.org.apache.cxf}</version>
-                <classifier>jakarta</classifier>
                 <exclusions>
                     <exclusion>
                         <groupId>org.apache.cxf</groupId>

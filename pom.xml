@@ -65,11 +65,8 @@
         <module>ee</module>
         <module>ee-build</module>
         <module>ee-dist</module>
-        <!-- rls
         <module>ee-feature-pack</module>
-        -->
         <module>ee-security</module>
-
         <module>ee-9</module>
         <module>ejb3</module>
         <module>galleon-pack</module>

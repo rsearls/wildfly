@@ -500,7 +500,7 @@
         <dependency>
             <groupId>org.jboss.ws.cxf</groupId>
             <artifactId>jbossws-cxf-resources</artifactId>
-            <classifier>wildfly2000</classifier>
+            <classifier>wildfly2500</classifier>
         </dependency>
 
         <dependency>

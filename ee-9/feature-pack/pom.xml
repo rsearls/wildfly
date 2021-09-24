@@ -508,11 +508,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <!--<dependency>
-            <groupId>org.jboss.spec.javax.interceptor</groupId>
-            <artifactId>jboss-interceptors-api_1.2_spec</artifactId>
-            <scope>provided</scope>
-        </dependency>-->
         <dependency>
             <groupId>jakarta.interceptor</groupId>
             <artifactId>jakarta.interceptor-api</artifactId>
@@ -526,11 +521,6 @@
             </exclusions>
         </dependency>
 
-        <!--<dependency>
-            <groupId>org.jboss.spec.javax.security.auth.message</groupId>
-            <artifactId>jboss-jaspi-api_1.1_spec</artifactId>
-            <scope>provided</scope>
-        </dependency>-->
         <dependency>
             <groupId>jakarta.authentication</groupId>
             <artifactId>jakarta.authentication-api</artifactId>
@@ -538,17 +528,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <!--<dependency>
-            <groupId>org.jboss.spec.javax.security.jacc</groupId>
-            <artifactId>jboss-jacc-api_1.5_spec</artifactId>
-            <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.jboss.spec.javax.servlet</groupId>
-                    <artifactId>jboss-servlet-api_3.1_spec</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>-->
         <dependency>
             <groupId>jakarta.authorization</groupId>
             <artifactId>jakarta.authorization-api</artifactId>
@@ -617,11 +596,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <!--<dependency>
-            <groupId>org.jboss.spec.javax.annotation</groupId>
-            <artifactId>jboss-annotations-api_1.3_spec</artifactId>
-            <scope>provided</scope>
-        </dependency>-->
         <dependency>
             <groupId>jakarta.annotation</groupId>
             <artifactId>jakarta.annotation-api</artifactId>
@@ -629,11 +603,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <!--<dependency>
-            <groupId>org.jboss.spec.javax.enterprise.concurrent</groupId>
-            <artifactId>jboss-concurrency-api_1.0_spec</artifactId>
-            <scope>provided</scope>
-        </dependency>-->
         <dependency>
             <groupId>jakarta.enterprise.concurrent</groupId>
             <artifactId>jakarta.enterprise.concurrent-api</artifactId>
@@ -648,11 +617,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <!--<dependency>
-            <groupId>org.jboss.spec.javax.servlet</groupId>
-            <artifactId>jboss-servlet-api_4.0_spec</artifactId>
-            <scope>provided</scope>
-        </dependency>-->
         <dependency>
             <groupId>jakarta.servlet</groupId>
             <artifactId>jakarta.servlet-api</artifactId>
@@ -660,11 +624,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <!--<dependency>
-            <groupId>org.jboss.spec.javax.servlet.jsp</groupId>
-            <artifactId>jboss-jsp-api_2.3_spec</artifactId>
-            <scope>provided</scope>
-        </dependency>-->
         <dependency>
             <groupId>jakarta.servlet.jsp</groupId>
             <artifactId>jakarta.servlet.jsp-api</artifactId>
@@ -672,11 +631,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <!--<dependency>
-            <groupId>org.jboss.spec.javax.transaction</groupId>
-            <artifactId>jboss-transaction-api_1.3_spec</artifactId>
-            <scope>provided</scope>
-        </dependency>-->
         <dependency>
             <groupId>jakarta.transaction</groupId>
             <artifactId>jakarta.transaction-api</artifactId>
@@ -684,11 +638,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <!--<dependency>
-            <groupId>org.jboss.spec.javax.websocket</groupId>
-            <artifactId>jboss-websocket-api_1.1_spec</artifactId>
-            <scope>provided</scope>
-        </dependency>-->
         <dependency>
             <groupId>jakarta.websocket</groupId>
             <artifactId>jakarta.websocket-api</artifactId>
@@ -773,17 +722,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <!--<dependency>
-            <groupId>org.jboss.spec.javax.batch</groupId>
-            <artifactId>jboss-batch-api_1.0_spec</artifactId>
-            <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>*</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>-->
         <dependency>
             <groupId>jakarta.batch</groupId>
             <artifactId>jakarta.batch-api</artifactId>
@@ -797,18 +735,6 @@
             </exclusions>
         </dependency>
 
-        <!--<dependency>
-            <groupId>org.jboss.spec.javax.ejb</groupId>
-            <artifactId>jboss-ejb-api_3.2_spec</artifactId>
-            <scope>provided</scope>-->
-            <!-- Exclude dependencies declared in the servlet-feature-pack-ee-8-api module -->
-            <!--<exclusions>
-                <exclusion>
-                    <artifactId>*</artifactId>
-                    <groupId>*</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>-->
         <dependency>
             <groupId>jakarta.ejb</groupId>
             <artifactId>jakarta.ejb-api</artifactId>
@@ -823,11 +749,6 @@
             </exclusions>
         </dependency>
 
-        <!--<dependency>
-            <groupId>org.jboss.spec.javax.faces</groupId>
-            <artifactId>jboss-jsf-api_2.3_spec</artifactId>
-            <scope>provided</scope>
-        </dependency>-->
         <dependency>
             <groupId>jakarta.faces</groupId>
             <artifactId>jakarta.faces-api</artifactId>
@@ -852,11 +773,6 @@
             </exclusions>
         </dependency>
 
-        <!--<dependency>
-            <groupId>org.jboss.spec.javax.jms</groupId>
-            <artifactId>jboss-jms-api_2.0_spec</artifactId>
-            <scope>provided</scope>
-        </dependency>-->
         <dependency>
             <groupId>jakarta.jms</groupId>
             <artifactId>jakarta.jms-api</artifactId>
@@ -864,17 +780,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <!--<dependency>
-            <groupId>org.jboss.spec.javax.resource</groupId>
-            <artifactId>jboss-connector-api_1.7_spec</artifactId>
-            <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>*</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>-->
         <dependency>
             <groupId>jakarta.resource</groupId>
             <artifactId>jakarta.resource-api</artifactId>
@@ -894,30 +799,12 @@
             <version>${version.org.jboss.spec.jakarta.ws.rs.jboss-jaxrs-api_3.0_spec}</version>
             <scope>provided</scope>
         </dependency>
-        <!--<dependency>
-            <groupId>jakarta.ws.rs</groupId>
-            <artifactId>jakarta.ws.rs-api</artifactId>
-            <version>${version.jakarta.ws.rs.jakarta-ws-rs-api}</version>
-            <scope>provided</scope>
-        </dependency>-->
 
         <dependency>
             <groupId>org.jboss.spec.javax.xml.bind</groupId>
             <artifactId>jboss-jaxb-api_2.3_spec</artifactId>
             <scope>provided</scope>
         </dependency>
-        <!--<dependency>
-            <groupId>jakarta.xml.bind</groupId>
-            <artifactId>jakarta.xml.bind-api</artifactId>
-            <version>${version.jakarta.xml.bind.jakarta-xml-bind-api}</version>
-            <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>*</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>-->
 
         <dependency>
             <groupId>org.jboss.spec.javax.xml.soap</groupId>
@@ -1066,6 +953,12 @@
             <groupId>org.jboss.metadata</groupId>
             <artifactId>jboss-metadata-ejb-jakarta</artifactId>
             <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>jakarta.annotation</groupId>
+                    <artifactId>jakarta.annotation-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -1494,7 +1387,7 @@
         <dependency>
             <groupId>org.jboss.ws.cxf</groupId>
             <artifactId>jbossws-cxf-resources</artifactId>
-            <classifier>wildfly2000</classifier>
+            <classifier>wildfly2500</classifier>
         </dependency>
         <dependency>
             <groupId>org.jboss.ws.cxf</groupId>
@@ -1545,6 +1438,12 @@
             <artifactId>cxf-rt-bindings-coloc</artifactId>
             <version>${version.org.apache.cxf}</version>
             <classifier>jakarta</classifier>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -1565,6 +1464,12 @@
             <artifactId>cxf-rt-bindings-xml</artifactId>
             <version>${version.org.apache.cxf}</version>
             <classifier>jakarta</classifier>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -1642,6 +1547,12 @@
             <artifactId>cxf-rt-databinding-aegis</artifactId>
             <version>${version.org.apache.cxf}</version>
             <classifier>jakarta</classifier>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -1649,6 +1560,12 @@
             <artifactId>cxf-rt-databinding-jaxb</artifactId>
             <version>${version.org.apache.cxf}</version>
             <classifier>jakarta</classifier>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -1656,6 +1573,12 @@
             <artifactId>cxf-rt-features-clustering</artifactId>
             <version>${version.org.apache.cxf}</version>
             <classifier>jakarta</classifier>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -1676,6 +1599,12 @@
             <artifactId>cxf-rt-frontend-simple</artifactId>
             <version>${version.org.apache.cxf}</version>
             <classifier>jakarta</classifier>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -1683,6 +1612,12 @@
             <artifactId>cxf-rt-management</artifactId>
             <version>${version.org.apache.cxf}</version>
             <classifier>jakarta</classifier>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -1690,6 +1625,12 @@
             <artifactId>cxf-rt-security</artifactId>
             <version>${version.org.apache.cxf}</version>
             <classifier>jakarta</classifier>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -1697,6 +1638,12 @@
             <artifactId>cxf-rt-security-saml</artifactId>
             <version>${version.org.apache.cxf}</version>
             <classifier>jakarta</classifier>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -1704,6 +1651,12 @@
             <artifactId>cxf-rt-transports-http</artifactId>
             <version>${version.org.apache.cxf}</version>
             <classifier>jakarta</classifier>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -1713,12 +1666,8 @@
             <classifier>jakarta</classifier>
             <exclusions>
                 <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>jcl-over-slf4j</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>jakarta.annotation</groupId>
-                    <artifactId>jakarta.annotation-api</artifactId>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -1728,6 +1677,12 @@
             <artifactId>cxf-rt-transports-local</artifactId>
             <version>${version.org.apache.cxf}</version>
             <classifier>jakarta</classifier>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -1761,6 +1716,12 @@
             <artifactId>cxf-rt-ws-addr</artifactId>
             <version>${version.org.apache.cxf}</version>
             <classifier>jakarta</classifier>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -1768,6 +1729,12 @@
             <artifactId>cxf-rt-ws-mex</artifactId>
             <version>${version.org.apache.cxf}</version>
             <classifier>jakarta</classifier>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -1775,6 +1742,12 @@
             <artifactId>cxf-rt-ws-policy</artifactId>
             <version>${version.org.apache.cxf}</version>
             <classifier>jakarta</classifier>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -1782,6 +1755,12 @@
             <artifactId>cxf-rt-ws-rm</artifactId>
             <version>${version.org.apache.cxf}</version>
             <classifier>jakarta</classifier>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>

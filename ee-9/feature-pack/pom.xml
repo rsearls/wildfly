@@ -723,6 +723,71 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- jbossws-* -->
+        <dependency>
+            <groupId>org.jboss.ws.cxf</groupId>
+            <artifactId>jbossws-cxf-client</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jboss.ws.cxf</groupId>
+            <artifactId>jbossws-cxf-factories</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jboss.ws.cxf</groupId>
+            <artifactId>jbossws-cxf-jaspi</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.ws.cxf</groupId>
+            <artifactId>jbossws-cxf-resources</artifactId>
+            <classifier>wildfly2000</classifier>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.ws.cxf</groupId>
+            <artifactId>jbossws-cxf-server</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.ws.cxf</groupId>
+            <artifactId>jbossws-cxf-transports-udp</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.ws.cxf</groupId>
+            <artifactId>jbossws-cxf-transports-undertow</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.ws.projects</groupId>
+            <artifactId>jaxws-undertow-httpspi</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.ws</groupId>
+            <artifactId>jbossws-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.ws</groupId>
+            <artifactId>jbossws-common-tools</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.ws</groupId>
+            <artifactId>jbossws-common</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.ws</groupId>
+            <artifactId>jbossws-spi</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
         <dependency>
             <groupId>org.apache.taglibs</groupId>
             <artifactId>taglibs-standard-spec</artifactId>

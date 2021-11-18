@@ -47,7 +47,6 @@
         <servlet.common.resources.directory>${basedir}/../../servlet-feature-pack/common/src/main/resources</servlet.common.resources.directory>
         <servlet.galleon-common.resources.directory>${basedir}/../../servlet-feature-pack/galleon-common/src/main/resources</servlet.galleon-common.resources.directory>
         <full.ee-9-api.license.directory>${basedir}/src/license</full.ee-9-api.license.directory>
-
         <!-- WildFly Preview vs standard WildFly GAV expression properties. -->
         <module.jakarta.classifier>::jakarta</module.jakarta.classifier>
         <module.jakarta.suffix>-jakarta</module.jakarta.suffix>
@@ -611,6 +610,10 @@
                     <groupId>org.wildfly.wildfly-http-client</groupId>
                     <artifactId>wildfly-http-transaction-client</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>org.jboss.ws.cxf</groupId>
+                    <artifactId>jbossws-cxf-resources</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
 
@@ -1053,6 +1056,12 @@
             <groupId>org.jboss.metadata</groupId>
             <artifactId>jboss-metadata-ejb-jakarta</artifactId>
             <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>jakarta.annotation</groupId>
+                    <artifactId>jakarta.annotation-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -1258,6 +1267,65 @@
             <groupId>org.wildfly.wildfly-http-client</groupId>
             <artifactId>wildfly-http-transaction-client-jakarta</artifactId>
             <scope>provided</scope>
+        </dependency>
+
+        <!-- jbossws additions -->
+        <!-- DO NOT MOVE the JBossWS dependencies here below; they need to come BEFORE the Apache CXF ones (see WFLY-5067) -->
+        <dependency>
+            <groupId>org.jboss.ws.cxf</groupId>
+            <artifactId>jbossws-cxf-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.ws.cxf</groupId>
+            <artifactId>jbossws-cxf-factories</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.ws.cxf</groupId>
+            <artifactId>jbossws-cxf-jaspi</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.ws.cxf</groupId>
+            <artifactId>jbossws-cxf-resources</artifactId>
+            <classifier>wildfly2500</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.ws.cxf</groupId>
+            <artifactId>jbossws-cxf-server</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.ws.cxf</groupId>
+            <artifactId>jbossws-cxf-transports-udp</artifactId>
+            <version>${version.org.jboss.ws.cxf}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.ws.cxf</groupId>
+            <artifactId>jbossws-cxf-transports-undertow</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.ws.projects</groupId>
+            <artifactId>jaxws-undertow-httpspi</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.ws</groupId>
+            <artifactId>jbossws-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.ws</groupId>
+            <artifactId>jbossws-common-tools</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.ws</groupId>
+            <artifactId>jbossws-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.ws</groupId>
+            <artifactId>jbossws-spi</artifactId>
         </dependency>
 
     </dependencies>

@@ -42,6 +42,10 @@
     <name>WildFly: EE Feature Pack Common Resources</name>
     <packaging>pom</packaging>
 
+    <properties>
+        <version.org.jboss.ws.cxf>6.0.0-SNAPSHOT</version.org.jboss.ws.cxf>
+    </properties>
+
     <dependencies>
 
         <!-- module and copy artifact dependencies -->
@@ -483,7 +487,8 @@
         <dependency>
             <groupId>org.jboss.ws.cxf</groupId>
             <artifactId>jbossws-cxf-resources</artifactId>
-            <classifier>wildfly2000</classifier>
+            <version>${version.org.jboss.ws.cxf}</version>
+            <classifier>wildfly2500</classifier>
         </dependency>
 
         <dependency>
@@ -2728,11 +2733,11 @@
             <groupId>org.jboss.ws.cxf</groupId>
             <artifactId>jbossws-cxf-transports-undertow</artifactId>
             <exclusions>
-                <exclusion>
-                    <groupId>*</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
+            <exclusion>
+                <groupId>*</groupId>
+                <artifactId>*</artifactId>
+            </exclusion>
+        </exclusions>
         </dependency>
 
         <dependency>

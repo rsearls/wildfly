@@ -523,6 +523,7 @@
         <version.wsdl4j>1.6.3</version.wsdl4j>
         <version.xml-resolver>1.2</version.xml-resolver>
         <version.xom>1.3.7</version.xom>
+        <version.glassfish.jaxb>3.0.2</version.glassfish.jaxb> <!-- rls added -->
     </properties>
 
     <dependencyManagement>
@@ -6939,13 +6940,13 @@
             <dependency>
                 <groupId>org.glassfish.jaxb</groupId>
                 <artifactId>codemodel</artifactId>
-                <version>${version.sun.jaxb}</version>
+                <version>${version.glassfish.jaxb}</version>
             </dependency>
 
             <dependency>
                 <groupId>org.glassfish.jaxb</groupId>
                 <artifactId>jaxb-jxc</artifactId>
-                <version>${version.sun.jaxb}</version>
+                <version>${version.glassfish.jaxb}</version>
                 <exclusions>
                     <exclusion>
                         <groupId>com.sun</groupId>
@@ -6957,7 +6958,27 @@
             <dependency>
                 <groupId>org.glassfish.jaxb</groupId>
                 <artifactId>jaxb-runtime</artifactId>
-                <version>${version.sun.jaxb}</version>
+                <version>${version.glassfish.jaxb}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>javax.activation</groupId>
+                        <artifactId>javax.activation-api</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>javax.xml.bind</groupId>
+                        <artifactId>jaxb-api</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.jvnet.staxex</groupId>
+                        <artifactId>stax-ex</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency> <!-- rls added -->
+                <groupId>org.glassfish.jaxb</groupId>
+                <artifactId>jaxb-core</artifactId>
+                <version>${version.glassfish.jaxb}</version>
                 <exclusions>
                     <exclusion>
                         <groupId>javax.activation</groupId>
@@ -6977,7 +6998,7 @@
             <dependency>
                 <groupId>org.glassfish.jaxb</groupId>
                 <artifactId>jaxb-xjc</artifactId>
-                <version>${version.sun.jaxb}</version>
+                <version>${version.glassfish.jaxb}</version>
                 <exclusions>
                     <exclusion>
                         <groupId>com.sun.xml.dtd-parser</groupId>
@@ -6989,13 +7010,13 @@
             <dependency>
                 <groupId>org.glassfish.jaxb</groupId>
                 <artifactId>txw2</artifactId>
-                <version>${version.sun.jaxb}</version>
+                <version>${version.glassfish.jaxb}</version>
             </dependency>
 
             <dependency>
                 <groupId>org.glassfish.jaxb</groupId>
                 <artifactId>xsom</artifactId>
-                <version>${version.sun.jaxb}</version>
+                <version>${version.glassfish.jaxb}</version>
                 <exclusions>
                     <exclusion>
                         <groupId>com.sun.xml.bind.external</groupId>

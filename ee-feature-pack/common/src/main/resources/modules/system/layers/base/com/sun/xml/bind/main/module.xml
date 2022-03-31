@@ -37,7 +37,7 @@
         <artifact name="${org.glassfish.jaxb:jaxb-xjc}"/>
         <artifact name="${org.glassfish.jaxb:xsom}"/>
         <artifact name="${org.glassfish.jaxb:txw2}"/>
-        <artifact name="${org.glassfish.jaxb:jaxb-core}"/> <!-- rls added -->
+        <artifact name="${org.glassfish.jaxb:jaxb-core}"/>
     </resources>
 
     <dependencies>

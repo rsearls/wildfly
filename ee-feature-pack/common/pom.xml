@@ -252,7 +252,7 @@
             </exclusions>
         </dependency>
 
-        <dependency>    <!-- rls added -->
+        <dependency>
             <groupId>org.glassfish.jaxb</groupId>
             <artifactId>jaxb-core</artifactId>
             <exclusions>

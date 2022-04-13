@@ -29,6 +29,10 @@
     </resources>
 
     <dependencies>
+        <!-- rls
+        <module name="java.desktop"/>
+        <module name="java.xml"/>
+        -->
         <module name="java.logging" />
         <module name="jakarta.activation.api" />
     </dependencies>

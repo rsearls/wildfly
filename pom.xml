@@ -270,6 +270,7 @@
         <version.jacoco.plugin>0.8.2</version.jacoco.plugin><!-- TODO property does not follow verion.groupId format -->
         <version.org.codehaus.woodstox.stax2-api>4.2.1</version.org.codehaus.woodstox.stax2-api>
         <version.org.codehaus.woodstox.woodstox-core>6.0.3</version.org.codehaus.woodstox.woodstox-core>
+        <version.org.ehcache>3.10.0</version.org.ehcache>
         <version.org.jboss.galleon>4.2.8.Final</version.org.jboss.galleon>
         <version.org.wildfly.build-tools>1.2.12.Final</version.org.wildfly.build-tools>
         <version.org.wildfly.checkstyle-config>1.0.8.Final</version.org.wildfly.checkstyle-config>
@@ -547,6 +548,12 @@
                         <artifactId>stax-api</artifactId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>org.ehcache</groupId>
+                <artifactId>ehcache</artifactId>
+                <version>${version.org.ehcache}</version>
             </dependency>
 
             <!-- Import the core parent to get all the managed dependencies from core -->

@@ -767,6 +767,21 @@
         </dependency>
 
         <dependency>
+            <groupId>org.ehcache</groupId>
+            <artifactId>ehcache</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.cache</groupId>
+                    <artifactId>cache-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>wildfly-rts</artifactId>
             <exclusions>

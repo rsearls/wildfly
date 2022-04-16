@@ -566,6 +566,44 @@
                                 <exclude>org.apache.johnzon:johnzon-core\z</exclude>
                                 <exclude>activemq-artemis-native\z</exclude>
                                 <exclude>org.jboss.activemq.artemis.integration:artemis-wildfly-jakarta-integration\z</exclude>
+
+                                <exclude>org.jboss.ws.cxf:jbossws-cxf-client\z</exclude>
+                                <exclude>org.jboss.ws.cxf:jbossws-cxf-jaspi\z</exclude>
+                                <exclude>org.jboss.ws.cxf:jbossws-cxf-server\z</exclude>
+                                <exclude>org.jboss.ws.cxf:jbossws-cxf-transports-udp\z</exclude>
+                                <exclude>org.jboss.ws.cxf:jbossws-cxf-transports-undertow\z</exclude>
+
+                                <exclude>org.apache.cxf:cxf-core\z</exclude>
+                                <exclude>org.apache.cxf:cxf-rt-features-logging\z</exclude>
+                                <exclude>org.apache.cxf:cxf-rt-bindings-coloc\z</exclude>
+                                <exclude>org.apache.cxf:cxf-rt-bindings-soap\z</exclude>
+                                <exclude>org.apache.cxf:cxf-rt-bindings-xml\z</exclude>
+                                <exclude>org.apache.cxf:cxf-rt-databinding-aegis\z</exclude>
+                                <exclude>org.apache.cxf:cxf-rt-databinding-jaxb\z</exclude>
+                                <exclude>org.apache.cxf:cxf-rt-features-clustering\z</exclude>
+                                <exclude>org.apache.cxf:cxf-rt-frontend-jaxws\z</exclude>
+                                <exclude>org.apache.cxf:cxf-rt-frontend-simple\z</exclude>
+                                <exclude>org.apache.cxf:cxf-rt-management\z</exclude>
+                                <exclude>org.apache.cxf:cxf-rt-security\z</exclude>
+                                <exclude>org.apache.cxf:cxf-rt-security-saml\z</exclude>
+                                <exclude>org.apache.cxf:cxf-rt-transports-http\z</exclude>
+                                <exclude>org.apache.cxf:cxf-rt-transports-http-hc\z</exclude>
+                                <exclude>org.apache.cxf:cxf-rt-transports-jms\z</exclude>
+                                <exclude>org.apache.cxf:cxf-rt-transports-local\z</exclude>
+                                <exclude>org.apache.cxf:cxf-rt-ws-addr\z</exclude>
+                                <exclude>org.apache.cxf:cxf-rt-ws-mex\z</exclude>
+                                <exclude>org.apache.cxf:cxf-rt-ws-policy\z</exclude>
+                                <exclude>org.apache.cxf:cxf-rt-ws-rm\z</exclude>
+                                <exclude>org.apache.cxf:cxf-rt-ws-security\z</exclude>
+                                <exclude>org.apache.cxf:cxf-rt-wsdl\z</exclude>
+                                <exclude>org.apache.cxf:cxf-tools-common\z</exclude>
+                                <exclude>org.apache.cxf:cxf-tools-java2ws\z</exclude>
+                                <exclude>org.apache.cxf:cxf-tools-validator\z</exclude>
+                                <exclude>org.apache.cxf:cxf-tools-wsdlto-core\z</exclude>
+                                <exclude>org.apache.cxf:cxf-tools-wsdlto-databinding-jaxb\z</exclude>
+                                <exclude>org.apache.cxf:cxf-tools-wsdlto-frontend-jaxws\z</exclude>
+                                <exclude>org.apache.cxf.services.sts:cxf-services-sts-core\z</exclude>
+                                <exclude>org.apache.cxf.services.ws-discovery:cxf-services-ws-discovery-api\z</exclude>
                             </jakarta-transform-excluded-artifacts>
                         </configuration>
                     </execution>

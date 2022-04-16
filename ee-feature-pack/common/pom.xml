@@ -254,6 +254,17 @@
 
         <dependency>
             <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-core</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
             <artifactId>jaxb-jxc</artifactId>
             <exclusions>
                 <exclusion>

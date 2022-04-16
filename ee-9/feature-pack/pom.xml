@@ -532,6 +532,7 @@
                                 <!-- Only contains hard-coded strings that are either not used or both the javax and
                                 jakarta names are used -->
                                 <exclude>org.apache.logging.log4j:log4j-api\z</exclude>
+                                <exclude>org.apache.logging.log4j:log4j-core\z</exclude>
 
                                 <!-- Don't transform Infinispan modules and its dependents -->
                                 <exclude>org.jboss.spec.javax.transaction:jboss-transaction-api_1.3_spec</exclude>

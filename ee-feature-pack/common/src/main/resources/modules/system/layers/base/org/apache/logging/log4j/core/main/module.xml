@@ -30,6 +30,5 @@
 
    <dependencies>
       <module name="org.apache.logging.log4j.api" />
-      <!-- <module name="sun.jdk" /> rls -->
    </dependencies>
 </module>

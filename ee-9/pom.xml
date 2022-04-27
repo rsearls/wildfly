@@ -114,7 +114,8 @@
         <version.jakarta.org.apache.wss4j>3.0.0-SNAPSHOT</version.jakarta.org.apache.wss4j>
         <version.jakarta.org.apache.xmlsec>3.0.0-SNAPSHOT</version.jakarta.org.apache.xmlsec>
         <version.jakarta.org.opensaml.opensaml>4.0.1</version.jakarta.org.opensaml.opensaml>
-    <!-- rls test end -->
+        <version.org.jboss.ws.cxf>6.0.0-SNAPSHOT</version.org.jboss.ws.cxf>
+        <!-- rls test end -->
         <version.org.glassfish.web.jakarta.servlet.jsp.jstl>2.0.0</version.org.glassfish.web.jakarta.servlet.jsp.jstl>
         <version.org.hibernate.validator>7.0.2.Final</version.org.hibernate.validator>
         <version.org.jberet>2.0.4.Final</version.org.jberet>
@@ -3081,18 +3082,6 @@
             </dependency>
 
             <dependency>
-                <groupId>org.apache.logging.log4j</groupId>
-                <artifactId>log4j-core</artifactId>
-                <version>${version.org.apache.log4j-core}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.apache.logging.log4j</groupId>
-                        <artifactId>log4j-api</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-
-            <dependency>
                 <groupId>org.apache.myfaces.core</groupId>
                 <artifactId>myfaces-impl</artifactId>
                 <version>${version.org.apache.myfaces.core}</version>
@@ -3824,6 +3813,79 @@
                 <groupId>org.jboss.weld</groupId>
                 <artifactId>weld-spi</artifactId>
                 <version>${version.org.jboss.weld.weld-api}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.ws.cxf</groupId>
+                <artifactId>jbossws-cxf-client</artifactId>
+                <version>${version.org.jboss.ws.cxf}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.ws.cxf</groupId>
+                <artifactId>jbossws-cxf-jaspi</artifactId>
+                <version>${version.org.jboss.ws.cxf}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.ws.cxf</groupId>
+                <artifactId>jbossws-cxf-factories</artifactId>
+                <version>${version.org.jboss.ws.cxf}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.ws.cxf</groupId>
+                <artifactId>jbossws-cxf-resources</artifactId>
+                <version>${version.org.jboss.ws.cxf}</version>
+                <classifier>wildfly2700</classifier>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.ws.cxf</groupId>
+                <artifactId>jbossws-cxf-server</artifactId>
+                <version>${version.org.jboss.ws.cxf}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.ws.cxf</groupId>
+                <artifactId>jbossws-cxf-transports-udp</artifactId>
+                <version>${version.org.jboss.ws.cxf}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jboss.ws.cxf</groupId>
+                <artifactId>jbossws-cxf-transports-undertow</artifactId>
+                <version>${version.org.jboss.ws.cxf}</version>
                 <exclusions>
                     <exclusion>
                         <groupId>*</groupId>

@@ -65,7 +65,6 @@
         <module name="java.xml" />
         <module name="org.slf4j" />
         <module name="sun.jdk" />
-        <module name="org.ehcache" />
     </dependencies>
 
 </module>

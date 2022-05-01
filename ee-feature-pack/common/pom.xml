@@ -243,6 +243,17 @@
 
         <dependency>
             <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-core</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
             <artifactId>jaxb-runtime</artifactId>
             <exclusions>
                 <exclusion>
@@ -605,6 +616,12 @@
         <dependency>
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-transports-jms</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>jakarta.jms</groupId>
+                    <artifactId>jakarta.jms-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>

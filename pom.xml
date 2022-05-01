@@ -378,7 +378,7 @@
         <version.javax.jws.jsr181-api>1.0-MR1</version.javax.jws.jsr181-api>
         <version.jakarta.jws.jakarta.jws-api>2.1.0</version.jakarta.jws.jakarta.jws-api>
         <version.jaxen>1.1.6</version.jaxen>
-        <version.jboss.jaxbintros>1.0.3.GA</version.jboss.jaxbintros>
+        <version.jboss.jaxbintros>2.0.0-SNAPSHOT</version.jboss.jaxbintros>
         <version.joda-time>2.10.13</version.joda-time>
         <version.jsoup>1.14.2</version.jsoup>
         <version.net.jcip>1.0</version.net.jcip>
@@ -3175,6 +3175,14 @@
                     <exclusion>
                         <groupId>org.jboss.spec.javax.xml.bind</groupId>
                         <artifactId>jboss-jaxb-api_2.2_spec</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>jakarta.xml.bind</groupId>
+                        <artifactId>jakarta.xml.bind-api</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.sun.activation</groupId>
+                        <artifactId>jakarta.activation</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>

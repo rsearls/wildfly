@@ -1,6 +1,7 @@
 # By default, build on JDK 11
 ARG jdk=11
-FROM eclipse-temurin:${jdk}-centos7
+#FROM eclipse-temurin:${jdk}-centos7
+FROM eclipse-temurin:11-centos7
 
 LABEL maintainer="rsearls@redhat.com"
 

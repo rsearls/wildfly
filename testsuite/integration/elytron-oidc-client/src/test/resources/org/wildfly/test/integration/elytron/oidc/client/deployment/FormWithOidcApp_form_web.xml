@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="6.0" xmlns="https://jakarta.ee/xml/ns/jakartaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd">
+
+   <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>secured</web-resource-name>
+            <url-pattern>/secured</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>*</role-name>
+        </auth-constraint>   
+    </security-constraint>
+
+   <login-config>
+      <auth-method>FORM</auth-method>
+       <!-- rls tmp .. using default domain "other" in wlfy
+       <realm-name>myDomain</realm-name>
+       -->
+       <realm-name>other</realm-name> <!-- rls tmp -->
+       <form-login-config>
+           <form-login-page>/login.html</form-login-page>
+           <form-error-page>/error.html</form-error-page>
+       </form-login-config>
+   </login-config>
+
+   <security-role>
+       <role-name>*</role-name>
+   </security-role>
+</web-app>
+

@@ -303,15 +303,17 @@ public class UndertowDeploymentProcessor implements DeploymentUnitProcessor, Fun
         }
 
         final SecurityMetaData securityMetaData = deploymentUnit.getAttachment(ATTACHMENT_KEY);
-        if (isVirtualDomainRequired(deploymentUnit) || isVirtualMechanismFactoryRequired(deploymentUnit)) {
-            securityDomain = builder.requires(securityMetaData.getSecurityDomain());
-        } else if(securityDomainName != null) {
+        if(securityDomainName != null) {
             if (mappedSecurityDomain.test(securityDomainName)) {
                 applySecurityFunction = builder.requires(capabilitySupport.getCapabilityServiceName(Capabilities.CAPABILITY_APPLICATION_SECURITY_DOMAIN, securityDomainName));
             } else {
                 throw ROOT_LOGGER.deploymentConfiguredForLegacySecurity();
             }
         }
+        else if (isVirtualDomainRequired(deploymentUnit) || isVirtualMechanismFactoryRequired(deploymentUnit)) {
+            securityDomain = builder.requires(securityMetaData.getSecurityDomain());
+        }
+
         if (isVirtualMechanismFactoryRequired(deploymentUnit)) {
             if (securityMetaData instanceof AdvancedSecurityMetaData) {
                 mechanismFactorySupplier = builder.requires(((AdvancedSecurityMetaData) securityMetaData).getHttpServerAuthenticationMechanismFactory());

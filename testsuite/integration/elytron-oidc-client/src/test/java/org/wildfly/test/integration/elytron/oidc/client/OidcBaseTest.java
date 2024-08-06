@@ -87,6 +87,7 @@ public abstract class OidcBaseTest {
     public static final String AUTH_SERVER_URL_APP = "AuthServerUrlOidcApp";
     public static final String WRONG_PROVIDER_URL_APP = "WrongProviderUrlOidcApp";
     public static final String WRONG_SECRET_APP = "WrongSecretOidcApp";
+    public static final String FORM_WITH_OIDC_APP = "FormWithOidcApp";
     public static final String DIRECT_ACCCESS_GRANT_ENABLED_CLIENT = "DirectAccessGrantEnabledClient";
     public static final String BEARER_ONLY_AUTH_SERVER_URL_APP = "AuthServerUrlBearerOnlyApp";
     public static final String BEARER_ONLY_PROVIDER_URL_APP = "ProviderUrlBearerOnlyApp";
@@ -491,6 +492,21 @@ public abstract class OidcBaseTest {
         //Expected to fail since the client secret is needed to sign the JWT
         testRequestObjectInvalidConfiguration(new URL("http", TestSuiteEnvironment.getHttpAddress(), TestSuiteEnvironment.getHttpPort(),
                 "/" + MISSING_SECRET_APP + SimpleSecuredServlet.SERVLET_PATH).toURI(), true);
+    }
+
+    @Test
+    @OperateOnDeployment(FORM_WITH_OIDC_APP)
+    public void testFormWithOidc() throws Exception {
+        // oidc login
+        // EAR declares context-root to be oidc
+        loginToApp("oidc",
+                org.wildfly.test.integration.elytron.oidc.client.KeycloakConfiguration.ALICE,
+                org.wildfly.test.integration.elytron.oidc.client.KeycloakConfiguration.ALICE_PASSWORD,
+                HttpURLConnection.HTTP_OK, SimpleServlet.RESPONSE_BODY);
+
+        // TODO login to Form wfly user acct
+        // EAR declares context-root to be form
+        // loginToApp("form", ...);
     }
 
     public static void loginToApp(String appName, String username, String password, int expectedStatusCode, String expectedText) throws Exception {

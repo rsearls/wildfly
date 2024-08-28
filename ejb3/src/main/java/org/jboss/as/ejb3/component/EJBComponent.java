@@ -620,7 +620,7 @@ public abstract class EJBComponent extends BasicComponent implements ServerActiv
     // rls debug only TMP
     private SecurityIdentity getCallerSecurityIdentity() {
         SecurityIdentity si = getCallerSecurityIdentityORIGINAL();
-        EjbLogger.ROOT_LOGGER.trace("## EJBComponent.getCallerSecurityIdentity   SecurityIdentity: "
+        EjbLogger.ROOT_LOGGER.trace("### EJBComponent.getCallerSecurityIdentity   SecurityIdentity: "
                 + si + "   earApplicationName= " + earApplicationName);
         return si;
     }

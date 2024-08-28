@@ -617,7 +617,14 @@ public abstract class EJBComponent extends BasicComponent implements ServerActiv
         return false;
     }
 
+    // rls debug only TMP
     private SecurityIdentity getCallerSecurityIdentity() {
+        SecurityIdentity si = getCallerSecurityIdentityORIGINAL();
+        EjbLogger.ROOT_LOGGER.trace("## EJBComponent.getCallerSecurityIdentity   SecurityIdentity: "
+                + si + "   earApplicationName= " + earApplicationName);
+        return si;
+    }
+    private SecurityIdentity getCallerSecurityIdentityORIGINAL() {
         InvocationType invocationType = CurrentInvocationContext.get().getPrivateData(InvocationType.class);
         boolean isRemote = invocationType != null && invocationType.equals(InvocationType.REMOTE);
         if (legacyCompliantPrincipalPropagation && !isRemote) {

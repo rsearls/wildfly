@@ -372,14 +372,17 @@ public class JWTIdentityPropagationTestCase {
 
         // rls start
         private void rlsSetupDebugLog(CLIWrapper cli){
+            cli.sendLine("/subsystem=logging/logger=org.wildfly.extension.elytron:add()");
+            cli.sendLine("/subsystem=logging/logger=org.wildfly.extension.elytron:write-attribute(name=level, value=DEBUG)");
+            cli.sendLine("/subsystem=logging/logger=org.jboss.as.ejb3:add()");
+            cli.sendLine("/subsystem=logging/logger=org.jboss.as.ejb3:write-attribute(name=level, value=TRACE)");
             cli.sendLine("/subsystem=logging/logger=org.wildfly.security:add()");
             cli.sendLine("/subsystem=logging/logger=org.wildfly.security:write-attribute(name=level, value=DEBUG)");
-            cli.sendLine("/subsystem=logging/logger=org.apache.http:add()");
-            cli.sendLine("/subsystem=logging/logger=org.apache.http:write-attribute(name=level, value=DEBUG)");
         }
         private void rlsTearDownDebugLog(CLIWrapper cli){
+            cli.sendLine("/subsystem=logging/logger=org.wildfly.extension.elytron:remove()");
+            cli.sendLine("/subsystem=logging/logger=org.jboss.as.ejb3:remove()");
             cli.sendLine("/subsystem=logging/logger=org.wildfly.security:remove()");
-            cli.sendLine("/subsystem=logging/logger=org.apache.http:remove()");
         }
         // rls end
         @Override

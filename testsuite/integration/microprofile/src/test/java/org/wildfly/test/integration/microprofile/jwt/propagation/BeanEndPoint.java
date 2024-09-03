@@ -16,7 +16,7 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.SecurityContext;
 
 import org.eclipse.microprofile.jwt.JsonWebToken;
-
+import org.jboss.logging.Logger;
 /**
  * A simple Jakarta RESTful Web Services endpoint deployed as a Jakarta Enterprise Beans bean.
  *
@@ -25,6 +25,7 @@ import org.eclipse.microprofile.jwt.JsonWebToken;
 @Path("/Sample")
 @Stateless
 public class BeanEndPoint {
+    final Logger logger = Logger.getLogger(BeanEndPoint.class);
 
     @Inject
     JsonWebToken jwt;
@@ -35,6 +36,7 @@ public class BeanEndPoint {
     @GET()
     @Path("/subscription")
     public String helloRolesAllowed(@Context SecurityContext ctx) {
+        Thread.currentThread().dumpStack(); // rls debug
         Principal caller = ctx.getUserPrincipal();
         String name = caller == null ? "anonymous" : caller.getName();
         boolean hasJWT = jwt.getClaimNames() != null;

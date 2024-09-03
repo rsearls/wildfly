@@ -29,6 +29,11 @@ public class TargetBean {
         return context.isCallerInRole(role);
     }
 
+    static {
+        Thread.currentThread().dumpStack();
+    }// rls debug
+
+
     @PermitAll
     public String getCallerPrincipal() {
         Principal caller = context.getCallerPrincipal();

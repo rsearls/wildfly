@@ -3,7 +3,7 @@
   ~ SPDX-License-Identifier: Apache-2.0
   -->
 
-<subsystem xmlns="urn:wildfly:elytron-oidc-client:preview:3.0">
+<subsystem xmlns="urn:wildfly:elytron-oidc-client:preview:4.0">
     <secure-server name="wildfly-with-scope.war">
         <provider>keycloak</provider>
         <client-id>wildfly-console</client-id>
@@ -35,5 +35,6 @@
         <request-object-signing-key-password>password</request-object-signing-key-password>
         <request-object-signing-key-alias>alias</request-object-signing-key-alias>
         <request-object-signing-keystore-type>JKS</request-object-signing-keystore-type>
+        <allow-query-params>true</allow-query-params>
     </secure-deployment>
 </subsystem>

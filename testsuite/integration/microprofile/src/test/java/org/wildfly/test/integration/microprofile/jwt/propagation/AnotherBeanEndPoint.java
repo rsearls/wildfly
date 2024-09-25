@@ -35,6 +35,7 @@ public class AnotherBeanEndPoint {
     @GET()
     @Path("/subscription")
     public String helloRolesAllowed(@Context SecurityContext ctx) {
+        //new Throwable().printStackTrace(); // rls debug
         Principal caller = ctx.getUserPrincipal();
         String name = caller == null ? "anonymous" : caller.getName();
         boolean hasJWT = jwt.getClaimNames() != null;

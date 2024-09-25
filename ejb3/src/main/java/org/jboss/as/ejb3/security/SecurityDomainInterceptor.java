@@ -5,6 +5,7 @@
 
 package org.jboss.as.ejb3.security;
 
+import org.jboss.as.ejb3.logging.EjbLogger;
 import org.jboss.invocation.Interceptor;
 import org.jboss.invocation.InterceptorContext;
 import org.wildfly.security.auth.server.SecurityDomain;
@@ -23,6 +24,11 @@ final class SecurityDomainInterceptor implements Interceptor {
 
     public Object processInvocation(final InterceptorContext context) throws Exception {
         final SecurityDomain oldDomain = context.putPrivateData(SecurityDomain.class, securityDomain);
+        /** rls */
+        EjbLogger.ROOT_LOGGER.trace("## ejb3.security.SecurityDomainInterceptor  oldDomain SecurityIdentity: "
+        + (oldDomain == null ? "null" : oldDomain.getCurrentSecurityIdentity().toString())
+                + ",  securityDomain SecurityIdentity: " + securityDomain.getCurrentSecurityIdentity().toString());
+        /**/
         try {
             return context.proceed();
         } finally {

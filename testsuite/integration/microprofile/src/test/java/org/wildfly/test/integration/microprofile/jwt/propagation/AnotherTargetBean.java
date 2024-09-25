@@ -26,11 +26,13 @@ public class AnotherTargetBean {
 
     @PermitAll
     public boolean isCallerInRole(String role) {
+        //new Throwable().printStackTrace(); //rls
         return context.isCallerInRole(role);
     }
 
     @PermitAll
     public String getCallerPrincipal() {
+        //new Throwable().printStackTrace(); //rls
         Principal caller = context.getCallerPrincipal();
         return caller.getName();
     }

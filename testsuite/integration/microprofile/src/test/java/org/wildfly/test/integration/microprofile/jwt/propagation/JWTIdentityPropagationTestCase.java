@@ -378,11 +378,14 @@ public class JWTIdentityPropagationTestCase {
             cli.sendLine("/subsystem=logging/logger=org.jboss.as.ejb3:write-attribute(name=level, value=TRACE)");
             cli.sendLine("/subsystem=logging/logger=org.wildfly.security:add()");
             cli.sendLine("/subsystem=logging/logger=org.wildfly.security:write-attribute(name=level, value=DEBUG)");
+            cli.sendLine("/subsystem=logging/logger=org.jboss.as.ee:add()");
+            cli.sendLine("/subsystem=logging/logger=org.jboss.as.ee:write-attribute(name=level, value=TRACE)");
         }
         private void rlsTearDownDebugLog(CLIWrapper cli){
             cli.sendLine("/subsystem=logging/logger=org.wildfly.extension.elytron:remove()");
             cli.sendLine("/subsystem=logging/logger=org.jboss.as.ejb3:remove()");
             cli.sendLine("/subsystem=logging/logger=org.wildfly.security:remove()");
+            cli.sendLine("/subsystem=logging/logger=org.jboss.as.ee:remove()");
         }
         // rls end
         @Override

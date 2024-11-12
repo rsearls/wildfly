@@ -37,7 +37,6 @@ import org.junit.runner.RunWith;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.wildfly.test.integration.elytron.oidc.client.deployment.OidcWithDeploymentConfigTest;
 import org.wildfly.test.integration.elytron.oidc.client.KeycloakConfiguration;
-import org.wildfly.test.integration.elytron.oidc.client.OidcLogoutBaseTest;
 import org.wildfly.test.stabilitylevel.StabilityServerSetupSnapshotRestoreTasks;
 
 /**
@@ -71,11 +70,15 @@ public class OidcLogoutConfigTest extends OidcLogoutBaseTest {
         APP_NAMES.put(REST_AUTH_SERVER_URL_APP, KeycloakConfiguration.ClientAppType.OIDC_CLIENT);
     }
 
-    private static Map<String, OidcLogoutBaseTest.LogoutChannel> APP_LOGOUT;
+
+    private static Map<String, LogoutChannelPaths> APP_LOGOUT;
     static {
         APP_LOGOUT= new HashMap<>();
         // todo fix mapping to created uri
-        APP_LOGOUT.put(REST_AUTH_SERVER_URL_APP, LogoutChannel.RP_INITIATED);
+        APP_LOGOUT.put(REST_AUTH_SERVER_URL_APP,
+                new LogoutChannelPaths(
+                        SimpleSecuredServlet.SERVLET_PATH+RP_INITIATED_LOGOUT_PATH,
+                null, null) );
     }
 
     public OidcLogoutConfigTest() {
@@ -128,7 +131,7 @@ public class OidcLogoutConfigTest extends OidcLogoutBaseTest {
             super.setup(managementClient, containerId);
             RealmRepresentation realm = getRealmRepresentation(TEST_REALM,
                     CLIENT_SECRET, CLIENT_HOST_NAME, CLIENT_PORT, APP_NAMES);
-            setupOidcLogout(realm, APP_NAMES, APP_LOGOUT);
+            setOidcLogoutUrls(realm, APP_NAMES, APP_LOGOUT);
             sendRealmCreationRequest(realm);
 
             ModelControllerClient client = managementClient.getControllerClient();

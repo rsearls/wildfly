@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package org.wildfly.test.integration.elytron.oidc.client;
+package org.wildfly.test.integration.elytron.oidc.client.logout;
 
 import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.SYSTEM_PROPERTY;
 import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.VALUE;
@@ -12,8 +12,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
 
-import static org.wildfly.test.integration.elytron.oidc.client.KeycloakConfiguration.ClientAppType;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -21,7 +19,6 @@ import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -58,11 +55,14 @@ import org.jboss.dmr.ModelNode;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.keycloak.representations.idm.ClientRepresentation;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.wildfly.security.jose.util.JsonSerialization;
+import org.wildfly.test.integration.elytron.oidc.client.KeycloakConfiguration;
+import org.wildfly.test.integration.elytron.oidc.client.KeycloakContainer;
 import org.wildfly.test.integration.elytron.oidc.client.deployment.OidcWithDeploymentConfigTest;
 
 import io.restassured.RestAssured;
@@ -73,6 +73,16 @@ import io.restassured.RestAssured;
  * @author <a href="mailto:fjuma@redhat.com">Farah Juma</a>
  */
 public abstract class OidcLogoutBaseTest {
+
+    private static HttpClient httpClient;
+    @Before
+    public void createHttpClient() {
+        CookieStore store = new BasicCookieStore();
+        httpClient = TestHttpClientUtils.promiscuousCookieHttpClientBuilder()
+                .setDefaultCookieStore(store)
+                .setRedirectStrategy(new LaxRedirectStrategy())
+                .build();
+    }
 
     public static final String CLIENT_SECRET = "longerclientsecretthatisstleast256bitslong";
     public static final String OIDC_WITHOUT_SUBSYSTEM_CONFIG_WEB_XML = "web.xml";
@@ -135,9 +145,9 @@ public abstract class OidcLogoutBaseTest {
     public static final String RELATIVE_TO = "jboss.server.config.dir";
 
     // FRONTCHANNEL_LOGOUT_PATH
-    private static final String RP_INITIATED_LOGOUT_PATH = "/logout";
-    private static final String BACKCHANNEL_LOGOUT_PATH = RP_INITIATED_LOGOUT_PATH;
-    private static final String FRONTCHANNEL_LOGOUT_PATH = "/frontLogout";
+    public static final String RP_INITIATED_LOGOUT_PATH = "/logout";
+    public static final String BACKCHANNEL_LOGOUT_PATH = RP_INITIATED_LOGOUT_PATH;
+    public static final String FRONTCHANNEL_LOGOUT_PATH = "/frontLogout";
     //private static final String FRONTCHANNEL_LOGOUT_PATH = "/logout/callback";
 
     private final Stability desiredStability;
@@ -152,17 +162,49 @@ public abstract class OidcLogoutBaseTest {
         BASIC
     }
 
-    public enum LogoutChannel {
-        RP_INITIATED,
-        FRONTCHANNEL,
-        BACKCHANNEL,
-        BACKCHANNEL_NO_ENDPOINT
-    }
-
     private enum RestMethod {
         GET,
         POST
     }
+
+    // register backchannel, frontchannel, postLogoutRedirectUris with Keycloak
+    public static void setOidcLogoutUrls(RealmRepresentation realm,
+                                         Map<String, KeycloakConfiguration.ClientAppType> clientApps,
+                                         Map<String, LogoutChannelPaths> appLogout) {
+
+        for (ClientRepresentation client : realm.getClients()) {
+            KeycloakConfiguration.ClientAppType value = clientApps.get(client.getClientId());
+            if (value == KeycloakConfiguration.ClientAppType.OIDC_CLIENT) {
+                List<String> redirectUris = new ArrayList<>(client.getRedirectUris());
+                String redirectUri = redirectUris.get(0);
+                redirectUris.add("*");
+                client.setRedirectUris(redirectUris);
+
+                int indx = redirectUri.lastIndexOf("/*");
+                String tmpRedirectUri = redirectUri.substring(0,indx);
+
+                LogoutChannelPaths logoutChannelUrls = appLogout.get(client.getClientId());
+                if (logoutChannelUrls != null) {
+                    if (logoutChannelUrls.backChannelPath != null) {
+                        KeycloakConfiguration.setBackchannelLogoutUrl(client,
+                                tmpRedirectUri + logoutChannelUrls.backChannelPath);
+                    }
+                    if (logoutChannelUrls.frontChannelPath != null) {
+                        KeycloakConfiguration.setFrontChannelLogoutUrl(client,
+                                tmpRedirectUri + logoutChannelUrls.frontChannelPath);
+                    }
+                    if (logoutChannelUrls.postLogoutRedirectPaths != null) {
+                        List<String> tmpList = new ArrayList<>();
+                        for (String s : logoutChannelUrls.postLogoutRedirectPaths) {
+                            tmpList.add(tmpRedirectUri + s);
+                        }
+                        KeycloakConfiguration.setPostLogoutRedirectUris(client, tmpList);
+                    }
+                }
+            }
+        }
+    }
+
 
     public static void sendRealmCreationRequest(RealmRepresentation realm) {
         try {
@@ -181,61 +223,6 @@ public abstract class OidcLogoutBaseTest {
         }
     }
 
-    // provide config for frontchannel, backchannel OIDC logout
-    public static void setupOidcLogout(RealmRepresentation realm,
-                                       Map<String, ClientAppType> clientApps,
-                                       Map<String, LogoutChannel> appLogout) {
-
-        for (ClientRepresentation client : realm.getClients()) {
-            ClientAppType value = clientApps.get(client.getClientId());
-            if (value == ClientAppType.OIDC_CLIENT) {
-                /* rls these may not be needed
-                realm.setAccessTokenLifespan(100);
-                realm.setSsoSessionMaxLifespan(100);
-                */
-                List<String> redirectUris = new ArrayList<>(client.getRedirectUris());
-                String redirectUri = redirectUris.get(0);
-                redirectUris.add("*");
-                client.setRedirectUris(redirectUris);
-
-                if(client.getAttributes() == null) {
-                    client.setAttributes(new HashMap<>());
-                }
-
-                LogoutChannel lChannel = appLogout.get(client.getClientId());
-                if (lChannel != null) {
-
-                    String tmpRedirectUri = redirectUri;
-                    int indx = redirectUri.lastIndexOf("/*");
-                    if (indx > -1) {
-                        tmpRedirectUri = redirectUri.substring(0,indx);
-                    }
-
-                    switch(lChannel) {
-                        case FRONTCHANNEL:
-                            client.setFrontchannelLogout(true);
-                            client.getAttributes().put("frontchannel.logout.url",
-                                    tmpRedirectUri + FRONTCHANNEL_LOGOUT_PATH);
-                            redirectUris.add(tmpRedirectUri + FRONTCHANNEL_LOGOUT_PATH);
-                            break;
-                        case RP_INITIATED:
-                            redirectUris.add(tmpRedirectUri + BACKCHANNEL_LOGOUT_PATH);
-                            break;
-                        case BACKCHANNEL:
-                            client.setFrontchannelLogout(false);
-                            client.getAttributes().put("backchannel.logout.session.required", "true");
-                            client.getAttributes().put("backchannel.logout.url",
-                                    tmpRedirectUri + BACKCHANNEL_LOGOUT_PATH);
-                            redirectUris.add(tmpRedirectUri + BACKCHANNEL_LOGOUT_PATH);
-                            break;
-                        case BACKCHANNEL_NO_ENDPOINT:
-                            client.setFrontchannelLogout(false);
-                            break;
-                    }
-                }
-            }
-        }
-    }
 
     @BeforeClass
     public static void checkDockerAvailability() {
@@ -259,8 +246,8 @@ public abstract class OidcLogoutBaseTest {
         URI requestUri = new URL("http", TestSuiteEnvironment.getHttpAddress(), TestSuiteEnvironment.getHttpPort(),
                 "/" + REST_AUTH_SERVER_URL_APP + SimpleSecuredServlet.SERVLET_PATH + RP_INITIATED_LOGOUT_PATH).toURI();
 
-        // rls logoutOfKeycloak(requestUri, RestMethod.POST, HttpURLConnection.HTTP_OK, "success", true);
-        logoutOfKeycloak(requestUri, RestMethod.GET, HttpURLConnection.HTTP_OK, "success", true);
+        // rls logoutOfKeycloak(requestUri, RestMethod.POST, HttpURLConnection.HTTP_OK, "You are logged out", true);
+        logoutOfKeycloak(requestUri, RestMethod.GET, HttpURLConnection.HTTP_OK, "You are logged out", true);
 
     }
 
@@ -296,26 +283,32 @@ public abstract class OidcLogoutBaseTest {
     }
 
     public static void loginToApp(String username, String password, int expectedStatusCode, String expectedText, boolean loginToKeycloak, URI requestUri, String expectedScope, boolean checkInvalidScope, String requestMethod) throws Exception {
+        /* -- rls
         CookieStore store = new BasicCookieStore();
         HttpClient httpClient = TestHttpClientUtils.promiscuousCookieHttpClientBuilder()
                 .setDefaultCookieStore(store)
                 .setRedirectStrategy(new LaxRedirectStrategy())
                 .build();
+        rls --*/
         HttpGet getMethod = new HttpGet(requestUri);
         HttpContext context = new BasicHttpContext();
         HttpResponse response = httpClient.execute(getMethod, context);
         try {
             int statusCode = response.getStatusLine().getStatusCode();
             if (loginToKeycloak) {
-                assertTrue("Expected code == OK but got " + statusCode + " for request=" + requestUri, statusCode == HttpURLConnection.HTTP_OK);
+                assertTrue("Expected code == OK but got " + statusCode
+                        + " for request=" + requestUri, statusCode == HttpURLConnection.HTTP_OK);
                 Form keycloakLoginForm = new Form(response);
-                HttpResponse afterLoginClickResponse = simulateClickingOnButton(httpClient, keycloakLoginForm, username, password, "Sign In");
+                HttpResponse afterLoginClickResponse = simulateClickingOnButton(httpClient,
+                        keycloakLoginForm, username, password, "Sign In");
+        /* rls --*/
                 afterLoginClickResponse.getEntity().getContent();
                 assertEquals(expectedStatusCode, afterLoginClickResponse.getStatusLine().getStatusCode());
                 if (expectedText != null) {
                     String responseString = new BasicResponseHandler().handleResponse(afterLoginClickResponse);
                     assertTrue("Unexpected result " + responseString, responseString.contains(expectedText));
                 }
+        /*-- rls */
             }
             else {
                 assertTrue("Expected code == FORBIDDEN but got " + statusCode + " for request=" + requestUri, statusCode == HttpURLConnection.HTTP_FORBIDDEN);
@@ -327,12 +320,6 @@ public abstract class OidcLogoutBaseTest {
 
     public static void logoutOfKeycloak(URI requestUri, RestMethod restMethod, int expectedStatusCode, String expectedText,
                                         boolean logoutFromKeycloak) throws Exception {
-        CookieStore store = new BasicCookieStore();
-        HttpClient httpClient = TestHttpClientUtils.promiscuousCookieHttpClientBuilder()
-                .setDefaultCookieStore(store)
-                .setRedirectStrategy(new LaxRedirectStrategy())
-                .build();
-
 
         HttpContext context = new BasicHttpContext();
         HttpResponse response = null;
@@ -340,7 +327,6 @@ public abstract class OidcLogoutBaseTest {
             case POST:
                 HttpPost postMethod = new HttpPost(requestUri);
                 URI uri = new URIBuilder(postMethod.getURI())
-                        .addParameter("logout", "logout")
                         .build();
                 postMethod.setURI(uri);
                 response = httpClient.execute(postMethod, context);
@@ -356,18 +342,9 @@ public abstract class OidcLogoutBaseTest {
             int statusCode = response.getStatusLine().getStatusCode();
             if (logoutFromKeycloak) {
                 assertTrue("Expected code == OK but got " + statusCode + " for request=" + requestUri, statusCode == HttpURLConnection.HTTP_OK);
-                Form keycloakLoginForm = new Form(response);
-
-                String formAction = keycloakLoginForm.getAction();
-                /* --- rls
-                HttpResponse afterLoginClickResponse = simulateClickingOnButton(httpClient, keycloakLoginForm, username, password, "Sign In");
-                afterLoginClickResponse.getEntity().getContent();
-                assertEquals(expectedStatusCode, afterLoginClickResponse.getStatusLine().getStatusCode());
-                if (expectedText != null) {
-                    String responseString = new BasicResponseHandler().handleResponse(afterLoginClickResponse);
-                    assertTrue("Unexpected result " + responseString, responseString.contains(expectedText));
-                }
-                ---- */
+                response.getEntity();
+                String responseString = new BasicResponseHandler().handleResponse(response);
+                assertTrue("Unexpected result " + expectedText, responseString.contains(expectedText));
             }
             else {
                 assertTrue("Expected code == FORBIDDEN but got " + statusCode + " for request=" + requestUri, statusCode == HttpURLConnection.HTTP_FORBIDDEN);
@@ -478,6 +455,23 @@ public abstract class OidcLogoutBaseTest {
         }
     }
 
+    /* Data structure containing the URL path text to be appended to the
+       application's URLs to reach the application's various logout endpoints.
+    */
+    public static class LogoutChannelPaths {
+        public String backChannelPath = null;
+        public String frontChannelPath = null;
+        public List<String> postLogoutRedirectPaths = null;
+
+        public LogoutChannelPaths(final String backChannelPath,
+                                 final String frontChannelPath,
+                                 final List<String> postLogoutRedirectPaths) {
+            this.backChannelPath = backChannelPath;
+            this.frontChannelPath = frontChannelPath;
+            this.postLogoutRedirectPaths = postLogoutRedirectPaths;
+        }
+    }
+
     protected static <T extends OidcLogoutBaseTest> void addSystemProperty(ManagementClient client, Class<T> clazz) throws Exception {
         ModelNode add = Util.createAddOperation(PathAddress.pathAddress(SYSTEM_PROPERTY, OidcLogoutBaseTest.class.getName()));
         add.get(VALUE).set(clazz.getName());
@@ -523,3 +517,18 @@ public abstract class OidcLogoutBaseTest {
         }
     }
 }
+/* todo test list
+    - RpInitialed
+        - POST
+        - GET
+        - Invalid registed URI
+        - post-redirect
+    - back-channel
+        - url without application/x-www-form-urlencoded
+        - url with application/x-www-form-urlencoded
+    - front-channel
+        - url without application/x-www-form-urlencoded
+        - url with application/x-www-form-urlencoded
+        - set "frontchannel_logout_session_required" TRUE .. OP send SID ISS
+        - not set "frontchannel_logout_session_required"  .. OP does not send SID ISS
+ */

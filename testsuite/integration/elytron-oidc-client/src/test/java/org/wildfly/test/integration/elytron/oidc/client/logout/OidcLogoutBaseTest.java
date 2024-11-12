@@ -85,24 +85,18 @@ public abstract class OidcLogoutBaseTest {
     }
 
     public static final String CLIENT_SECRET = "longerclientsecretthatisstleast256bitslong";
-    public static final String OIDC_WITHOUT_SUBSYSTEM_CONFIG_WEB_XML = "web.xml";
+    public static final String WEB_XML = "web.xml";
     public static KeycloakContainer KEYCLOAK_CONTAINER;
     public static final String TEST_REALM = "WildFly";
     private static final String KEYCLOAK_USERNAME = "username";
     private static final String KEYCLOAK_PASSWORD = "password";
     public static final int CLIENT_PORT = TestSuiteEnvironment.getHttpPort();
     public static final String CLIENT_HOST_NAME = TestSuiteEnvironment.getHttpAddress();
-    public static final String PROVIDER_URL_APP = "ProviderUrlOidcApp";
-    public static final String AUTH_SERVER_URL_APP = "AuthServerUrlOidcApp";
-    public static final String REST_AUTH_SERVER_URL_APP = "RestAuthServerUrlOidcApp";
-    public static final String WRONG_PROVIDER_URL_APP = "WrongProviderUrlOidcApp";
-    public static final String WRONG_SECRET_APP = "WrongSecretOidcApp";
-    public static final String FORM_WITH_OIDC_EAR_APP = "FormWithOidcApp";
+    public static final String RP_INITIATED_LOGOUT_APP = "RpInitiatedLogoutApp";
+    public static final String FRONT_CHANNEL_LOGOUT_APP = "FrontChannelLogoutApp";
+    public static final String BACK_CHANNEL_LOGOUT_APP = "BackChannelLogoutApp";
     public static final String FORM_WITH_OIDC_OIDC_APP = "oidc";
     public static final String DIRECT_ACCCESS_GRANT_ENABLED_CLIENT = "DirectAccessGrantEnabledClient";
-    public static final String BEARER_ONLY_AUTH_SERVER_URL_APP = "AuthServerUrlBearerOnlyApp";
-    public static final String BEARER_ONLY_PROVIDER_URL_APP = "ProviderUrlBearerOnlyApp";
-    public static final String BASIC_AUTH_PROVIDER_URL_APP = "BasicAuthProviderUrlApp";
     public static final String CORS_PROVIDER_URL_APP = "CorsApp";
     private static final String WRONG_PASSWORD = "WRONG_PASSWORD";
     private static final String ACCESS_CONTROL_ALLOW_ORIGIN = "Access-Control-Allow-Origin";
@@ -112,37 +106,10 @@ public abstract class OidcLogoutBaseTest {
     static final String ORIGIN = "Origin";
     static final String ACCESS_CONTROL_REQUEST_METHOD = "Access-Control-Request-Method";
     static final String ACCESS_CONTROL_REQUEST_HEADERS = "Access-Control-Request-Headers";
-    public static final String CORS_CLIENT = "CorsClient";
-    public static final String OPENID_SCOPE_APP = "OpenIDScopeApp";
-    public static final String INVALID_SCOPE_APP = "InvalidScopeApp";
-    public static final String SINGLE_SCOPE_APP = "SingleScopeApp";
-    public static final String MULTIPLE_SCOPE_APP = "MultipleScopeApp";
-    public static final String OAUTH2_REQUEST_METHOD_APP = "OAuth2RequestApp";
-    public static final String PLAINTEXT_REQUEST_APP = "PlainTextRequestApp";
-    public static final String PLAINTEXT_REQUEST_URI_APP = "PlainTextRequestUriApp";
-    public static final String PLAINTEXT_ENCRYPTED_REQUEST_APP = "PlainTextEncryptedRequestApp";
-    public static final String PLAINTEXT_ENCRYPTED_REQUEST_URI_APP = "PlainTextEncryptedRequestUriApp";
-    public static final String RSA_SIGNED_REQUEST_APP = "RsaSignedRequestApp";
-    public static final String RSA_SIGNED_AND_ENCRYPTED_REQUEST_APP = "RSASignedAndEncryptedRequestApp";
-    public static final String SIGNED_AND_ENCRYPTED_REQUEST_URI_APP = "SignedAndEncryptedRequestUriApp";
-    public static final String PS_SIGNED_RSA_ENCRYPTED_REQUEST_APP = "PsSignedAndRsaEncryptedRequestApp";
-    public static final String INVALID_SIGNATURE_ALGORITHM_APP = "InvalidSignatureAlgorithmApp";
-    public static final String PS_SIGNED_REQUEST_URI_APP = "PsSignedRequestUriApp";
-    public static final String MISSING_SECRET_APP = "MissingSecretApp";
+    public static final String CORS_CLIENT = "CorsClient";;
     public static final String FORM_USER="user1";
     public static final String FORM_PASSWORD="password1";
     protected static final String ERROR_PAGE_CONTENT = "Error!";
-
-    // Avoid problem on windows with path
-    public static final String USERS_PATH = new File(
-            OidcWithDeploymentConfigTest.class.getResource("users.properties").getFile()).getAbsolutePath()
-            .replace("\\", "/");
-    public static final String ROLES_PATH = new File(
-            OidcWithDeploymentConfigTest.class.getResource("roles.properties").getFile()).getAbsolutePath()
-            .replace("\\", "/");
-    public static final String ORIGINAL_USERS_PATH = "application-users.properties";
-    public static final String ORIGINAL_ROLES_PATH = "application-roles.properties";
-    public static final String RELATIVE_TO = "jboss.server.config.dir";
 
     // FRONTCHANNEL_LOGOUT_PATH
     public static final String RP_INITIATED_LOGOUT_PATH = "/logout";
@@ -155,19 +122,19 @@ public abstract class OidcLogoutBaseTest {
     public OidcLogoutBaseTest(Stability desiredStability) {
         this.desiredStability = desiredStability;
     }
-
+    /*-- rls
     private enum BearerAuthType {
         BEARER,
         QUERY_PARAM,
         BASIC
     }
-
+    rls --*/
     private enum RestMethod {
         GET,
         POST
     }
 
-    // register backchannel, frontchannel, postLogoutRedirectUris with Keycloak
+    // register rpInitiated, backchannel, frontchannel, postLogoutRedirectUris with Keycloak
     public static void setOidcLogoutUrls(RealmRepresentation realm,
                                          Map<String, KeycloakConfiguration.ClientAppType> clientApps,
                                          Map<String, LogoutChannelPaths> appLogout) {
@@ -233,38 +200,43 @@ public abstract class OidcLogoutBaseTest {
         return "http://" + CLIENT_HOST_NAME + ":" + CLIENT_PORT + "/" + clientApp;
     }
 
-
     @Test
-    @OperateOnDeployment(REST_AUTH_SERVER_URL_APP)
-    public void testOidcLogout() throws Exception {
+    @OperateOnDeployment(RP_INITIATED_LOGOUT_APP)
+    public void testRpInitiatedLogoutPOST() throws Exception {
 
-        loginToApp(REST_AUTH_SERVER_URL_APP,
+        loginToApp(RP_INITIATED_LOGOUT_APP,
                 org.wildfly.test.integration.elytron.oidc.client.KeycloakConfiguration.ALICE,
                 org.wildfly.test.integration.elytron.oidc.client.KeycloakConfiguration.ALICE_PASSWORD,
                 HttpURLConnection.HTTP_OK, SimpleServlet.RESPONSE_BODY);
 
         URI requestUri = new URL("http", TestSuiteEnvironment.getHttpAddress(), TestSuiteEnvironment.getHttpPort(),
-                "/" + REST_AUTH_SERVER_URL_APP + SimpleSecuredServlet.SERVLET_PATH + RP_INITIATED_LOGOUT_PATH).toURI();
+                "/" + RP_INITIATED_LOGOUT_APP + SimpleSecuredServlet.SERVLET_PATH + RP_INITIATED_LOGOUT_PATH).toURI();
 
-        // rls logoutOfKeycloak(requestUri, RestMethod.POST, HttpURLConnection.HTTP_OK, "You are logged out", true);
-        logoutOfKeycloak(requestUri, RestMethod.GET, HttpURLConnection.HTTP_OK, "You are logged out", true);
-
+        logoutOfKeycloak(requestUri, RestMethod.POST, HttpURLConnection.HTTP_OK, "You are logged out", true);
     }
 
-    /*------------------ rls start
-        @Test
-        @OperateOnDeployment(AUTH_SERVER_URL_APP)
-        public void testWrongRoleWithAuthServerUrl() throws Exception {
-            loginToApp(AUTH_SERVER_URL_APP, org.wildfly.test.integration.elytron.oidc.client.KeycloakConfiguration.BOB, org.wildfly.test.integration.elytron.oidc.client.KeycloakConfiguration.BOB_PASSWORD, HttpURLConnection.HTTP_FORBIDDEN, null);
-        }
-        -------------------- rls end */
+    @Test
+    @OperateOnDeployment(RP_INITIATED_LOGOUT_APP)
+    public void testRpInitiatedLogoutGET() throws Exception {
+
+        loginToApp(RP_INITIATED_LOGOUT_APP,
+                org.wildfly.test.integration.elytron.oidc.client.KeycloakConfiguration.ALICE,
+                org.wildfly.test.integration.elytron.oidc.client.KeycloakConfiguration.ALICE_PASSWORD,
+                HttpURLConnection.HTTP_OK, SimpleServlet.RESPONSE_BODY);
+
+        URI requestUri = new URL("http", TestSuiteEnvironment.getHttpAddress(), TestSuiteEnvironment.getHttpPort(),
+                "/" + RP_INITIATED_LOGOUT_APP + SimpleSecuredServlet.SERVLET_PATH + RP_INITIATED_LOGOUT_PATH).toURI();
+
+        logoutOfKeycloak(requestUri, RestMethod.GET, HttpURLConnection.HTTP_OK, "You are logged out", true);
+    }
+
 
     public static void loginToApp(String appName, String username, String password, int expectedStatusCode, String expectedText) throws Exception {
         loginToApp(username, password, expectedStatusCode, expectedText, true,
                 new URL("http", TestSuiteEnvironment.getHttpAddress(), TestSuiteEnvironment.getHttpPort(),
                 "/" + appName + SimpleSecuredServlet.SERVLET_PATH).toURI());
     }
-
+    /*-- rls
     public static void loginToApp(String appName, String username, String password, int expectedStatusCode, String expectedText, URI requestUri) throws Exception {
         loginToApp(username, password, expectedStatusCode, expectedText, true, requestUri);
     }
@@ -273,7 +245,7 @@ public abstract class OidcLogoutBaseTest {
         loginToApp(username, password, expectedStatusCode, expectedText, loginToKeycloak, new URL("http", TestSuiteEnvironment.getHttpAddress(), TestSuiteEnvironment.getHttpPort(),
                 "/" + appName + SimpleSecuredServlet.SERVLET_PATH).toURI());
     }
-
+    rls --*/
     public static void loginToApp(String username, String password, int expectedStatusCode, String expectedText, boolean loginToKeycloak, URI requestUri) throws Exception {
         loginToApp(username, password, expectedStatusCode, expectedText, loginToKeycloak, requestUri, null, false);
     }
@@ -283,13 +255,7 @@ public abstract class OidcLogoutBaseTest {
     }
 
     public static void loginToApp(String username, String password, int expectedStatusCode, String expectedText, boolean loginToKeycloak, URI requestUri, String expectedScope, boolean checkInvalidScope, String requestMethod) throws Exception {
-        /* -- rls
-        CookieStore store = new BasicCookieStore();
-        HttpClient httpClient = TestHttpClientUtils.promiscuousCookieHttpClientBuilder()
-                .setDefaultCookieStore(store)
-                .setRedirectStrategy(new LaxRedirectStrategy())
-                .build();
-        rls --*/
+
         HttpGet getMethod = new HttpGet(requestUri);
         HttpContext context = new BasicHttpContext();
         HttpResponse response = httpClient.execute(getMethod, context);
@@ -301,14 +267,13 @@ public abstract class OidcLogoutBaseTest {
                 Form keycloakLoginForm = new Form(response);
                 HttpResponse afterLoginClickResponse = simulateClickingOnButton(httpClient,
                         keycloakLoginForm, username, password, "Sign In");
-        /* rls --*/
+
                 afterLoginClickResponse.getEntity().getContent();
                 assertEquals(expectedStatusCode, afterLoginClickResponse.getStatusLine().getStatusCode());
                 if (expectedText != null) {
                     String responseString = new BasicResponseHandler().handleResponse(afterLoginClickResponse);
                     assertTrue("Unexpected result " + responseString, responseString.contains(expectedText));
                 }
-        /*-- rls */
             }
             else {
                 assertTrue("Expected code == FORBIDDEN but got " + statusCode + " for request=" + requestUri, statusCode == HttpURLConnection.HTTP_FORBIDDEN);
@@ -455,8 +420,8 @@ public abstract class OidcLogoutBaseTest {
         }
     }
 
-    /* Data structure containing the URL path text to be appended to the
-       application's URLs to reach the application's various logout endpoints.
+    /* Data structure containing the URL path text to be registered with keycloak
+       for logout support.
     */
     public static class LogoutChannelPaths {
         public String backChannelPath = null;
@@ -478,46 +443,29 @@ public abstract class OidcLogoutBaseTest {
         ManagementOperations.executeOperation(client.getControllerClient(), add);
     }
 
+    /*
+        Class enables easy configuring of logging messages to server.log.
+        It is being maintained for future debugging needs.
+     */
     public static class WildFlyServerSetupTask extends ManagementServerSetupTask {
         public WildFlyServerSetupTask() {
             super(createContainerConfigurationBuilder()
                     .setupScript(createScriptBuilder()
                             .startBatch()
-                            .add(String.format("/subsystem=elytron/properties-realm=ApplicationRealm:write-attribute(name=users-properties.path,value=\"%s\")",
-                                    USERS_PATH))
-                            .add("/subsystem=elytron/properties-realm=ApplicationRealm:write-attribute(name=users-properties.plain-text,value=true)")
-                            .add("/subsystem=elytron/properties-realm=ApplicationRealm:undefine-attribute(name=users-properties.relative-to)")
-                            .add(String.format("/subsystem=elytron/properties-realm=ApplicationRealm:write-attribute(name=groups-properties.path,value=\"%s\")",
-                                    ROLES_PATH))
-                            .add("/subsystem=elytron/properties-realm=ApplicationRealm:undefine-attribute(name=groups-properties.relative-to)")
-
-                            /* // rls debug */
                             .add("/subsystem=logging/logger=org.wildfly.security.http.oidc:add()")
                             .add("/subsystem=logging/logger=org.wildfly.security.http.oidc:write-attribute(name=level, value=TRACE)")
-
                             .endBatch()
                             .build())
                     .tearDownScript(createScriptBuilder()
                             .startBatch()
-                            .add(String.format("/subsystem=elytron/properties-realm=ApplicationRealm:write-attribute(name=users-properties.path,value=\"%s\")",
-                                    ORIGINAL_USERS_PATH))
-                            .add(String.format("/subsystem=elytron/properties-realm=ApplicationRealm:write-attribute(name=users-properties.relative-to,value=\"%s\")",
-                                    RELATIVE_TO))
-                            .add("/subsystem=elytron/properties-realm=ApplicationRealm:undefine-attribute(name=users-properties.plain-text)")
-                            .add(String.format("/subsystem=elytron/properties-realm=ApplicationRealm:write-attribute(name=groups-properties.path,value=\"%s\")",
-                                    ORIGINAL_ROLES_PATH))
-                            .add(String.format("/subsystem=elytron/properties-realm=ApplicationRealm:write-attribute(name=groups-properties.relative-to,value=\"%s\")",
-                                    RELATIVE_TO))
-                            /* // rls debug */
                             .add("/subsystem=logging/logger=org.wildfly.security.http.oidc:remove()")
-
                             .endBatch()
                             .build())
                     .build());
         }
     }
 }
-/* todo test list
+/* todo rls test list
     - RpInitialed
         - POST
         - GET

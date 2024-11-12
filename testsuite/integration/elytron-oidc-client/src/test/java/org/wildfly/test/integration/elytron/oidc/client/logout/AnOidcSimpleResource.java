@@ -10,18 +10,11 @@ import jakarta.ws.rs.Produces;
 public class AnOidcSimpleResource {
 
     @GET
-    @Path("ping")
-    @Produces("text/plain")
-    public String ping() {
-        return "pong";
-    }
-
-    @POST
-    @Path("frontLogout")
+    @Path("frontchannel")
     @Produces("text/plain")
     @Consumes("text/plain")
     public String frontLogout(String s) {
-        return "frontLogout";
+        return "frontchannel Logout complete";
     }
 
     @POST
@@ -31,4 +24,12 @@ public class AnOidcSimpleResource {
     public String backLogout(String s) {
         return "backLogout";
     }
+
+    @GET
+    @Path("ping")
+    @Produces("text/plain")
+    public String ping() {
+        return "pong";
+    }
+
 }

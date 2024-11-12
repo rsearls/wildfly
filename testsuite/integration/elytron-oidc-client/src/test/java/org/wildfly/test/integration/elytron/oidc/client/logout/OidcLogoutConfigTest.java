@@ -51,23 +51,13 @@ import org.wildfly.test.stabilitylevel.StabilityServerSetupSnapshotRestoreTasks;
         OidcLogoutBaseTest.WildFlyServerSetupTask.class})
 public class OidcLogoutConfigTest extends OidcLogoutBaseTest {
 
-    private static final String OIDC_PROVIDER_URL = "oidc.provider.url";
-    private static final String OIDC_JSON_WITH_PROVIDER_URL_FILE = "OidcWithProviderUrl.json";
-
-    private static final String OIDC_AUTH_SERVER_URL = "oidc.auth.server.url";
-    private static final String OIDC_JSON_WITH_AUTH_SERVER_URL_FILE = "OidcWithAuthServerUrl.json";
-
-    private static final String OIDC_REST_AUTH_SERVER_URL = "oidc.rest.auth.server.url";
-    private static final String OIDC_JSON_WITH_REST_AUTH_SERVER_URL_FILE = "OidcWithRestAuthServerUrl.json";
-
-    private static final String WRONG_OIDC_PROVIDER_URL = "wrong.oidc.provider.url";
+    private static final String OIDC_LOGOUT_AUTH_SERVER_URL = "oidc.logout.auth.server.url";
     private static final String OIDC_REQUEST_OBJECT_SIGNING_KEYSTORE_FILE = "oidc.request.object.signing.keystore.file";
 
     private static Map<String, KeycloakConfiguration.ClientAppType> APP_NAMES;
     static {
         APP_NAMES = new HashMap<>();
-        APP_NAMES.put(AUTH_SERVER_URL_APP, KeycloakConfiguration.ClientAppType.OIDC_CLIENT);
-        APP_NAMES.put(REST_AUTH_SERVER_URL_APP, KeycloakConfiguration.ClientAppType.OIDC_CLIENT);
+        APP_NAMES.put(RP_INITIATED_LOGOUT_APP, KeycloakConfiguration.ClientAppType.OIDC_CLIENT);
     }
 
 
@@ -75,7 +65,7 @@ public class OidcLogoutConfigTest extends OidcLogoutBaseTest {
     static {
         APP_LOGOUT= new HashMap<>();
         // todo fix mapping to created uri
-        APP_LOGOUT.put(REST_AUTH_SERVER_URL_APP,
+        APP_LOGOUT.put(RP_INITIATED_LOGOUT_APP,
                 new LogoutChannelPaths(
                         SimpleSecuredServlet.SERVLET_PATH+RP_INITIATED_LOGOUT_PATH,
                 null, null) );
@@ -88,41 +78,45 @@ public class OidcLogoutConfigTest extends OidcLogoutBaseTest {
     @ArquillianResource
     protected static Deployer deployer;
 
-    //------------------ KEEP  start -------------------
-    @Deployment(name = AUTH_SERVER_URL_APP, managed = false, testable = false)
-    public static WebArchive createAuthServerUrlDeployment() {
-        return ShrinkWrap.create(WebArchive.class, AUTH_SERVER_URL_APP + ".war")
-                .addClasses(SimpleServlet.class)
-                .addClasses(SimpleSecuredServlet.class)
-                .addAsWebInfResource(OidcWithDeploymentConfigTest.class.getPackage(), OIDC_WITHOUT_SUBSYSTEM_CONFIG_WEB_XML, "web.xml")
-                .addAsWebInfResource(OidcWithDeploymentConfigTest.class.getPackage(), OIDC_JSON_WITH_AUTH_SERVER_URL_FILE, "oidc.json");
-    }
-    //------------------ KEEP  end -------------------
-
-    @Deployment(name = REST_AUTH_SERVER_URL_APP, managed = false, testable = false)
+    @Deployment(name = RP_INITIATED_LOGOUT_APP, managed = false, testable = false)
     public static WebArchive createRestAuthServerUrlDeployment() {
-        return ShrinkWrap.create(WebArchive.class, REST_AUTH_SERVER_URL_APP + ".war")
+        return ShrinkWrap.create(WebArchive.class, RP_INITIATED_LOGOUT_APP + ".war")
                 .addClasses(SimpleServlet.class)
                 .addClasses(SimpleSecuredServlet.class)
                 .addClass(AnOidcSimpleResource.class)
-                .addAsWebInfResource(OidcLogoutConfigTest.class.getPackage(), OIDC_WITHOUT_SUBSYSTEM_CONFIG_WEB_XML, "web.xml")
-                .addAsWebInfResource(OidcLogoutConfigTest.class.getPackage(), OIDC_JSON_WITH_REST_AUTH_SERVER_URL_FILE, "oidc.json")
+                .addAsWebInfResource(OidcLogoutConfigTest.class.getPackage(), WEB_XML, "web.xml")
+                .addAsWebInfResource(OidcLogoutConfigTest.class.getPackage(), RP_INITIATED_LOGOUT_APP+"-oidc.json", "oidc.json")
         ;
     }
 
-    //------------------ KEEP  start -------------------
-
     @Test
     @InSequence(1)
-    public void testOidcLogout() throws Exception {
+    /*  Test checks that RPInitiated Logout can be completed
+        via a POST to the OP.
+     */
+    public void testRpInitiatedLogoutPOST() throws Exception {
         try {
-            deployer.deploy(REST_AUTH_SERVER_URL_APP);
-            super.testOidcLogout();
+            deployer.deploy(RP_INITIATED_LOGOUT_APP);
+            super.testRpInitiatedLogoutPOST();
         } finally {
-            deployer.undeploy(REST_AUTH_SERVER_URL_APP);
+            deployer.undeploy(RP_INITIATED_LOGOUT_APP);
         }
     }
-    //------------------ KEEP  end -------------------
+
+    @Test
+    @InSequence(2)
+    /*  Test checks that RPInitiated Logout can be completed
+        via a GET to the OP.
+     */
+    public void testRpInitiatedLogoutGET() throws Exception {
+        try {
+            deployer.deploy(RP_INITIATED_LOGOUT_APP);
+            super.testRpInitiatedLogoutGET();
+        } finally {
+            deployer.undeploy(RP_INITIATED_LOGOUT_APP);
+        }
+    }
+
 
     static class KeycloakAndSystemPropertySetup extends KeycloakSetup {
 
@@ -135,21 +129,8 @@ public class OidcLogoutConfigTest extends OidcLogoutBaseTest {
             sendRealmCreationRequest(realm);
 
             ModelControllerClient client = managementClient.getControllerClient();
-            ModelNode operation = createOpNode("system-property=" + OIDC_PROVIDER_URL, ModelDescriptionConstants.ADD);
-            operation.get("value").set(KEYCLOAK_CONTAINER.getAuthServerUrl() + "/realms/" + TEST_REALM);
-            Utils.applyUpdate(operation, client);
-
-            operation = createOpNode("system-property=" + OIDC_AUTH_SERVER_URL, ModelDescriptionConstants.ADD);
+            ModelNode operation = createOpNode("system-property=" + OIDC_LOGOUT_AUTH_SERVER_URL, ModelDescriptionConstants.ADD);
             operation.get("value").set(KEYCLOAK_CONTAINER.getAuthServerUrl());
-            Utils.applyUpdate(operation, client);
-
-            operation = createOpNode("system-property=" + OIDC_REST_AUTH_SERVER_URL, ModelDescriptionConstants.ADD);
-            operation.get("value").set(KEYCLOAK_CONTAINER.getAuthServerUrl());
-            Utils.applyUpdate(operation, client);
-
-
-            operation = createOpNode("system-property=" + WRONG_OIDC_PROVIDER_URL, ModelDescriptionConstants.ADD);
-            operation.get("value").set("http://fakeauthserver/auth"); // provider url does not exist
             Utils.applyUpdate(operation, client);
 
             operation = createOpNode("system-property=" + OIDC_REQUEST_OBJECT_SIGNING_KEYSTORE_FILE, ModelDescriptionConstants.ADD);
@@ -167,13 +148,7 @@ public class OidcLogoutConfigTest extends OidcLogoutBaseTest {
 
             super.tearDown(managementClient, containerId);
             ModelControllerClient client = managementClient.getControllerClient();
-            ModelNode operation = createOpNode("system-property=" + OIDC_PROVIDER_URL, ModelDescriptionConstants.REMOVE);
-            Utils.applyUpdate(operation, client);
-
-            operation = createOpNode("system-property=" + OIDC_AUTH_SERVER_URL, ModelDescriptionConstants.REMOVE);
-            Utils.applyUpdate(operation, client);
-
-            operation = createOpNode("system-property=" + WRONG_OIDC_PROVIDER_URL, ModelDescriptionConstants.REMOVE);
+            ModelNode operation = createOpNode("system-property=" + OIDC_LOGOUT_AUTH_SERVER_URL, ModelDescriptionConstants.REMOVE);
             Utils.applyUpdate(operation, client);
 
             operation = createOpNode("system-property=" + OIDC_REQUEST_OBJECT_SIGNING_KEYSTORE_FILE, ModelDescriptionConstants.REMOVE);

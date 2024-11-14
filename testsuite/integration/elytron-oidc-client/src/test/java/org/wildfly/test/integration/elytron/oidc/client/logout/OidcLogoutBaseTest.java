@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -137,7 +138,7 @@ public abstract class OidcLogoutBaseTest {
     // register rpInitiated, backchannel, frontchannel, postLogoutRedirectUris with Keycloak
     public static void setOidcLogoutUrls(RealmRepresentation realm,
                                          Map<String, KeycloakConfiguration.ClientAppType> clientApps,
-                                         Map<String, LogoutChannelPaths> appLogout) {
+                                         Map<String, LogoutChannelPaths> appLogout) throws Exception {
 
         for (ClientRepresentation client : realm.getClients()) {
             KeycloakConfiguration.ClientAppType value = clientApps.get(client.getClientId());
@@ -335,6 +336,7 @@ rls --*/
             case POST:
                 HttpPost postMethod = new HttpPost(requestUri);
                 URI uri = new URIBuilder(postMethod.getURI())
+                        .addParameter("name", "Bob")  // rls test
                         .build();
                 postMethod.setURI(uri);
                 response = httpClient.execute(postMethod, context);
@@ -497,14 +499,20 @@ rls --*/
                             .startBatch()
                             .add("/subsystem=logging/logger=org.wildfly.security.http.oidc:add()")
                             .add("/subsystem=logging/logger=org.wildfly.security.http.oidc:write-attribute(name=level, value=TRACE)")
-                            .add("/subsystem=logging/logger=io.undertow:add()")
-                            .add("/subsystem=logging/logger=io.undertow:write-attribute(name=level, value=TRACE)")
+                            .add("/subsystem=logging/logger=io.undertow.request:add()")
+                            .add("/subsystem=logging/logger=io.undertow.request:write-attribute(name=level, value=TRACE)")
+                            .add("/subsystem=logging/logger=io.undertow.request.security:add()")
+                            .add("/subsystem=logging/logger=io.undertow.request.security:write-attribute(name=level, value=TRACE)")
+                            .add("/subsystem=logging/logger=io.undertow.session:add()")
+                            .add("/subsystem=logging/logger=io.undertow.session:write-attribute(name=level, value=TRACE)")
                             .endBatch()
                             .build())
                     .tearDownScript(createScriptBuilder()
                             .startBatch()
                             .add("/subsystem=logging/logger=org.wildfly.security.http.oidc:remove()")
-                            .add("/subsystem=logging/logger=io.undertow:remove()")
+                            .add("/subsystem=logging/logger=io.undertow.request:remove()")
+                            .add("/subsystem=logging/logger=io.undertow..request.security:remove()")
+                            .add("/subsystem=logging/logger=io.undertow.session:remove()")
                             .endBatch()
                             .build())
                     .build());

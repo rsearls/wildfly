@@ -1,13 +1,13 @@
 package org.wildfly.test.integration.elytron.oidc.client.logout;
 
 import java.util.List;
-import java.util.Set;
 
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MultivaluedMap;
 
 @Path("/")
@@ -28,7 +28,7 @@ public class AnOidcSimpleResource {
 
     @POST
     @Path("backchannel")
-    public String simpleBackChannel(){
+    public String simpleBackChannel(@QueryParam("name") String name){
         new Throwable("simpleBackChannel ENTERED").printStackTrace();  // rls debug
         return "backchannel complete";
     }

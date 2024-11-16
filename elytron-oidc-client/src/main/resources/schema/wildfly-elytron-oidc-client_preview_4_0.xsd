@@ -1463,6 +1463,70 @@
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
+            <xs:element name="rp-initiated-logout-path"
+                        type="xs:string" minOccurs="0" maxOccurs="1" default="/logout">
+                <xs:annotation>
+                    <xs:documentation>
+                        <![CDATA[
+                        This option designates the path component of a URL.  Elytron
+                        uses it to identify an RP-Initiated logout request.  The default
+                        values is "/logout". It is expected that the text start with a
+                        forward slash (e.g. "/").  A path with multiple directories may
+                        be specified (e.g. "/call/back/home"). This path must be the last
+                        text in the base URL.
+                    ]]>
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="post-logout-redirect-path"
+                        type="xs:string" minOccurs="0" maxOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>
+                        <![CDATA[
+                        This option designates the path component of a URL.  It is
+                        appended to the redirect base URL registered with the OpenID
+                        provider.  This new URL is also registered with the OpenID provider.
+                        The URL is called after the logout request has completed.  There is
+                        no default value. If left unset it is not used.  It is expected that
+                        the text start with a forward slash (e.g. "/"). A path with multiple
+                        directories may specified (e.g. "/call/back/home"). This path will
+                        be appended to the base URI registered with the OpenID provider.
+                    ]]>
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+
+            <xs:element name="front-channel-back-channel-logout-path"
+                        type="xs:string" minOccurs="0" maxOccurs="1" default="/channel-logout">
+                <xs:annotation>
+                    <xs:documentation>
+                        <![CDATA[
+                         This option designates the path component of a URL. Elytron uses
+                         it to identify a front-channel and back-channel logout request.
+                         The default values is "/channel-logout".  It is expected that
+                         the text start with a forward slash (e.g. "/").  A path with
+                         multiple directories may be specified (e.g. "/call/back/home")
+                         This path must be the last text in the base URL.
+                    ]]>
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+
+            <xs:element name="logout-session-required"
+                        type="xs:boolean" minOccurs="0" maxOccurs="1" default="true">
+                <xs:annotation>
+                    <xs:documentation>
+                        <![CDATA[
+                    A boolean value that indicates whether `elytron-oidc-client` should enforce
+                    both `sid` and `iss` parameters when processing front-channel logout requests and should enforce the `sid`
+                    parameter when processing back-channel requests. If set to false, for front-channel logout, there will
+                    be no check and any authenticated request is going to invalidate the local user session. To make use of back-channel
+                    logout, this must be set to `true`. (This is because the `sid` will be marked for invalidation using a bounded map
+                    so that subsequent requests from the user will force the session to be invalidated.) This defaults to `true`.
+                    ]]>
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
         </xs:all>
         <xs:attribute name="name" type="xs:string" use="required">
             <xs:annotation>

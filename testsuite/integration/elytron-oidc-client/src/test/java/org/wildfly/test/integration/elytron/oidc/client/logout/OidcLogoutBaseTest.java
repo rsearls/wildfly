@@ -12,11 +12,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -61,19 +59,18 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.keycloak.representations.idm.ClientRepresentation;
 import org.keycloak.representations.idm.RealmRepresentation;
+import org.wildfly.security.http.oidc.OidcClientConfiguration;
 import org.wildfly.security.jose.util.JsonSerialization;
 import org.wildfly.test.integration.elytron.oidc.client.KeycloakConfiguration;
 import org.wildfly.test.integration.elytron.oidc.client.KeycloakContainer;
-import org.wildfly.test.integration.elytron.oidc.client.deployment.OidcWithDeploymentConfigTest;
 
 import io.restassured.RestAssured;
 
 /**
- * Tests for the OpenID Connect authentication mechanism.
- *
- * @author <a href="mailto:fjuma@redhat.com">Farah Juma</a>
+ * Tests for the OpenID Connect logout types.
  */
 public abstract class OidcLogoutBaseTest {
+
 
     private static HttpClient httpClient;
     @Before
@@ -84,6 +81,8 @@ public abstract class OidcLogoutBaseTest {
                 .setRedirectStrategy(new LaxRedirectStrategy())
                 .build();
     }
+
+    protected static OidcClientConfiguration config = new OidcClientConfiguration();
 
     public static final String CLIENT_SECRET = "longerclientsecretthatisstleast256bitslong";
     public static final String WEB_XML = "web.xml";
@@ -96,46 +95,21 @@ public abstract class OidcLogoutBaseTest {
     public static final String RP_INITIATED_LOGOUT_APP = "RpInitiatedLogoutApp";
     public static final String FRONT_CHANNEL_LOGOUT_APP = "FrontChannelLogoutApp";
     public static final String BACK_CHANNEL_LOGOUT_APP = "BackChannelLogoutApp";
-    public static final String FORM_WITH_OIDC_OIDC_APP = "oidc";
-    public static final String DIRECT_ACCCESS_GRANT_ENABLED_CLIENT = "DirectAccessGrantEnabledClient";
-    public static final String CORS_PROVIDER_URL_APP = "CorsApp";
-    private static final String WRONG_PASSWORD = "WRONG_PASSWORD";
-    private static final String ACCESS_CONTROL_ALLOW_ORIGIN = "Access-Control-Allow-Origin";
-    private static final String ACCESS_CONTROL_ALLOW_CREDENTIALS = "Access-Control-Allow-Credentials";
-    private static final String ACCESS_CONTROL_ALLOW_METHODS = "Access-Control-Allow-Methods";
-    private static final String ACCESS_CONTROL_ALLOW_HEADERS = "Access-Control-Allow-Headers";
-    static final String ORIGIN = "Origin";
-    static final String ACCESS_CONTROL_REQUEST_METHOD = "Access-Control-Request-Method";
-    static final String ACCESS_CONTROL_REQUEST_HEADERS = "Access-Control-Request-Headers";
-    public static final String CORS_CLIENT = "CorsClient";;
-    public static final String FORM_USER="user1";
-    public static final String FORM_PASSWORD="password1";
-    protected static final String ERROR_PAGE_CONTENT = "Error!";
 
-    // FRONTCHANNEL_LOGOUT_PATH
-    public static final String RP_INITIATED_LOGOUT_PATH = "/logout";
-    public static final String BACKCHANNEL_LOGOUT_PATH = RP_INITIATED_LOGOUT_PATH;
-    public static final String FRONTCHANNEL_LOGOUT_PATH = "/frontLogout";
-    //private static final String FRONTCHANNEL_LOGOUT_PATH = "/logout/callback";
 
     private final Stability desiredStability;
 
     public OidcLogoutBaseTest(Stability desiredStability) {
         this.desiredStability = desiredStability;
     }
-    /*-- rls
-    private enum BearerAuthType {
-        BEARER,
-        QUERY_PARAM,
-        BASIC
-    }
-    rls --*/
+
     private enum RestMethod {
         GET,
         POST
     }
 
-    // register rpInitiated, backchannel, frontchannel, postLogoutRedirectUris with Keycloak
+    /* register rpInitiated, backchannel, frontchannel, postLogoutRedirectUris with Keycloak
+     */
     public static void setOidcLogoutUrls(RealmRepresentation realm,
                                          Map<String, KeycloakConfiguration.ClientAppType> clientApps,
                                          Map<String, LogoutChannelPaths> appLogout) throws Exception {
@@ -154,6 +128,8 @@ public abstract class OidcLogoutBaseTest {
                 LogoutChannelPaths logoutChannelUrls = appLogout.get(client.getClientId());
                 if (logoutChannelUrls != null) {
                     if (logoutChannelUrls.backChannelPath != null) {
+                        KeycloakConfiguration.setBackchannelLogoutSessionRequired(
+                                client,true);
                         KeycloakConfiguration.setBackchannelLogoutUrl(client,
                                 tmpRedirectUri + logoutChannelUrls.backChannelPath);
                     }
@@ -197,48 +173,19 @@ public abstract class OidcLogoutBaseTest {
         assumeTrue("Docker isn't available, OIDC tests will be skipped", AssumeTestGroupUtil.isDockerAvailable());
     }
 
-    protected static String getClientUrl(String clientApp) {
-        return "http://" + CLIENT_HOST_NAME + ":" + CLIENT_PORT + "/" + clientApp;
-    }
 
-    /*-- rls
     @Test
     @OperateOnDeployment(RP_INITIATED_LOGOUT_APP)
-    public void testRpInitiatedLogoutPOST() throws Exception {
+    public void testRpInitiatedLogout() throws Exception {
 
         loginToApp(RP_INITIATED_LOGOUT_APP,
                 org.wildfly.test.integration.elytron.oidc.client.KeycloakConfiguration.ALICE,
                 org.wildfly.test.integration.elytron.oidc.client.KeycloakConfiguration.ALICE_PASSWORD,
                 HttpURLConnection.HTTP_OK, SimpleServlet.RESPONSE_BODY);
 
-        URI requestUri = new URL("http", TestSuiteEnvironment.getHttpAddress(), TestSuiteEnvironment.getHttpPort(),
-                "/" + RP_INITIATED_LOGOUT_APP
-                    //rls + SimpleSecuredServlet.SERVLET_PATH
-                    + RP_INITIATED_LOGOUT_PATH).toURI();
-
-        logoutOfKeycloak(requestUri, RestMethod.POST, HttpURLConnection.HTTP_OK, "You are logged out", true);
+        logoutOfKeycloak(RP_INITIATED_LOGOUT_APP, "You are logged out");
     }
-rls --*/
-    /*-- rls
-    @Test
-    @OperateOnDeployment(RP_INITIATED_LOGOUT_APP)
-    public void testRpInitiatedLogoutGET() throws Exception {
 
-        loginToApp(RP_INITIATED_LOGOUT_APP,
-                org.wildfly.test.integration.elytron.oidc.client.KeycloakConfiguration.ALICE,
-                org.wildfly.test.integration.elytron.oidc.client.KeycloakConfiguration.ALICE_PASSWORD,
-                HttpURLConnection.HTTP_OK, SimpleServlet.RESPONSE_BODY);
-
-        LogoutChannelPaths logoutChannelPaths = OidcLogoutConfigTest.APP_LOGOUT.get(RP_INITIATED_LOGOUT_APP);
-        URI requestUri = new URL("http", TestSuiteEnvironment.getHttpAddress(), TestSuiteEnvironment.getHttpPort(),
-                "/" + RP_INITIATED_LOGOUT_APP
-                // rls + SimpleSecuredServlet.SERVLET_PATH
-                        + logoutChannelPaths.backChannelPath+"-test").toURI();
-
-        logoutOfKeycloak(requestUri, RestMethod.GET, HttpURLConnection.HTTP_OK, "You are logged out", true);
-    }
-    rls --*/
-/*-- rls
     @Test
     @OperateOnDeployment(FRONT_CHANNEL_LOGOUT_APP)
     public void testFrontChannelLogout() throws Exception {
@@ -248,15 +195,9 @@ rls --*/
                 org.wildfly.test.integration.elytron.oidc.client.KeycloakConfiguration.ALICE_PASSWORD,
                 HttpURLConnection.HTTP_OK, SimpleServlet.RESPONSE_BODY);
 
-        LogoutChannelPaths logoutChannelPaths = OidcLogoutConfigTest.APP_LOGOUT.get(FRONT_CHANNEL_LOGOUT_APP);
-        URI requestUri = new URL("http", TestSuiteEnvironment.getHttpAddress(), TestSuiteEnvironment.getHttpPort(),
-                "/" + FRONT_CHANNEL_LOGOUT_APP
-                        + logoutChannelPaths.frontChannelPath+"-test").toURI();
-
-        logoutOfKeycloak(requestUri, RestMethod.GET, HttpURLConnection.HTTP_OK, "You are logged out", true);
+        logoutOfKeycloak(FRONT_CHANNEL_LOGOUT_APP, "You are logging out from following apps");
     }
- rls --*/
-/*-- rls */
+
     @Test
     @OperateOnDeployment(BACK_CHANNEL_LOGOUT_APP)
     public void testBackChannelLogout() throws Exception {
@@ -266,30 +207,15 @@ rls --*/
                 org.wildfly.test.integration.elytron.oidc.client.KeycloakConfiguration.ALICE_PASSWORD,
                 HttpURLConnection.HTTP_OK, SimpleServlet.RESPONSE_BODY);
 
-        LogoutChannelPaths logoutChannelPaths = OidcLogoutConfigTest.APP_LOGOUT.get(BACK_CHANNEL_LOGOUT_APP);
-        URI requestUri = new URL("http", TestSuiteEnvironment.getHttpAddress(), TestSuiteEnvironment.getHttpPort(),
-                "/" + BACK_CHANNEL_LOGOUT_APP
-                        + logoutChannelPaths.backChannelPath).toURI();
-
-        logoutOfKeycloak(requestUri, RestMethod.POST, HttpURLConnection.HTTP_OK, "You are logged out", true);
+        logoutOfKeycloak(BACK_CHANNEL_LOGOUT_APP,"You are logged out");
     }
-/* rls --*/
 
     public static void loginToApp(String appName, String username, String password, int expectedStatusCode, String expectedText) throws Exception {
         loginToApp(username, password, expectedStatusCode, expectedText, true,
                 new URL("http", TestSuiteEnvironment.getHttpAddress(), TestSuiteEnvironment.getHttpPort(),
                 "/" + appName + SimpleSecuredServlet.SERVLET_PATH).toURI());
     }
-    /*-- rls
-    public static void loginToApp(String appName, String username, String password, int expectedStatusCode, String expectedText, URI requestUri) throws Exception {
-        loginToApp(username, password, expectedStatusCode, expectedText, true, requestUri);
-    }
 
-    public static void loginToApp(String appName, String username, String password, int expectedStatusCode, String expectedText, boolean loginToKeycloak) throws Exception {
-        loginToApp(username, password, expectedStatusCode, expectedText, loginToKeycloak, new URL("http", TestSuiteEnvironment.getHttpAddress(), TestSuiteEnvironment.getHttpPort(),
-                "/" + appName + SimpleSecuredServlet.SERVLET_PATH).toURI());
-    }
-    rls --*/
     public static void loginToApp(String username, String password, int expectedStatusCode, String expectedText, boolean loginToKeycloak, URI requestUri) throws Exception {
         loginToApp(username, password, expectedStatusCode, expectedText, loginToKeycloak, requestUri, null, false);
     }
@@ -327,6 +253,15 @@ rls --*/
         }
     }
 
+    public static void logoutOfKeycloak(String appName, String expectedText) throws Exception {
+        URI requestUri = new URL("http", TestSuiteEnvironment.getHttpAddress(),
+                TestSuiteEnvironment.getHttpPort(),
+                "/" + appName + SimpleSecuredServlet.SERVLET_PATH
+                        + config.getLogoutPath()).toURI();
+        logoutOfKeycloak(requestUri, RestMethod.GET, HttpURLConnection.HTTP_OK,
+                expectedText, true);
+    }
+
     public static void logoutOfKeycloak(URI requestUri, RestMethod restMethod, int expectedStatusCode, String expectedText,
                                         boolean logoutFromKeycloak) throws Exception {
 
@@ -336,7 +271,6 @@ rls --*/
             case POST:
                 HttpPost postMethod = new HttpPost(requestUri);
                 URI uri = new URIBuilder(postMethod.getURI())
-                        .addParameter("name", "Bob")  // rls test
                         .build();
                 postMethod.setURI(uri);
                 response = httpClient.execute(postMethod, context);
@@ -499,38 +433,14 @@ rls --*/
                             .startBatch()
                             .add("/subsystem=logging/logger=org.wildfly.security.http.oidc:add()")
                             .add("/subsystem=logging/logger=org.wildfly.security.http.oidc:write-attribute(name=level, value=TRACE)")
-                            .add("/subsystem=logging/logger=io.undertow.request:add()")
-                            .add("/subsystem=logging/logger=io.undertow.request:write-attribute(name=level, value=TRACE)")
-                            .add("/subsystem=logging/logger=io.undertow.request.security:add()")
-                            .add("/subsystem=logging/logger=io.undertow.request.security:write-attribute(name=level, value=TRACE)")
-                            .add("/subsystem=logging/logger=io.undertow.session:add()")
-                            .add("/subsystem=logging/logger=io.undertow.session:write-attribute(name=level, value=TRACE)")
                             .endBatch()
                             .build())
                     .tearDownScript(createScriptBuilder()
                             .startBatch()
                             .add("/subsystem=logging/logger=org.wildfly.security.http.oidc:remove()")
-                            .add("/subsystem=logging/logger=io.undertow.request:remove()")
-                            .add("/subsystem=logging/logger=io.undertow..request.security:remove()")
-                            .add("/subsystem=logging/logger=io.undertow.session:remove()")
                             .endBatch()
                             .build())
                     .build());
         }
     }
 }
-/* todo rls test list
-    - RpInitialed
-        - POST
-        - GET
-        - Invalid registed URI
-        - post-redirect
-    - back-channel
-        - url without application/x-www-form-urlencoded
-        - url with application/x-www-form-urlencoded
-    - front-channel
-        - url without application/x-www-form-urlencoded
-        - url with application/x-www-form-urlencoded
-        - set "frontchannel_logout_session_required" TRUE .. OP send SID ISS
-        - not set "frontchannel_logout_session_required"  .. OP does not send SID ISS
- */

@@ -4,7 +4,6 @@
     "public-client" : "false",
     "auth-server-url" : "${oidc.logout.auth.server.url}",
     "ssl-required" : "EXTERNAL",
-    "front-channel-back-channel-logout-path": "/backchannel",
     "credentials" : {
         "secret" : "longerclientsecretthatisstleast256bitslong"
     }

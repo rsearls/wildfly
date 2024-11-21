@@ -13,6 +13,7 @@ import static org.wildfly.test.integration.elytron.oidc.client.KeycloakConfigura
 import io.restassured.RestAssured;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.jboss.arquillian.container.test.api.Deployer;
@@ -60,12 +61,12 @@ public class OidcLogoutConfigTest extends OidcLogoutBaseTest {
         APP_NAMES.put(RP_INITIATED_LOGOUT_APP, KeycloakConfiguration.ClientAppType.OIDC_CLIENT);
         APP_NAMES.put(FRONT_CHANNEL_LOGOUT_APP, KeycloakConfiguration.ClientAppType.OIDC_CLIENT);
         APP_NAMES.put(BACK_CHANNEL_LOGOUT_APP, KeycloakConfiguration.ClientAppType.OIDC_CLIENT);
+        APP_NAMES.put(POST_LOGOUT_APP, KeycloakConfiguration.ClientAppType.OIDC_CLIENT);
     }
 
     public static Map<String, LogoutChannelPaths> APP_LOGOUT;
     static {
         APP_LOGOUT= new HashMap<>();
-        // todo fix mapping to created uri
         APP_LOGOUT.put(RP_INITIATED_LOGOUT_APP, new LogoutChannelPaths(
                         null,null, null) );
         APP_LOGOUT.put(FRONT_CHANNEL_LOGOUT_APP, new LogoutChannelPaths(null,
@@ -76,6 +77,8 @@ public class OidcLogoutConfigTest extends OidcLogoutBaseTest {
                         SimpleSecuredServlet.SERVLET_PATH
                                 + config.getLogoutCallbackPath(),
                         null, null) );
+        APP_LOGOUT.put(POST_LOGOUT_APP, new LogoutChannelPaths(
+                null,null, List.of("/post-logout")) );
     }
 
     public OidcLogoutConfigTest() {
@@ -119,6 +122,16 @@ public class OidcLogoutConfigTest extends OidcLogoutBaseTest {
         return war;
     }
 
+    @Deployment(name = POST_LOGOUT_APP, managed = false, testable = false)
+    public static WebArchive createPostLogoutApp() {
+        return ShrinkWrap.create(WebArchive.class, POST_LOGOUT_APP + ".war")
+                .addClasses(SimpleServlet.class)
+                .addClasses(SimpleSecuredServlet.class)
+                .addAsWebInfResource(OidcLogoutConfigTest.class.getPackage(), WEB_XML, "web.xml")
+                .addAsWebInfResource(OidcLogoutConfigTest.class.getPackage(),
+                        POST_LOGOUT_APP+"-oidc.json", "oidc.json")
+                ;
+    }
     @Test
     @InSequence(1)
     //  Test checks that RPInitiated Logout can be completed
@@ -156,6 +169,17 @@ public class OidcLogoutConfigTest extends OidcLogoutBaseTest {
         }
     }
 
+    @Test
+    @InSequence(4)
+    //  Test checks that post Logout callback.
+    public void testPostLogout() throws Exception {
+        try {
+            deployer.deploy(POST_LOGOUT_APP);
+            super.testPostLogout();
+        } finally {
+            deployer.undeploy(POST_LOGOUT_APP);
+        }
+    }
     static class KeycloakAndSystemPropertySetup extends KeycloakSetup {
 
         @Override

@@ -95,6 +95,7 @@ public abstract class OidcLogoutBaseTest {
     public static final String RP_INITIATED_LOGOUT_APP = "RpInitiatedLogoutApp";
     public static final String FRONT_CHANNEL_LOGOUT_APP = "FrontChannelLogoutApp";
     public static final String BACK_CHANNEL_LOGOUT_APP = "BackChannelLogoutApp";
+    public static final String POST_LOGOUT_APP = "PostLogoutApp";
 
 
     private final Stability desiredStability;
@@ -208,6 +209,18 @@ public abstract class OidcLogoutBaseTest {
                 HttpURLConnection.HTTP_OK, SimpleServlet.RESPONSE_BODY);
 
         logoutOfKeycloak(BACK_CHANNEL_LOGOUT_APP,"You are logged out");
+    }
+
+    @Test
+    @OperateOnDeployment(POST_LOGOUT_APP)
+    public void testPostLogout() throws Exception {
+
+        loginToApp(POST_LOGOUT_APP,
+                org.wildfly.test.integration.elytron.oidc.client.KeycloakConfiguration.ALICE,
+                org.wildfly.test.integration.elytron.oidc.client.KeycloakConfiguration.ALICE_PASSWORD,
+                HttpURLConnection.HTTP_OK, SimpleServlet.RESPONSE_BODY);
+
+        logoutOfKeycloak(POST_LOGOUT_APP, "You are logged out");
     }
 
     public static void loginToApp(String appName, String username, String password, int expectedStatusCode, String expectedText) throws Exception {

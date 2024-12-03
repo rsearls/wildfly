@@ -11,9 +11,9 @@ import static org.wildfly.extension.elytron.oidc.ElytronOidcClientSubsystemModel
 import static org.wildfly.extension.elytron.oidc.ElytronOidcClientSubsystemModel.VERSION_4_0_0;
 import static org.wildfly.extension.elytron.oidc.ElytronOidcClientSubsystemModel.VERSION_5_0_0;
 import static org.wildfly.extension.elytron.oidc.ElytronOidcDescriptionConstants.AUTHENTICATION_REQUEST_FORMAT;
-import static org.wildfly.extension.elytron.oidc.ElytronOidcDescriptionConstants.FRONT_CHANNEL_BACK_CHANNEL_LOGOUT_PATH;
+import static org.wildfly.extension.elytron.oidc.ElytronOidcDescriptionConstants.POST_LOGOUT_PATH;
 import static org.wildfly.extension.elytron.oidc.ElytronOidcDescriptionConstants.LOGOUT_SESSION_REQUIRED;
-import static org.wildfly.extension.elytron.oidc.ElytronOidcDescriptionConstants.POST_LOGOUT_REDIRECT_PATH;
+import static org.wildfly.extension.elytron.oidc.ElytronOidcDescriptionConstants.LOGOUT_CALLBACK_PATH;
 import static org.wildfly.extension.elytron.oidc.ElytronOidcDescriptionConstants.PROVIDER;
 import static org.wildfly.extension.elytron.oidc.ElytronOidcDescriptionConstants.REALM;
 import static org.wildfly.extension.elytron.oidc.ElytronOidcDescriptionConstants.REQUEST_OBJECT_ENCRYPTION_ALG_VALUE;
@@ -24,7 +24,7 @@ import static org.wildfly.extension.elytron.oidc.ElytronOidcDescriptionConstants
 import static org.wildfly.extension.elytron.oidc.ElytronOidcDescriptionConstants.REQUEST_OBJECT_SIGNING_KEYSTORE_FILE;
 import static org.wildfly.extension.elytron.oidc.ElytronOidcDescriptionConstants.REQUEST_OBJECT_SIGNING_KEYSTORE_PASSWORD;
 import static org.wildfly.extension.elytron.oidc.ElytronOidcDescriptionConstants.REQUEST_OBJECT_SIGNING_KEYSTORE_TYPE;
-import static org.wildfly.extension.elytron.oidc.ElytronOidcDescriptionConstants.RP_INITIATED_LOGOUT_PATH;
+import static org.wildfly.extension.elytron.oidc.ElytronOidcDescriptionConstants.LOGOUT_PATH;
 import static org.wildfly.extension.elytron.oidc.ElytronOidcDescriptionConstants.SCOPE;
 import static org.wildfly.extension.elytron.oidc.ElytronOidcDescriptionConstants.SECURE_DEPLOYMENT;
 import static org.wildfly.extension.elytron.oidc.ElytronOidcDescriptionConstants.SECURE_SERVER;
@@ -180,14 +180,26 @@ public class ElytronOidcSubsystemTransformers implements ExtensionTransformerReg
     private static void from5(ChainedTransformationDescriptionBuilder chainedBuilder) {
         ResourceTransformationDescriptionBuilder builder = chainedBuilder.createBuilder(VERSION_5_0_0.getVersion(), VERSION_4_0_0.getVersion());
 
+        builder.addChildResource(PathElement.pathElement(SECURE_SERVER))
+                .getAttributeBuilder()
+                .addRejectCheck(RejectAttributeChecker.DEFINED, LOGOUT_PATH)
+                .setDiscard(DiscardAttributeChecker.ALWAYS, LOGOUT_PATH)
+                .addRejectCheck(RejectAttributeChecker.DEFINED, LOGOUT_CALLBACK_PATH)
+                .setDiscard(DiscardAttributeChecker.ALWAYS, LOGOUT_CALLBACK_PATH)
+                .addRejectCheck(RejectAttributeChecker.DEFINED, POST_LOGOUT_PATH)
+                .setDiscard(DiscardAttributeChecker.ALWAYS, POST_LOGOUT_PATH)
+                .addRejectCheck(RejectAttributeChecker.DEFINED, LOGOUT_SESSION_REQUIRED)
+                .setDiscard(DiscardAttributeChecker.ALWAYS, LOGOUT_SESSION_REQUIRED)
+                .end();
+
         builder.addChildResource(PathElement.pathElement(SECURE_DEPLOYMENT))
                 .getAttributeBuilder()
-                .addRejectCheck(RejectAttributeChecker.DEFINED, RP_INITIATED_LOGOUT_PATH)
-                .setDiscard(DiscardAttributeChecker.ALWAYS, RP_INITIATED_LOGOUT_PATH)
-                .addRejectCheck(RejectAttributeChecker.DEFINED, POST_LOGOUT_REDIRECT_PATH)
-                .setDiscard(DiscardAttributeChecker.ALWAYS, POST_LOGOUT_REDIRECT_PATH)
-                .addRejectCheck(RejectAttributeChecker.DEFINED, FRONT_CHANNEL_BACK_CHANNEL_LOGOUT_PATH)
-                .setDiscard(DiscardAttributeChecker.ALWAYS, FRONT_CHANNEL_BACK_CHANNEL_LOGOUT_PATH)
+                .addRejectCheck(RejectAttributeChecker.DEFINED, LOGOUT_PATH)
+                .setDiscard(DiscardAttributeChecker.ALWAYS, LOGOUT_PATH)
+                .addRejectCheck(RejectAttributeChecker.DEFINED, LOGOUT_CALLBACK_PATH)
+                .setDiscard(DiscardAttributeChecker.ALWAYS, LOGOUT_CALLBACK_PATH)
+                .addRejectCheck(RejectAttributeChecker.DEFINED, POST_LOGOUT_PATH)
+                .setDiscard(DiscardAttributeChecker.ALWAYS, POST_LOGOUT_PATH)
                 .addRejectCheck(RejectAttributeChecker.DEFINED, LOGOUT_SESSION_REQUIRED)
                 .setDiscard(DiscardAttributeChecker.ALWAYS, LOGOUT_SESSION_REQUIRED)
                 .end();

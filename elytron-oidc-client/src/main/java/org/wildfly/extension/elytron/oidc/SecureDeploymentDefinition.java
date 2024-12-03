@@ -157,20 +157,20 @@ class SecureDeploymentDefinition extends SimpleResourceDefinition {
                     .setValidator(new StringLengthValidator(1, Integer.MAX_VALUE, true, true))
                     .build();
 
-    protected static final SimpleAttributeDefinition RP_INITIATED_LOGOUT_PATH =
-            new SimpleAttributeDefinitionBuilder(ElytronOidcDescriptionConstants.RP_INITIATED_LOGOUT_PATH, ModelType.STRING, true)
+    protected static final SimpleAttributeDefinition LOGOUT_PATH =
+            new SimpleAttributeDefinitionBuilder(ElytronOidcDescriptionConstants.LOGOUT_PATH, ModelType.STRING, true)
                     .setValidator(new StringLengthValidator(0, Integer.MAX_VALUE, true, false))
                     .setStability(Stability.PREVIEW)
                     .setAllowExpression(true)
                     .build();
-    protected static final SimpleAttributeDefinition POST_LOGOUT_REDIRECT_PATH =
-            new SimpleAttributeDefinitionBuilder(ElytronOidcDescriptionConstants.POST_LOGOUT_REDIRECT_PATH, ModelType.STRING, true)
+    protected static final SimpleAttributeDefinition LOGOUT_CALLBACK_PATH =
+            new SimpleAttributeDefinitionBuilder(ElytronOidcDescriptionConstants.LOGOUT_CALLBACK_PATH, ModelType.STRING, true)
                     .setValidator(new StringLengthValidator(0, Integer.MAX_VALUE, true, false))
                     .setStability(Stability.PREVIEW)
                     .setAllowExpression(true)
                     .build();
-    protected static final SimpleAttributeDefinition FRONT_CHANNEL_BACK_CHANNEL_LOGOUT_PATH =
-            new SimpleAttributeDefinitionBuilder(ElytronOidcDescriptionConstants.FRONT_CHANNEL_BACK_CHANNEL_LOGOUT_PATH, ModelType.STRING, true)
+    protected static final SimpleAttributeDefinition POST_LOGOUT_PATH =
+            new SimpleAttributeDefinitionBuilder(ElytronOidcDescriptionConstants.POST_LOGOUT_PATH, ModelType.STRING, true)
                     .setValidator(new StringLengthValidator(0, Integer.MAX_VALUE, true, false))
                     .setStability(Stability.PREVIEW)
                     .setAllowExpression(true)
@@ -199,9 +199,9 @@ class SecureDeploymentDefinition extends SimpleResourceDefinition {
         ALL_ATTRIBUTES.add(CredentialDefinition.CREDENTIAL);
         ALL_ATTRIBUTES.add(SCOPE);
         ALL_ATTRIBUTES.add(RedirectRewriteRuleDefinition.REDIRECT_REWRITE_RULE);
-        ALL_ATTRIBUTES.add(RP_INITIATED_LOGOUT_PATH);
-        ALL_ATTRIBUTES.add(POST_LOGOUT_REDIRECT_PATH);
-        ALL_ATTRIBUTES.add(FRONT_CHANNEL_BACK_CHANNEL_LOGOUT_PATH);
+        ALL_ATTRIBUTES.add(LOGOUT_PATH);
+        ALL_ATTRIBUTES.add(LOGOUT_CALLBACK_PATH);
+        ALL_ATTRIBUTES.add(POST_LOGOUT_PATH);
         ALL_ATTRIBUTES.add(LOGOUT_SESSION_REQUIRED);
         for (SimpleAttributeDefinition attribute : ProviderAttributeDefinitions.ATTRIBUTES) {
             ALL_ATTRIBUTES.add(attribute);
@@ -227,9 +227,9 @@ class SecureDeploymentDefinition extends SimpleResourceDefinition {
         NON_DEFAULT_ATTRIBUTES.add(REQUEST_OBJECT_SIGNING_KEYSTORE_PASSWORD);
         NON_DEFAULT_ATTRIBUTES.add(REQUEST_OBJECT_SIGNING_KEYSTORE_TYPE);
         NON_DEFAULT_ATTRIBUTES.add(REQUEST_OBJECT_SIGNING_ALGORITHM);
-        NON_DEFAULT_ATTRIBUTES.add(RP_INITIATED_LOGOUT_PATH);
-        NON_DEFAULT_ATTRIBUTES.add(POST_LOGOUT_REDIRECT_PATH);
-        NON_DEFAULT_ATTRIBUTES.add(FRONT_CHANNEL_BACK_CHANNEL_LOGOUT_PATH);
+        NON_DEFAULT_ATTRIBUTES.add(LOGOUT_PATH);
+        NON_DEFAULT_ATTRIBUTES.add(LOGOUT_CALLBACK_PATH);
+        NON_DEFAULT_ATTRIBUTES.add(POST_LOGOUT_PATH);
         NON_DEFAULT_ATTRIBUTES.add(LOGOUT_SESSION_REQUIRED);
     }
 

@@ -50,14 +50,14 @@ import static org.wildfly.extension.elytron.oidc.SecureDeploymentDefinition.ADAP
 import static org.wildfly.extension.elytron.oidc.SecureDeploymentDefinition.BEARER_ONLY;
 import static org.wildfly.extension.elytron.oidc.SecureDeploymentDefinition.CLIENT_ID;
 import static org.wildfly.extension.elytron.oidc.SecureDeploymentDefinition.ENABLE_BASIC_AUTH;
-import static org.wildfly.extension.elytron.oidc.SecureDeploymentDefinition.FRONT_CHANNEL_BACK_CHANNEL_LOGOUT_PATH;
+import static org.wildfly.extension.elytron.oidc.SecureDeploymentDefinition.POST_LOGOUT_PATH;
 import static org.wildfly.extension.elytron.oidc.SecureDeploymentDefinition.LOGOUT_SESSION_REQUIRED;
 import static org.wildfly.extension.elytron.oidc.SecureDeploymentDefinition.MIN_TIME_BETWEEN_JWKS_REQUESTS;
 import static org.wildfly.extension.elytron.oidc.SecureDeploymentDefinition.PUBLIC_CLIENT;
 import static org.wildfly.extension.elytron.oidc.SecureDeploymentDefinition.PUBLIC_KEY_CACHE_TTL;
-import static org.wildfly.extension.elytron.oidc.SecureDeploymentDefinition.POST_LOGOUT_REDIRECT_PATH;
+import static org.wildfly.extension.elytron.oidc.SecureDeploymentDefinition.LOGOUT_CALLBACK_PATH;
 import static org.wildfly.extension.elytron.oidc.SecureDeploymentDefinition.RESOURCE;
-import static org.wildfly.extension.elytron.oidc.SecureDeploymentDefinition.RP_INITIATED_LOGOUT_PATH;
+import static org.wildfly.extension.elytron.oidc.SecureDeploymentDefinition.LOGOUT_PATH;
 import static org.wildfly.extension.elytron.oidc.SecureDeploymentDefinition.SCOPE;
 import static org.wildfly.extension.elytron.oidc.SecureDeploymentDefinition.PROVIDER;
 import static org.wildfly.extension.elytron.oidc.SecureDeploymentDefinition.REALM;
@@ -145,8 +145,8 @@ public enum ElytronOidcSubsystemSchema implements PersistentSubsystemSchema<Elyt
                 REQUEST_OBJECT_SIGNING_KEYSTORE_FILE, REQUEST_OBJECT_SIGNING_KEYSTORE_PASSWORD,
                 REQUEST_OBJECT_SIGNING_KEY_ALIAS, REQUEST_OBJECT_SIGNING_KEY_PASSWORD, REQUEST_OBJECT_SIGNING_KEYSTORE_TYPE};
 
-        SimpleAttributeDefinition[] oidcLogoutChannelAttributes = {RP_INITIATED_LOGOUT_PATH, POST_LOGOUT_REDIRECT_PATH,
-                FRONT_CHANNEL_BACK_CHANNEL_LOGOUT_PATH, LOGOUT_SESSION_REQUIRED};
+        SimpleAttributeDefinition[] oidcLogoutChannelAttributes = {LOGOUT_PATH, LOGOUT_CALLBACK_PATH,
+                POST_LOGOUT_PATH, LOGOUT_SESSION_REQUIRED};
 
         redirectRewriteRuleDefinitionBuilder.addAttribute(RedirectRewriteRuleDefinition.REPLACEMENT, SIMPLE_ATTRIBUTE_PARSER, SIMPLE_ATTRIBUTE_MARSHALLER);
         Stream.of(CredentialDefinition.ATTRIBUTES).forEach(attribute -> credentialDefinitionBuilder.addAttribute(attribute, SIMPLE_ATTRIBUTE_PARSER, SIMPLE_ATTRIBUTE_MARSHALLER));
@@ -157,8 +157,9 @@ public enum ElytronOidcSubsystemSchema implements PersistentSubsystemSchema<Elyt
         Stream.of(providerDefaultAttributes).forEach(attribute -> secureDeploymentDefinitionBuilder.addAttribute(attribute, SIMPLE_ATTRIBUTE_PARSER, SIMPLE_ATTRIBUTE_MARSHALLER));
         Stream.of(providerDefaultAttributes).forEach(attribute -> secureServerDefinitionBuilder.addAttribute(attribute, SIMPLE_ATTRIBUTE_PARSER, SIMPLE_ATTRIBUTE_MARSHALLER));
 
-        if (this.since(VERSION_4_0_PREVIEW) && this.enables(RP_INITIATED_LOGOUT_PATH)) {
+        if (this.since(VERSION_4_0_PREVIEW) && this.enables(LOGOUT_PATH)) {
             Stream.of(oidcLogoutChannelAttributes).forEach(attribute -> secureDeploymentDefinitionBuilder.addAttribute(attribute, SIMPLE_ATTRIBUTE_PARSER, SIMPLE_ATTRIBUTE_MARSHALLER));
+            Stream.of(oidcLogoutChannelAttributes).forEach(attribute -> secureServerDefinitionBuilder.addAttribute(attribute, SIMPLE_ATTRIBUTE_PARSER, SIMPLE_ATTRIBUTE_MARSHALLER));
         }
 
         if (this.since(VERSION_3_0_PREVIEW) && this.enables(AUTHENTICATION_REQUEST_FORMAT)) {

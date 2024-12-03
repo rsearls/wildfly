@@ -1463,14 +1463,14 @@
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="rp-initiated-logout-path"
+            <xs:element name="logout-path"
                         type="xs:string" minOccurs="0" default="/logout">
                 <xs:annotation>
                     <xs:documentation>
                         <![CDATA[
                         This option designates the path component of a URL.  Elytron
-                        uses it to identify an RP-Initiated logout request.  The default
-                        values is "/logout". It is expected that the text start with a
+                        uses it to identify a URL that is used to start an OIDC logout request.
+                        The default values is "/logout". It is expected that the text start with a
                         forward slash (e.g. "/").  A path with multiple directories may
                         be specified (e.g. "/call/back/home"). This path must be the last
                         text in the base URL.
@@ -1478,12 +1478,29 @@
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="post-logout-redirect-path"
+            <xs:element name="logout-callback-path"
+                        type="xs:string" minOccurs="0"  default="/logout/callback">
+                <xs:annotation>
+                    <xs:documentation>
+                        <![CDATA[
+                        This option designates the path component of a URL. Elytron uses
+                         it to identify a front-channel and back-channel logout request.
+                         The default values is "/channel-logout".  It is expected that
+                         the text start with a forward slash (e.g. "/").  A path with
+                         multiple directories may be specified (e.g. "/call/back/home")
+                         This path must be the last text in the base URL.
+
+                    ]]>
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+
+            <xs:element name="post-logout-path"
                         type="xs:string" minOccurs="0">
                 <xs:annotation>
                     <xs:documentation>
                         <![CDATA[
-                        This option designates the path component of a URL.  It is
+                         This option designates the path component of a URL.  It is
                         appended to the redirect base URL registered with the OpenID
                         provider.  This new URL is also registered with the OpenID provider.
                         The URL is called after the logout request has completed.  There is
@@ -1491,22 +1508,6 @@
                         the text start with a forward slash (e.g. "/"). A path with multiple
                         directories may specified (e.g. "/call/back/home"). This path will
                         be appended to the base URI registered with the OpenID provider.
-                    ]]>
-                    </xs:documentation>
-                </xs:annotation>
-            </xs:element>
-
-            <xs:element name="front-channel-back-channel-logout-path"
-                        type="xs:string" minOccurs="0" default="/channel-logout">
-                <xs:annotation>
-                    <xs:documentation>
-                        <![CDATA[
-                         This option designates the path component of a URL. Elytron uses
-                         it to identify a front-channel and back-channel logout request.
-                         The default values is "/channel-logout".  It is expected that
-                         the text start with a forward slash (e.g. "/").  A path with
-                         multiple directories may be specified (e.g. "/call/back/home")
-                         This path must be the last text in the base URL.
                     ]]>
                     </xs:documentation>
                 </xs:annotation>

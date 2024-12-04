@@ -347,6 +347,14 @@ public class KeycloakConfiguration {
         }
     }
 
+    public static void setFrontChannelLogoutSessionRequired(ClientRepresentation client,
+                                                            boolean frontchannelLogoutSessionRequired) {
+        OIDCAdvancedConfigWrapper oidcAdvancedConfigWrapper = logoutChannelMap.get(client);
+        if (oidcAdvancedConfigWrapper != null) {
+            oidcAdvancedConfigWrapper.setFrontChannelLogoutSessionRequired(frontchannelLogoutSessionRequired);
+        }
+    }
+
     public static List<String> getPostLogoutRedirectUris(ClientRepresentation client) {
         OIDCAdvancedConfigWrapper oidcAdvancedConfigWrapper = logoutChannelMap.get(client);
         return oidcAdvancedConfigWrapper == null? null: oidcAdvancedConfigWrapper.getPostLogoutRedirectUris();

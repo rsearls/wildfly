@@ -129,12 +129,18 @@ public abstract class OidcLogoutBaseTest {
                 LogoutChannelPaths logoutChannelUrls = appLogout.get(client.getClientId());
                 if (logoutChannelUrls != null) {
                     if (logoutChannelUrls.backChannelPath != null) {
+                        KeycloakConfiguration.setFrontChannelLogoutSessionRequired(
+                                client,false);
                         KeycloakConfiguration.setBackchannelLogoutSessionRequired(
                                 client,true);
                         KeycloakConfiguration.setBackchannelLogoutUrl(client,
                                 tmpRedirectUri + logoutChannelUrls.backChannelPath);
                     }
                     if (logoutChannelUrls.frontChannelPath != null) {
+                        KeycloakConfiguration.setBackchannelLogoutSessionRequired(
+                                client,false);
+                        KeycloakConfiguration.setFrontChannelLogoutSessionRequired(
+                                client,true);
                         KeycloakConfiguration.setFrontChannelLogoutUrl(client,
                                 tmpRedirectUri + logoutChannelUrls.frontChannelPath);
                     }
@@ -202,13 +208,19 @@ public abstract class OidcLogoutBaseTest {
     @Test
     @OperateOnDeployment(BACK_CHANNEL_LOGOUT_APP)
     public void testBackChannelLogout() throws Exception {
+      //  assertUserLoggedOut(BACK_CHANNEL_LOGOUT_APP, HttpURLConnection.HTTP_OK,
+      //          "Sign in to your account");
 
         loginToApp(BACK_CHANNEL_LOGOUT_APP,
                 org.wildfly.test.integration.elytron.oidc.client.KeycloakConfiguration.ALICE,
                 org.wildfly.test.integration.elytron.oidc.client.KeycloakConfiguration.ALICE_PASSWORD,
                 HttpURLConnection.HTTP_OK, SimpleServlet.RESPONSE_BODY);
 
+    //    assertUserLoggedIn(BACK_CHANNEL_LOGOUT_APP, HttpURLConnection.HTTP_OK,
+    //            "GOOD");
         logoutOfKeycloak(BACK_CHANNEL_LOGOUT_APP,"You are logged out");
+    //    assertUserLoggedOut(BACK_CHANNEL_LOGOUT_APP, HttpURLConnection.HTTP_OK,
+    //            "GOOD");
     }
 
     @Test
@@ -306,6 +318,45 @@ public abstract class OidcLogoutBaseTest {
             else {
                 assertTrue("Expected code == FORBIDDEN but got " + statusCode + " for request=" + requestUri, statusCode == HttpURLConnection.HTTP_FORBIDDEN);
             }
+        } finally {
+            HttpClientUtils.closeQuietly(response);
+        }
+    }
+
+    public static void assertUserLoggedIn(String appName, int expectedStatusCode,
+                                          String expectedText) throws Exception {
+        URI requestUri = new URL("http", TestSuiteEnvironment.getHttpAddress(),
+                TestSuiteEnvironment.getHttpPort(),
+                "/" + appName + SimpleSecuredServlet.SERVLET_PATH).toURI();
+
+        tryPageAccess(requestUri, expectedStatusCode, expectedText);
+    }
+
+    public static void assertUserLoggedOut(String appName, int expectedStatusCode,
+                                          String expectedText) throws Exception {
+        URI requestUri = new URL("http", TestSuiteEnvironment.getHttpAddress(),
+                TestSuiteEnvironment.getHttpPort(),
+                "/" + appName + SimpleSecuredServlet.SERVLET_PATH).toURI();
+
+        tryPageAccess(requestUri, expectedStatusCode, expectedText);
+    }
+
+    public static void tryPageAccess(URI requestUri, int expectedStatusCode,
+                                     String expectedText) throws Exception {
+        HttpContext context = new BasicHttpContext();
+        HttpResponse response = null;
+        HttpGet getMethod = new HttpGet(requestUri);
+        response = httpClient.execute(getMethod, context);
+
+        try {
+            int statusCode = response.getStatusLine().getStatusCode();
+            assertTrue("Expected code == " + expectedStatusCode + " but got "
+                            + statusCode + " for request=" + requestUri,
+                    statusCode == expectedStatusCode);
+            response.getEntity();
+            String responseString = new BasicResponseHandler().handleResponse(response);
+            assertTrue("Unexpected result " + expectedText,
+                    responseString.contains(expectedText));
         } finally {
             HttpClientUtils.closeQuietly(response);
         }
@@ -446,11 +497,17 @@ public abstract class OidcLogoutBaseTest {
                             .startBatch()
                             .add("/subsystem=logging/logger=org.wildfly.security.http.oidc:add()")
                             .add("/subsystem=logging/logger=org.wildfly.security.http.oidc:write-attribute(name=level, value=TRACE)")
+                            .add("/subsystem=logging/logger=io.undertow:add()")
+                            .add("/subsystem=logging/logger=io.undertow:write-attribute(name=level, value=TRACE)")
+                            .add("/subsystem=logging/logger=io.undertow.servlet:add()")
+                            .add("/subsystem=logging/logger=io.undertow.servlet:write-attribute(name=level, value=TRACE)")
                             .endBatch()
                             .build())
                     .tearDownScript(createScriptBuilder()
                             .startBatch()
                             .add("/subsystem=logging/logger=org.wildfly.security.http.oidc:remove()")
+                            .add("/subsystem=logging/logger=io.undertow:remove()")
+                            .add("/subsystem=logging/logger=io.undertow.servlet:remove()")
                             .endBatch()
                             .build())
                     .build());

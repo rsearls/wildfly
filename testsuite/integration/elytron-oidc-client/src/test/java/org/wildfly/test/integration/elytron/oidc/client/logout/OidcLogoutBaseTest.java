@@ -8,12 +8,17 @@ package org.wildfly.test.integration.elytron.oidc.client.logout;
 import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.SYSTEM_PROPERTY;
 import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.VALUE;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
 
+import static org.wildfly.test.integration.elytron.oidc.client.KeycloakConfiguration.ALICE;
+import static org.wildfly.test.integration.elytron.oidc.client.KeycloakConfiguration.ALICE_PASSWORD;
+
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -30,7 +35,6 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.HttpClientUtils;
-import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.LaxRedirectStrategy;
@@ -71,8 +75,8 @@ import io.restassured.RestAssured;
  */
 public abstract class OidcLogoutBaseTest {
 
-
     private static HttpClient httpClient;
+
     @Before
     public void createHttpClient() {
         CookieStore store = new BasicCookieStore();
@@ -80,6 +84,11 @@ public abstract class OidcLogoutBaseTest {
                 .setDefaultCookieStore(store)
                 .setRedirectStrategy(new LaxRedirectStrategy())
                 .build();
+    }
+
+    @BeforeClass
+    public static void checkDockerAvailability() {
+        assumeTrue("Docker isn't available, OIDC tests will be skipped", AssumeTestGroupUtil.isDockerAvailable());
     }
 
     protected static OidcClientConfiguration config = new OidcClientConfiguration();
@@ -91,12 +100,13 @@ public abstract class OidcLogoutBaseTest {
     private static final String KEYCLOAK_USERNAME = "username";
     private static final String KEYCLOAK_PASSWORD = "password";
     public static final int CLIENT_PORT = TestSuiteEnvironment.getHttpPort();
-    public static final String CLIENT_HOST_NAME = TestSuiteEnvironment.getHttpAddress();
+    // This name enables the Docker container (running keycloak) to make the
+    // local machine's host accessible to keycloak.
+    public static final String HOST_TESTCONTAINERS_INTERNAL = "host.testcontainers.internal";
     public static final String RP_INITIATED_LOGOUT_APP = "RpInitiatedLogoutApp";
     public static final String FRONT_CHANNEL_LOGOUT_APP = "FrontChannelLogoutApp";
     public static final String BACK_CHANNEL_LOGOUT_APP = "BackChannelLogoutApp";
     public static final String POST_LOGOUT_APP = "PostLogoutApp";
-
 
     private final Stability desiredStability;
 
@@ -104,152 +114,71 @@ public abstract class OidcLogoutBaseTest {
         this.desiredStability = desiredStability;
     }
 
-    private enum RestMethod {
-        GET,
-        POST
-    }
-
-    /* register rpInitiated, backchannel, frontchannel, postLogoutRedirectUris with Keycloak
-     */
-    public static void setOidcLogoutUrls(RealmRepresentation realm,
-                                         Map<String, KeycloakConfiguration.ClientAppType> clientApps,
-                                         Map<String, LogoutChannelPaths> appLogout) throws Exception {
-
-        for (ClientRepresentation client : realm.getClients()) {
-            KeycloakConfiguration.ClientAppType value = clientApps.get(client.getClientId());
-            if (value == KeycloakConfiguration.ClientAppType.OIDC_CLIENT) {
-                List<String> redirectUris = new ArrayList<>(client.getRedirectUris());
-                String redirectUri = redirectUris.get(0);
-                redirectUris.add("*");
-                client.setRedirectUris(redirectUris);
-
-                int indx = redirectUri.lastIndexOf("/*");
-                String tmpRedirectUri = redirectUri.substring(0,indx);
-
-                LogoutChannelPaths logoutChannelUrls = appLogout.get(client.getClientId());
-                if (logoutChannelUrls != null) {
-                    if (logoutChannelUrls.backChannelPath != null) {
-                        KeycloakConfiguration.setFrontChannelLogoutSessionRequired(
-                                client,false);
-                        KeycloakConfiguration.setBackchannelLogoutSessionRequired(
-                                client,true);
-                        KeycloakConfiguration.setBackchannelLogoutUrl(client,
-                                tmpRedirectUri + logoutChannelUrls.backChannelPath);
-                    }
-                    if (logoutChannelUrls.frontChannelPath != null) {
-                        KeycloakConfiguration.setBackchannelLogoutSessionRequired(
-                                client,false);
-                        KeycloakConfiguration.setFrontChannelLogoutSessionRequired(
-                                client,true);
-                        KeycloakConfiguration.setFrontChannelLogoutUrl(client,
-                                tmpRedirectUri + logoutChannelUrls.frontChannelPath);
-                    }
-                    if (logoutChannelUrls.postLogoutRedirectPaths != null) {
-                        List<String> tmpList = new ArrayList<>();
-                        for (String s : logoutChannelUrls.postLogoutRedirectPaths) {
-                            tmpList.add(tmpRedirectUri + s);
-                        }
-                        KeycloakConfiguration.setPostLogoutRedirectUris(client, tmpList);
-                    }
-                }
-            }
-        }
-    }
-
-
-    public static void sendRealmCreationRequest(RealmRepresentation realm) {
-        try {
-            String adminAccessToken = KeycloakConfiguration.getAdminAccessToken(KEYCLOAK_CONTAINER.getAuthServerUrl());
-            assertNotNull(adminAccessToken);
-            RestAssured
-                    .given()
-                    .auth().oauth2(adminAccessToken)
-                    .contentType("application/json")
-                    .body(JsonSerialization.writeValueAsBytes(realm))
-                    .when()
-                    .post(KEYCLOAK_CONTAINER.getAuthServerUrl() + "/admin/realms").then()
-                    .statusCode(201);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-
-    @BeforeClass
-    public static void checkDockerAvailability() {
-        assumeTrue("Docker isn't available, OIDC tests will be skipped", AssumeTestGroupUtil.isDockerAvailable());
-    }
-
-
     @Test
     @OperateOnDeployment(RP_INITIATED_LOGOUT_APP)
     public void testRpInitiatedLogout() throws Exception {
 
-        loginToApp(RP_INITIATED_LOGOUT_APP,
-                org.wildfly.test.integration.elytron.oidc.client.KeycloakConfiguration.ALICE,
-                org.wildfly.test.integration.elytron.oidc.client.KeycloakConfiguration.ALICE_PASSWORD,
-                HttpURLConnection.HTTP_OK, SimpleServlet.RESPONSE_BODY);
-
+        loginToApp(RP_INITIATED_LOGOUT_APP);
+        assertUserLoggedIn(RP_INITIATED_LOGOUT_APP, "GOOD");
         logoutOfKeycloak(RP_INITIATED_LOGOUT_APP, "You are logged out");
+        assertUserLoggedOut(RP_INITIATED_LOGOUT_APP, "GOOD");
     }
 
     @Test
     @OperateOnDeployment(FRONT_CHANNEL_LOGOUT_APP)
     public void testFrontChannelLogout() throws Exception {
 
-        loginToApp(FRONT_CHANNEL_LOGOUT_APP,
-                org.wildfly.test.integration.elytron.oidc.client.KeycloakConfiguration.ALICE,
-                org.wildfly.test.integration.elytron.oidc.client.KeycloakConfiguration.ALICE_PASSWORD,
-                HttpURLConnection.HTTP_OK, SimpleServlet.RESPONSE_BODY);
-
+        loginToApp(FRONT_CHANNEL_LOGOUT_APP);
+        assertUserLoggedIn(FRONT_CHANNEL_LOGOUT_APP, "GOOD");
         logoutOfKeycloak(FRONT_CHANNEL_LOGOUT_APP, "You are logging out from following apps");
+        assertUserLoggedOut(FRONT_CHANNEL_LOGOUT_APP, "GOOD");
     }
 
     @Test
     @OperateOnDeployment(BACK_CHANNEL_LOGOUT_APP)
     public void testBackChannelLogout() throws Exception {
-      //  assertUserLoggedOut(BACK_CHANNEL_LOGOUT_APP, HttpURLConnection.HTTP_OK,
-      //          "Sign in to your account");
 
-        loginToApp(BACK_CHANNEL_LOGOUT_APP,
-                org.wildfly.test.integration.elytron.oidc.client.KeycloakConfiguration.ALICE,
-                org.wildfly.test.integration.elytron.oidc.client.KeycloakConfiguration.ALICE_PASSWORD,
-                HttpURLConnection.HTTP_OK, SimpleServlet.RESPONSE_BODY);
-
-    //    assertUserLoggedIn(BACK_CHANNEL_LOGOUT_APP, HttpURLConnection.HTTP_OK,
-    //            "GOOD");
+        loginToApp(BACK_CHANNEL_LOGOUT_APP);
+        assertUserLoggedIn(BACK_CHANNEL_LOGOUT_APP, "GOOD");
         logoutOfKeycloak(BACK_CHANNEL_LOGOUT_APP,"You are logged out");
-    //    assertUserLoggedOut(BACK_CHANNEL_LOGOUT_APP, HttpURLConnection.HTTP_OK,
-    //            "GOOD");
+        assertUserLoggedOut(BACK_CHANNEL_LOGOUT_APP, "Sign in to your account");
     }
 
     @Test
     @OperateOnDeployment(POST_LOGOUT_APP)
     public void testPostLogout() throws Exception {
 
-        loginToApp(POST_LOGOUT_APP,
-                org.wildfly.test.integration.elytron.oidc.client.KeycloakConfiguration.ALICE,
-                org.wildfly.test.integration.elytron.oidc.client.KeycloakConfiguration.ALICE_PASSWORD,
-                HttpURLConnection.HTTP_OK, SimpleServlet.RESPONSE_BODY);
-
+        loginToApp(POST_LOGOUT_APP);
+        assertUserLoggedIn(POST_LOGOUT_APP, "GOOD");
         logoutOfKeycloak(POST_LOGOUT_APP, "You are logged out");
+        assertUserLoggedOut(POST_LOGOUT_APP, "GOOD");
     }
 
-    public static void loginToApp(String appName, String username, String password, int expectedStatusCode, String expectedText) throws Exception {
+    private static URL generateURL(String appName) {
+        try {
+            return new URL("http", TestSuiteEnvironment.getHttpAddress(),
+                    TestSuiteEnvironment.getHttpPort(),
+                    "/" + appName + SimpleSecuredServlet.SERVLET_PATH);
+        } catch (MalformedURLException e) {
+            assertFalse(e.getMessage(), false);
+        }
+        return null;
+    }
+
+    public static void loginToApp(String appName) throws Exception {
+        loginToApp(appName, ALICE, ALICE_PASSWORD, HttpURLConnection.HTTP_OK,
+                SimpleServlet.RESPONSE_BODY);
+    }
+
+    public static void loginToApp(String appName,
+                                  String username, String password, int expectedStatusCode, String expectedText) throws Exception {
         loginToApp(username, password, expectedStatusCode, expectedText, true,
-                new URL("http", TestSuiteEnvironment.getHttpAddress(), TestSuiteEnvironment.getHttpPort(),
-                "/" + appName + SimpleSecuredServlet.SERVLET_PATH).toURI());
+                generateURL(appName).toURI());
     }
 
-    public static void loginToApp(String username, String password, int expectedStatusCode, String expectedText, boolean loginToKeycloak, URI requestUri) throws Exception {
-        loginToApp(username, password, expectedStatusCode, expectedText, loginToKeycloak, requestUri, null, false);
-    }
-
-    public static void loginToApp(String username, String password, int expectedStatusCode, String expectedText, boolean loginToKeycloak, URI requestUri, String expectedScope, boolean checkInvalidScope) throws Exception {
-        loginToApp(username, password, expectedStatusCode, expectedText, loginToKeycloak, requestUri, expectedScope, checkInvalidScope, null);
-    }
-
-    public static void loginToApp(String username, String password, int expectedStatusCode, String expectedText, boolean loginToKeycloak, URI requestUri, String expectedScope, boolean checkInvalidScope, String requestMethod) throws Exception {
+    public static void loginToApp(String username, String password,
+                                  int expectedStatusCode, String expectedText,
+                                  boolean loginToKeycloak, URI requestUri) throws Exception {
 
         HttpGet getMethod = new HttpGet(requestUri);
         HttpContext context = new BasicHttpContext();
@@ -265,6 +194,7 @@ public abstract class OidcLogoutBaseTest {
 
                 afterLoginClickResponse.getEntity().getContent();
                 assertEquals(expectedStatusCode, afterLoginClickResponse.getStatusLine().getStatusCode());
+
                 if (expectedText != null) {
                     String responseString = new BasicResponseHandler().handleResponse(afterLoginClickResponse);
                     assertTrue("Unexpected result " + responseString, responseString.contains(expectedText));
@@ -283,29 +213,16 @@ public abstract class OidcLogoutBaseTest {
                 TestSuiteEnvironment.getHttpPort(),
                 "/" + appName + SimpleSecuredServlet.SERVLET_PATH
                         + config.getLogoutPath()).toURI();
-        logoutOfKeycloak(requestUri, RestMethod.GET, HttpURLConnection.HTTP_OK,
-                expectedText, true);
+        logoutOfKeycloak(requestUri, HttpURLConnection.HTTP_OK, expectedText, true);
     }
 
-    public static void logoutOfKeycloak(URI requestUri, RestMethod restMethod, int expectedStatusCode, String expectedText,
+    public static void logoutOfKeycloak(URI requestUri, int expectedStatusCode, String expectedText,
                                         boolean logoutFromKeycloak) throws Exception {
 
         HttpContext context = new BasicHttpContext();
         HttpResponse response = null;
-        switch(restMethod) {
-            case POST:
-                HttpPost postMethod = new HttpPost(requestUri);
-                URI uri = new URIBuilder(postMethod.getURI())
-                        .build();
-                postMethod.setURI(uri);
-                response = httpClient.execute(postMethod, context);
-                break;
-            case GET:
-                HttpGet getMethod = new HttpGet(requestUri);
-                response = httpClient.execute(getMethod, context);
-                break;
-            default:
-        }
+        HttpGet getMethod = new HttpGet(requestUri);
+        response = httpClient.execute(getMethod, context);
 
         try {
             int statusCode = response.getStatusLine().getStatusCode();
@@ -323,25 +240,15 @@ public abstract class OidcLogoutBaseTest {
         }
     }
 
-    public static void assertUserLoggedIn(String appName, int expectedStatusCode,
-                                          String expectedText) throws Exception {
-        URI requestUri = new URL("http", TestSuiteEnvironment.getHttpAddress(),
-                TestSuiteEnvironment.getHttpPort(),
-                "/" + appName + SimpleSecuredServlet.SERVLET_PATH).toURI();
-
-        tryPageAccess(requestUri, expectedStatusCode, expectedText);
+    public static void assertUserLoggedIn(String appName, String expectedText) throws Exception {
+        accessPage(generateURL(appName).toURI(), HttpURLConnection.HTTP_OK, expectedText);
     }
 
-    public static void assertUserLoggedOut(String appName, int expectedStatusCode,
-                                          String expectedText) throws Exception {
-        URI requestUri = new URL("http", TestSuiteEnvironment.getHttpAddress(),
-                TestSuiteEnvironment.getHttpPort(),
-                "/" + appName + SimpleSecuredServlet.SERVLET_PATH).toURI();
-
-        tryPageAccess(requestUri, expectedStatusCode, expectedText);
+    public static void assertUserLoggedOut(String appName, String expectedText) throws Exception {
+        accessPage(generateURL(appName).toURI(), HttpURLConnection.HTTP_OK, expectedText);
     }
 
-    public static void tryPageAccess(URI requestUri, int expectedStatusCode,
+    public static void accessPage(URI requestUri, int expectedStatusCode,
                                      String expectedText) throws Exception {
         HttpContext context = new BasicHttpContext();
         HttpResponse response = null;
@@ -367,6 +274,9 @@ public abstract class OidcLogoutBaseTest {
         @Override
         public void setup(ManagementClient managementClient, String containerId) throws Exception {
             assumeTrue("Docker isn't available, OIDC tests will be skipped", AssumeTestGroupUtil.isDockerAvailable());
+            // stmt required to enable container to have access to local
+            // machine's port.
+            org.testcontainers.Testcontainers.exposeHostPorts(8080);
             KEYCLOAK_CONTAINER = new KeycloakContainer();
             KEYCLOAK_CONTAINER.start();
         }
@@ -497,20 +407,104 @@ public abstract class OidcLogoutBaseTest {
                             .startBatch()
                             .add("/subsystem=logging/logger=org.wildfly.security.http.oidc:add()")
                             .add("/subsystem=logging/logger=org.wildfly.security.http.oidc:write-attribute(name=level, value=TRACE)")
-                            .add("/subsystem=logging/logger=io.undertow:add()")
-                            .add("/subsystem=logging/logger=io.undertow:write-attribute(name=level, value=TRACE)")
-                            .add("/subsystem=logging/logger=io.undertow.servlet:add()")
-                            .add("/subsystem=logging/logger=io.undertow.servlet:write-attribute(name=level, value=TRACE)")
                             .endBatch()
                             .build())
                     .tearDownScript(createScriptBuilder()
                             .startBatch()
                             .add("/subsystem=logging/logger=org.wildfly.security.http.oidc:remove()")
-                            .add("/subsystem=logging/logger=io.undertow:remove()")
-                            .add("/subsystem=logging/logger=io.undertow.servlet:remove()")
                             .endBatch()
                             .build())
                     .build());
+        }
+    }
+
+    /* register rpInitiated, backchannel, frontchannel, postLogoutRedirectUris with Keycloak
+     */
+    public static void setOidcLogoutUrls(RealmRepresentation realm,
+                                         Map<String, KeycloakConfiguration.ClientAppType> clientApps,
+                                         Map<String, LogoutChannelPaths> appLogout) throws Exception {
+
+        for (ClientRepresentation client : realm.getClients()) {
+            KeycloakConfiguration.ClientAppType value = clientApps.get(client.getClientId());
+            if (value == KeycloakConfiguration.ClientAppType.OIDC_CLIENT) {
+                List<String> redirectUris = new ArrayList<>(client.getRedirectUris());
+                String redirectUri = redirectUris.get(0);
+                redirectUris.add("*");
+                client.setRedirectUris(redirectUris);
+
+                int indx = redirectUri.lastIndexOf("/*");
+                String tmpRedirectUri = redirectUri.substring(0,indx);
+
+                LogoutChannelPaths logoutChannelUrls = appLogout.get(client.getClientId());
+                if (logoutChannelUrls != null) {
+                    if (logoutChannelUrls.backChannelPath != null) {
+                        KeycloakConfiguration.setBackchannelLogoutSessionRequired(
+                                client,true);
+                        KeycloakConfiguration.setBackchannelLogoutUrl(client,
+                                tmpRedirectUri + logoutChannelUrls.backChannelPath);
+                    }
+                    if (logoutChannelUrls.frontChannelPath != null) {
+                        KeycloakConfiguration.setBackchannelLogoutSessionRequired(
+                                client,false);
+                        KeycloakConfiguration.setFrontChannelLogoutSessionRequired(
+                                client,true);
+                        KeycloakConfiguration.setFrontChannelLogoutUrl(client,
+                                tmpRedirectUri + logoutChannelUrls.frontChannelPath);
+                    }
+                    if (logoutChannelUrls.postLogoutRedirectPaths != null) {
+                        List<String> tmpList = new ArrayList<>();
+                        for (String s : logoutChannelUrls.postLogoutRedirectPaths) {
+                            tmpList.add(tmpRedirectUri + s);
+                        }
+                        KeycloakConfiguration.setPostLogoutRedirectUris(client, tmpList);
+                    }
+                }
+            }
+        }
+    }
+
+
+    public static void sendRealmCreationRequest(RealmRepresentation realm) {
+        try {
+            String adminAccessToken = KeycloakConfiguration.getAdminAccessToken(KEYCLOAK_CONTAINER.getAuthServerUrl());
+            assertNotNull(adminAccessToken);
+            RestAssured
+                    .given()
+                    .auth().oauth2(adminAccessToken)
+                    .contentType("application/json")
+                    .body(JsonSerialization.writeValueAsBytes(realm))
+                    .when()
+                    .post(KEYCLOAK_CONTAINER.getAuthServerUrl() + "/admin/realms").then()
+                    .statusCode(201);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /* This method retained for future debugging.  It can be helpful to
+        review Keycloak's log file.
+
+        To enable logging one must add stmt, withEnv("KC_LOG_LEVEL", "DEBUG"); ,
+        to KeycloakContainer.configure()
+
+        Add a call to this method after the login, logout action of interest.
+     */
+    private void dumpKeycloakLog() {
+
+        String console = KEYCLOAK_CONTAINER.getLogs();
+        String fileName = "/tmp/x-keycloak-logout.log";
+        java.io.PrintWriter outLog = null;
+        try {
+            java.io.File file = new java.io.File(fileName);
+            file.delete();
+            outLog = new java.io.PrintWriter(fileName);
+            outLog.println(console);
+        } catch(Exception e) {
+            System.out.println(e.getMessage());
+        } finally {
+            if (outLog != null) {
+                outLog.close();
+            }
         }
     }
 }

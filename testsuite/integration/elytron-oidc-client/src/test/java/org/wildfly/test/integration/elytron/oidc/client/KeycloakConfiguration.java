@@ -237,11 +237,10 @@ public class KeycloakConfiguration {
         client.setClientId(clientId);
         client.setPublicClient(false);
         client.setSecret(clientSecret);
-        //client.setRedirectUris(Arrays.asList("*"));
         if (multiTenancyRedirectUri != null) {
             client.setRedirectUris(Arrays.asList(multiTenancyRedirectUri));
         } else {
-            client.setRedirectUris(Arrays.asList("http://" + clientHostName + ":" + clientPort + "/" + clientApp + "/*"));
+           client.setRedirectUris(Arrays.asList("http://" + clientHostName + ":" + clientPort + "/" + clientApp + "/*"));
         }
         client.setEnabled(true);
 

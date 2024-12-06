@@ -185,8 +185,10 @@ public class OidcLogoutConfigTest extends OidcLogoutBaseTest {
         @Override
         public void setup(ManagementClient managementClient, String containerId) throws Exception {
             super.setup(managementClient, containerId);
+
             RealmRepresentation realm = getRealmRepresentation(TEST_REALM,
-                    CLIENT_SECRET, CLIENT_HOST_NAME, CLIENT_PORT, APP_NAMES);
+                    CLIENT_SECRET, HOST_TESTCONTAINERS_INTERNAL, CLIENT_PORT, APP_NAMES);
+
             setOidcLogoutUrls(realm, APP_NAMES, APP_LOGOUT);
             sendRealmCreationRequest(realm);
 

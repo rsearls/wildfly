@@ -180,6 +180,22 @@ public class OidcLogoutConfigTest extends OidcLogoutBaseTest {
             deployer.undeploy(POST_LOGOUT_APP);
         }
     }
+
+    @Test
+    @InSequence(5)
+    // Test checks that back channel Logout can be completed
+    // when user logged in to 2 apps
+    public void testBackChannelLogoutTwo() throws Exception {
+        try {
+            deployer.deploy(FRONT_CHANNEL_LOGOUT_APP);
+            deployer.deploy(BACK_CHANNEL_LOGOUT_APP);
+            super.testBackChannelLogout();
+        } finally {
+            deployer.undeploy(FRONT_CHANNEL_LOGOUT_APP);
+            deployer.undeploy(BACK_CHANNEL_LOGOUT_APP);
+        }
+    }
+
     static class KeycloakAndSystemPropertySetup extends KeycloakSetup {
 
         @Override

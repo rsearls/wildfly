@@ -154,6 +154,17 @@ public abstract class OidcLogoutBaseTest {
         assertUserLoggedOut(POST_LOGOUT_APP, "GOOD");
     }
 
+    @Test
+    public void testBackChannelLogoutTwo() throws Exception {
+        loginToApp(BACK_CHANNEL_LOGOUT_APP);
+        loginToApp(FRONT_CHANNEL_LOGOUT_APP);
+        assertUserLoggedIn(BACK_CHANNEL_LOGOUT_APP, "GOOD");
+        assertUserLoggedIn(FRONT_CHANNEL_LOGOUT_APP, "GOOD");
+        logoutOfKeycloak(BACK_CHANNEL_LOGOUT_APP,"You are logged out");
+        assertUserLoggedOut(BACK_CHANNEL_LOGOUT_APP, "Sign in to your account");
+        assertUserLoggedOut(FRONT_CHANNEL_LOGOUT_APP, "Sign in to your account");
+    }
+
     private static URL generateURL(String appName) {
         try {
             return new URL("http", TestSuiteEnvironment.getHttpAddress(),

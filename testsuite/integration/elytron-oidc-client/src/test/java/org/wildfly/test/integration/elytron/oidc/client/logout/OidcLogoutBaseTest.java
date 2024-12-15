@@ -63,7 +63,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.keycloak.representations.idm.ClientRepresentation;
 import org.keycloak.representations.idm.RealmRepresentation;
-import org.wildfly.security.http.oidc.OidcClientConfiguration;
+import org.wildfly.security.http.oidc.Oidc;
 import org.wildfly.security.jose.util.JsonSerialization;
 import org.wildfly.test.integration.elytron.oidc.client.KeycloakConfiguration;
 import org.wildfly.test.integration.elytron.oidc.client.KeycloakContainer;
@@ -91,7 +91,12 @@ public abstract class OidcLogoutBaseTest {
         assumeTrue("Docker isn't available, OIDC tests will be skipped", AssumeTestGroupUtil.isDockerAvailable());
     }
 
-    protected static OidcClientConfiguration config = new OidcClientConfiguration();
+    /* rls test-1
+    protected static Map<String, LogoutChannelPaths> APP_LOGOUT_MAP;
+    protected static void setAppLogoutMap(Map<String, LogoutChannelPaths> appLogoutMap) {
+        this.APP_LOGOUT_MAP = appLogoutMap;
+    }
+    rls test-1 */
 
     public static final String CLIENT_SECRET = "longerclientsecretthatisstleast256bitslong";
     public static final String WEB_XML = "web.xml";
@@ -191,6 +196,7 @@ public abstract class OidcLogoutBaseTest {
                                   int expectedStatusCode, String expectedText,
                                   boolean loginToKeycloak, URI requestUri) throws Exception {
 
+        String console = KEYCLOAK_CONTAINER.getAuthServerUrl(); // rls debug
         HttpGet getMethod = new HttpGet(requestUri);
         HttpContext context = new BasicHttpContext();
         HttpResponse response = httpClient.execute(getMethod, context);
@@ -223,7 +229,7 @@ public abstract class OidcLogoutBaseTest {
         URI requestUri = new URL("http", TestSuiteEnvironment.getHttpAddress(),
                 TestSuiteEnvironment.getHttpPort(),
                 "/" + appName + SimpleSecuredServlet.SERVLET_PATH
-                        + config.getLogoutPath()).toURI();
+                        + OidcLogoutConfigTest.LOGOUT_PATH_SYS_PROP).toURI();
         logoutOfKeycloak(requestUri, HttpURLConnection.HTTP_OK, expectedText, true);
     }
 
@@ -418,11 +424,24 @@ public abstract class OidcLogoutBaseTest {
                             .startBatch()
                             .add("/subsystem=logging/logger=org.wildfly.security.http.oidc:add()")
                             .add("/subsystem=logging/logger=org.wildfly.security.http.oidc:write-attribute(name=level, value=TRACE)")
+                            .add(String.format("/system-property=%s:add(value=%s)",
+                                    Oidc.LOGOUT_PATH, OidcLogoutConfigTest.LOGOUT_PATH_SYS_PROP))
+                            .add(String.format("/system-property=%s:add(value=%s)",
+                                    Oidc.LOGOUT_CALLBACK_PATH, OidcLogoutConfigTest.LOGOUT_CALLBACK_PATH_SYS_PROP))
+                            /* -- rls
+                            .add(String.format("/system-property=%s:add(value=%s)",
+                                            Oidc.POST_LOGOUT_PATH, OidcLogoutConfigTest.POST_LOGOUT_PATH_SYS_PROP))
+                            -- rls */
                             .endBatch()
                             .build())
                     .tearDownScript(createScriptBuilder()
                             .startBatch()
                             .add("/subsystem=logging/logger=org.wildfly.security.http.oidc:remove()")
+                            .add(String.format("/system-property=%s:remove()",Oidc.LOGOUT_PATH))
+                            .add(String.format("/system-property=%s:remove()", Oidc.LOGOUT_CALLBACK_PATH))
+                            /* -- rls
+                            .add(String.format("/system-property=%s:remove()", Oidc.POST_LOGOUT_PATH))
+                            -- rls */
                             .endBatch()
                             .build())
                     .build());

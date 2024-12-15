@@ -55,6 +55,18 @@ public class OidcLogoutConfigTest extends OidcLogoutBaseTest {
     private static final String OIDC_LOGOUT_AUTH_SERVER_URL = "oidc.logout.auth.server.url";
     private static final String OIDC_REQUEST_OBJECT_SIGNING_KEYSTORE_FILE = "oidc.request.object.signing.keystore.file";
 
+    // -- rls test start
+    // rls private static OidcClientConfiguration config = new OidcClientConfiguration();
+    // rls public static final String LOGOUT_PATH_SYS_PROP = config.getLogoutPath();
+    // rls public static final String LOGOUT_CALLBACK_PATH_SYS_PROP = config.getLogoutCallbackPath();
+    public static final String POST_LOGOUT_PATH_SYS_PROP = "/myPath"; // rls  config.getPostLogoutPath();
+    // -- rls test end
+    public static final String LOGOUT_PATH_SYS_PROP = "/mylogout";
+    public static final String LOGOUT_CALLBACK_PATH_SYS_PROP = "/more/myCallback";
+    /* rls
+    public static final String POST_LOGOUT_PATH_SYS_PROP = "/post/myPath";
+    rls */
+
     private static Map<String, KeycloakConfiguration.ClientAppType> APP_NAMES;
     static {
         APP_NAMES = new HashMap<>();
@@ -71,15 +83,17 @@ public class OidcLogoutConfigTest extends OidcLogoutBaseTest {
                         null,null, null) );
         APP_LOGOUT.put(FRONT_CHANNEL_LOGOUT_APP, new LogoutChannelPaths(null,
                         SimpleSecuredServlet.SERVLET_PATH +
-                                config.getLogoutCallbackPath(),
+                                LOGOUT_CALLBACK_PATH_SYS_PROP,
                         null) );
         APP_LOGOUT.put(BACK_CHANNEL_LOGOUT_APP, new LogoutChannelPaths(
                         SimpleSecuredServlet.SERVLET_PATH
-                                + config.getLogoutCallbackPath(),
+                                + LOGOUT_CALLBACK_PATH_SYS_PROP,
                         null, null) );
         APP_LOGOUT.put(POST_LOGOUT_APP, new LogoutChannelPaths(
-                null,null, List.of("/post-logout")) );
+                null,null, List.of(POST_LOGOUT_PATH_SYS_PROP)) );
     }
+
+    // rls test-1  setAppLogoutMap(APP_LOGOUT);
 
     public OidcLogoutConfigTest() {
         super(Stability.PREVIEW);

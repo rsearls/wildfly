@@ -91,13 +91,6 @@ public abstract class OidcLogoutBaseTest {
         assumeTrue("Docker isn't available, OIDC tests will be skipped", AssumeTestGroupUtil.isDockerAvailable());
     }
 
-    /* rls test-1
-    protected static Map<String, LogoutChannelPaths> APP_LOGOUT_MAP;
-    protected static void setAppLogoutMap(Map<String, LogoutChannelPaths> appLogoutMap) {
-        this.APP_LOGOUT_MAP = appLogoutMap;
-    }
-    rls test-1 */
-
     public static final String CLIENT_SECRET = "longerclientsecretthatisstleast256bitslong";
     public static final String WEB_XML = "web.xml";
     public static KeycloakContainer KEYCLOAK_CONTAINER;

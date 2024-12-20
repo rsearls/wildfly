@@ -26,6 +26,8 @@ import org.jboss.as.arquillian.api.ServerSetup;
 import org.jboss.as.arquillian.container.ManagementClient;
 import org.jboss.as.controller.client.ModelControllerClient;
 import org.jboss.as.controller.descriptions.ModelDescriptionConstants;
+import org.jboss.as.test.integration.security.common.AbstractSystemPropertiesServerSetupTask;
+import org.jboss.as.test.integration.security.common.AbstractSystemPropertiesServerSetupTask.SystemProperty;
 import org.jboss.as.test.integration.security.common.Utils;
 import org.jboss.as.test.integration.security.common.servlets.SimpleSecuredServlet;
 import org.jboss.as.test.integration.security.common.servlets.SimpleServlet;
@@ -36,6 +38,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.keycloak.representations.idm.RealmRepresentation;
+import org.wildfly.security.http.oidc.Oidc;
 import org.wildfly.test.integration.elytron.oidc.client.KeycloakConfiguration;
 import org.wildfly.test.stabilitylevel.StabilityServerSetupSnapshotRestoreTasks;
 
@@ -49,23 +52,28 @@ import org.wildfly.test.stabilitylevel.StabilityServerSetupSnapshotRestoreTasks;
 @RunAsClient
 @ServerSetup({ OidcLogoutConfigTest.PreviewStabilitySetupTask.class,
         OidcLogoutConfigTest.KeycloakAndSystemPropertySetup.class,
+        OidcLogoutConfigTest.WildFlySystemPropertiesSetupTask.class,
         OidcLogoutBaseTest.WildFlyServerSetupTask.class})
 public class OidcLogoutConfigTest extends OidcLogoutBaseTest {
 
     private static final String OIDC_LOGOUT_AUTH_SERVER_URL = "oidc.logout.auth.server.url";
     private static final String OIDC_REQUEST_OBJECT_SIGNING_KEYSTORE_FILE = "oidc.request.object.signing.keystore.file";
 
-    // -- rls test start
-    // rls private static OidcClientConfiguration config = new OidcClientConfiguration();
-    // rls public static final String LOGOUT_PATH_SYS_PROP = config.getLogoutPath();
-    // rls public static final String LOGOUT_CALLBACK_PATH_SYS_PROP = config.getLogoutCallbackPath();
-    public static final String POST_LOGOUT_PATH_SYS_PROP = "/myPath"; // rls  config.getPostLogoutPath();
-    // -- rls test end
+    public static final String POST_LOGOUT_PATH_SYS_PROP = "/myPath";
     public static final String LOGOUT_PATH_SYS_PROP = "/mylogout";
     public static final String LOGOUT_CALLBACK_PATH_SYS_PROP = "/more/myCallback";
     /* rls
     public static final String POST_LOGOUT_PATH_SYS_PROP = "/post/myPath";
     rls */
+    private static Map<String,String> LOGOUT_SYS_PROPS;
+    static {
+        LOGOUT_SYS_PROPS = new HashMap<>();
+        LOGOUT_SYS_PROPS.put(Oidc.LOGOUT_PATH, OidcLogoutConfigTest.LOGOUT_PATH_SYS_PROP);
+        LOGOUT_SYS_PROPS.put(Oidc.LOGOUT_CALLBACK_PATH, OidcLogoutConfigTest.LOGOUT_CALLBACK_PATH_SYS_PROP);
+      //rls  LOGOUT_SYS_PROPS.put(Oidc.POST_LOGOUT_PATH, OidcLogoutConfigTest.POST_LOGOUT_PATH_SYS_PROP);
+
+        WildFlySystemPropertiesSetupTask.setLogoutSysProps(LOGOUT_SYS_PROPS);
+    }
 
     private static Map<String, KeycloakConfiguration.ClientAppType> APP_NAMES;
     static {
@@ -92,8 +100,6 @@ public class OidcLogoutConfigTest extends OidcLogoutBaseTest {
         APP_LOGOUT.put(POST_LOGOUT_APP, new LogoutChannelPaths(
                 null,null, List.of(POST_LOGOUT_PATH_SYS_PROP)) );
     }
-
-    // rls test-1  setAppLogoutMap(APP_LOGOUT);
 
     public OidcLogoutConfigTest() {
         super(Stability.PREVIEW);
@@ -256,6 +262,18 @@ public class OidcLogoutConfigTest extends OidcLogoutBaseTest {
             // Write a system property so the model gets stored with a lower stability level.
             // This is to make sure we can reload back to the higher level from the snapshot
             OidcLogoutBaseTest.addSystemProperty(managementClient, OidcLogoutConfigTest.class);
+        }
+    }
+
+    // This class generates all CLI cmds that set's the system properties.
+    static class WildFlySystemPropertiesSetupTask extends AbstractSystemPropertiesServerSetupTask {
+        private static SystemProperty[] sysProps;
+
+        public static void setLogoutSysProps(Map<String,String> map) {
+            sysProps =  mapToSystemProperties(map);
+        }
+        protected SystemProperty[] getSystemProperties() {
+            return sysProps;
         }
     }
 }

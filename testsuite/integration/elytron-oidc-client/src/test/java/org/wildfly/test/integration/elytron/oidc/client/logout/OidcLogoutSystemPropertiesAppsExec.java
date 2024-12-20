@@ -9,7 +9,6 @@ import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.SYS
 import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.VALUE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
 
@@ -22,10 +21,8 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -42,7 +39,6 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.jboss.arquillian.container.test.api.OperateOnDeployment;
-import org.jboss.as.arquillian.api.ServerSetupTask;
 import org.jboss.as.arquillian.container.ManagementClient;
 import org.jboss.as.controller.PathAddress;
 import org.jboss.as.controller.operations.common.Util;
@@ -50,7 +46,6 @@ import org.jboss.as.test.http.util.TestHttpClientUtils;
 import org.jboss.as.test.integration.management.ManagementOperations;
 import org.jboss.as.test.integration.security.common.servlets.SimpleSecuredServlet;
 import org.jboss.as.test.integration.security.common.servlets.SimpleServlet;
-import org.jboss.as.test.shared.ManagementServerSetupTask;
 import org.jboss.as.test.shared.TestSuiteEnvironment;
 import org.jboss.as.test.shared.util.AssumeTestGroupUtil;
 import org.jboss.as.version.Stability;
@@ -61,21 +56,13 @@ import org.jsoup.nodes.Element;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.keycloak.representations.idm.ClientRepresentation;
-import org.keycloak.representations.idm.RealmRepresentation;
-import org.wildfly.security.jose.util.JsonSerialization;
-import org.wildfly.test.integration.elytron.oidc.client.KeycloakConfiguration;
-import org.wildfly.test.integration.elytron.oidc.client.KeycloakContainer;
-
-import io.restassured.RestAssured;
 
 /**
  * Tests for the OpenID Connect logout types.
  */
-public abstract class OidcLogoutBaseTest {
+public abstract class OidcLogoutSystemPropertiesAppsExec extends OidcLogoutEnvSetup {
 
     private static HttpClient httpClient;
-
     @Before
     public void createHttpClient() {
         CookieStore store = new BasicCookieStore();
@@ -90,24 +77,18 @@ public abstract class OidcLogoutBaseTest {
         assumeTrue("Docker isn't available, OIDC tests will be skipped", AssumeTestGroupUtil.isDockerAvailable());
     }
 
-    public static final String CLIENT_SECRET = "longerclientsecretthatisstleast256bitslong";
-    public static final String WEB_XML = "web.xml";
-    public static KeycloakContainer KEYCLOAK_CONTAINER;
-    public static final String TEST_REALM = "WildFly";
     private static final String KEYCLOAK_USERNAME = "username";
     private static final String KEYCLOAK_PASSWORD = "password";
-    public static final int CLIENT_PORT = TestSuiteEnvironment.getHttpPort();
-    // This name enables the Docker container (running keycloak) to make the
-    // local machine's host accessible to keycloak.
-    public static final String HOST_TESTCONTAINERS_INTERNAL = "host.testcontainers.internal";
+
     public static final String RP_INITIATED_LOGOUT_APP = "RpInitiatedLogoutApp";
     public static final String FRONT_CHANNEL_LOGOUT_APP = "FrontChannelLogoutApp";
     public static final String BACK_CHANNEL_LOGOUT_APP = "BackChannelLogoutApp";
     public static final String POST_LOGOUT_APP = "PostLogoutApp";
 
-    private final Stability desiredStability;
+    private Stability desiredStability = null;
 
-    public OidcLogoutBaseTest(Stability desiredStability) {
+    public OidcLogoutSystemPropertiesAppsExec() {}
+    public OidcLogoutSystemPropertiesAppsExec(Stability desiredStability) {
         this.desiredStability = desiredStability;
     }
 
@@ -116,27 +97,28 @@ public abstract class OidcLogoutBaseTest {
     public void testRpInitiatedLogout() throws Exception {
 
         loginToApp(RP_INITIATED_LOGOUT_APP);
-        assertUserLoggedIn(RP_INITIATED_LOGOUT_APP, "GOOD");
-        logoutOfKeycloak(RP_INITIATED_LOGOUT_APP, "You are logged out");
-        assertUserLoggedOut(RP_INITIATED_LOGOUT_APP, "GOOD");
+        assertUserLoggedIn(RP_INITIATED_LOGOUT_APP, SimpleServlet.RESPONSE_BODY);
+        logoutOfKeycloak(RP_INITIATED_LOGOUT_APP, SimplePostLogoutServlet.RESPONSE_BODY);
+        assertUserLoggedOut(RP_INITIATED_LOGOUT_APP, SimpleServlet.RESPONSE_BODY); // todo fix rls
     }
 
+    /* --------- rls
     @Test
     @OperateOnDeployment(FRONT_CHANNEL_LOGOUT_APP)
     public void testFrontChannelLogout() throws Exception {
 
         loginToApp(FRONT_CHANNEL_LOGOUT_APP);
-        assertUserLoggedIn(FRONT_CHANNEL_LOGOUT_APP, "GOOD");
+        assertUserLoggedIn(FRONT_CHANNEL_LOGOUT_APP, SimpleServlet.RESPONSE_BODY);
         logoutOfKeycloak(FRONT_CHANNEL_LOGOUT_APP, "You are logging out from following apps");
-        assertUserLoggedOut(FRONT_CHANNEL_LOGOUT_APP, "GOOD");
+        assertUserLoggedOut(FRONT_CHANNEL_LOGOUT_APP, SimpleServlet.RESPONSE_BODY); // todo fix rls
     }
-
+ --------- rls */
     @Test
     @OperateOnDeployment(BACK_CHANNEL_LOGOUT_APP)
     public void testBackChannelLogout() throws Exception {
 
         loginToApp(BACK_CHANNEL_LOGOUT_APP);
-        assertUserLoggedIn(BACK_CHANNEL_LOGOUT_APP, "GOOD");
+        assertUserLoggedIn(BACK_CHANNEL_LOGOUT_APP, SimpleServlet.RESPONSE_BODY);
         logoutOfKeycloak(BACK_CHANNEL_LOGOUT_APP,"You are logged out");
         assertUserLoggedOut(BACK_CHANNEL_LOGOUT_APP, "Sign in to your account");
     }
@@ -146,9 +128,9 @@ public abstract class OidcLogoutBaseTest {
     public void testPostLogout() throws Exception {
 
         loginToApp(POST_LOGOUT_APP);
-        assertUserLoggedIn(POST_LOGOUT_APP, "GOOD");
+        assertUserLoggedIn(POST_LOGOUT_APP, SimpleServlet.RESPONSE_BODY);
         logoutOfKeycloak(POST_LOGOUT_APP, "You are logged out");
-        assertUserLoggedOut(POST_LOGOUT_APP, "GOOD");
+        assertUserLoggedOut(POST_LOGOUT_APP, SimpleServlet.RESPONSE_BODY); // todo fix rls
     }
 
     @Test
@@ -277,25 +259,6 @@ public abstract class OidcLogoutBaseTest {
         }
     }
 
-    public static class KeycloakSetup implements ServerSetupTask {
-
-        @Override
-        public void setup(ManagementClient managementClient, String containerId) throws Exception {
-            assumeTrue("Docker isn't available, OIDC tests will be skipped", AssumeTestGroupUtil.isDockerAvailable());
-            // stmt required to enable container to have access to local
-            // machine's port.
-            org.testcontainers.Testcontainers.exposeHostPorts(8080);
-            KEYCLOAK_CONTAINER = new KeycloakContainer();
-            KEYCLOAK_CONTAINER.start();
-        }
-
-        public void tearDown(ManagementClient managementClient, String containerId) throws Exception {
-            if (KEYCLOAK_CONTAINER != null) {
-                KEYCLOAK_CONTAINER.stop();
-            }
-        }
-    }
-
     public static HttpResponse simulateClickingOnButton(HttpClient client, Form form, String username, String password, String buttonValue) throws IOException {
         final URL url = new URL(form.getAction());
         final HttpPost request = new HttpPost(url.toString());
@@ -398,123 +361,23 @@ public abstract class OidcLogoutBaseTest {
         }
     }
 
-    protected static <T extends OidcLogoutBaseTest> void addSystemProperty(ManagementClient client, Class<T> clazz) throws Exception {
-        ModelNode add = Util.createAddOperation(PathAddress.pathAddress(SYSTEM_PROPERTY, OidcLogoutBaseTest.class.getName()));
+    protected static <T extends OidcLogoutSystemPropertiesAppsExec> void addSystemProperty(ManagementClient client, Class<T> clazz) throws Exception {
+        ModelNode add = Util.createAddOperation(PathAddress.pathAddress(SYSTEM_PROPERTY, OidcLogoutSystemPropertiesAppsExec.class.getName()));
         add.get(VALUE).set(clazz.getName());
         ManagementOperations.executeOperation(client.getControllerClient(), add);
-    }
-
-    /*
-        Class enables easy configuring of logging messages to server.log.
-        It is being maintained for future debugging needs.
-     */
-    public static class WildFlyServerSetupTask extends ManagementServerSetupTask {
-        public WildFlyServerSetupTask() {
-            super(createContainerConfigurationBuilder()
-                    .setupScript(createScriptBuilder()
-                            .startBatch()
-                            .add("/subsystem=logging/logger=org.wildfly.security.http.oidc:add()")
-                            .add("/subsystem=logging/logger=org.wildfly.security.http.oidc:write-attribute(name=level, value=TRACE)")
-                            /* -- rls
-                            .add(String.format("/system-property=%s:add(value=%s)",
-                                    Oidc.LOGOUT_PATH, OidcLogoutConfigTest.LOGOUT_PATH_SYS_PROP))
-                            .add(String.format("/system-property=%s:add(value=%s)",
-                                    Oidc.LOGOUT_CALLBACK_PATH, OidcLogoutConfigTest.LOGOUT_CALLBACK_PATH_SYS_PROP))
-                            -- rls */
-                            /* -- rls
-                            .add(String.format("/system-property=%s:add(value=%s)",
-                                            Oidc.POST_LOGOUT_PATH, OidcLogoutConfigTest.POST_LOGOUT_PATH_SYS_PROP))
-                            -- rls */
-                            .endBatch()
-                            .build())
-                    .tearDownScript(createScriptBuilder()
-                            .startBatch()
-                            .add("/subsystem=logging/logger=org.wildfly.security.http.oidc:remove()")
-                            /* -- rls
-                            .add(String.format("/system-property=%s:remove()",Oidc.LOGOUT_PATH))
-                            .add(String.format("/system-property=%s:remove()", Oidc.LOGOUT_CALLBACK_PATH))
-                             -- rls */
-                            /* -- rls
-                            .add(String.format("/system-property=%s:remove()", Oidc.POST_LOGOUT_PATH))
-                            -- rls */
-                            .endBatch()
-                            .build())
-                    .build());
-        }
-    }
-
-    /* register rpInitiated, backchannel, frontchannel, postLogoutRedirectUris with Keycloak
-     */
-    public static void setOidcLogoutUrls(RealmRepresentation realm,
-                                         Map<String, KeycloakConfiguration.ClientAppType> clientApps,
-                                         Map<String, LogoutChannelPaths> appLogout) throws Exception {
-
-        for (ClientRepresentation client : realm.getClients()) {
-            KeycloakConfiguration.ClientAppType value = clientApps.get(client.getClientId());
-            if (value == KeycloakConfiguration.ClientAppType.OIDC_CLIENT) {
-                List<String> redirectUris = new ArrayList<>(client.getRedirectUris());
-                String redirectUri = redirectUris.get(0);
-                redirectUris.add("*");
-                client.setRedirectUris(redirectUris);
-
-                int indx = redirectUri.lastIndexOf("/*");
-                String tmpRedirectUri = redirectUri.substring(0,indx);
-
-                LogoutChannelPaths logoutChannelUrls = appLogout.get(client.getClientId());
-                if (logoutChannelUrls != null) {
-                    if (logoutChannelUrls.backChannelPath != null) {
-                        KeycloakConfiguration.setBackchannelLogoutSessionRequired(
-                                client,true);
-                        KeycloakConfiguration.setBackchannelLogoutUrl(client,
-                                tmpRedirectUri + logoutChannelUrls.backChannelPath);
-                    }
-                    if (logoutChannelUrls.frontChannelPath != null) {
-                        KeycloakConfiguration.setBackchannelLogoutSessionRequired(
-                                client,false);
-                        KeycloakConfiguration.setFrontChannelLogoutSessionRequired(
-                                client,true);
-                        KeycloakConfiguration.setFrontChannelLogoutUrl(client,
-                                tmpRedirectUri + logoutChannelUrls.frontChannelPath);
-                    }
-                    if (logoutChannelUrls.postLogoutRedirectPaths != null) {
-                        List<String> tmpList = new ArrayList<>();
-                        for (String s : logoutChannelUrls.postLogoutRedirectPaths) {
-                            tmpList.add(tmpRedirectUri + s);
-                        }
-                        KeycloakConfiguration.setPostLogoutRedirectUris(client, tmpList);
-                    }
-                }
-            }
-        }
-    }
-
-
-    public static void sendRealmCreationRequest(RealmRepresentation realm) {
-        try {
-            String adminAccessToken = KeycloakConfiguration.getAdminAccessToken(KEYCLOAK_CONTAINER.getAuthServerUrl());
-            assertNotNull(adminAccessToken);
-            RestAssured
-                    .given()
-                    .auth().oauth2(adminAccessToken)
-                    .contentType("application/json")
-                    .body(JsonSerialization.writeValueAsBytes(realm))
-                    .when()
-                    .post(KEYCLOAK_CONTAINER.getAuthServerUrl() + "/admin/realms").then()
-                    .statusCode(201);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     /* This method retained for future debugging.  It can be helpful to
         review Keycloak's log file.
 
         To enable logging one must add stmt, withEnv("KC_LOG_LEVEL", "DEBUG"); ,
-        to KeycloakContainer.configure()
+        in class testsuite/integration/elytron-oidc-client/src/test/java/
+        org/wildfly/test/integration/elytron/oidc/client/KeycloakContainer
+        method configure() there are like withEnv stmts there.
 
         Add a call to this method after the login, logout action of interest.
      */
-    private void dumpKeycloakLog() {
+    public void dumpKeycloakLog() {
 
         String console = KEYCLOAK_CONTAINER.getLogs();
         String fileName = "/tmp/x-keycloak-logout.log";

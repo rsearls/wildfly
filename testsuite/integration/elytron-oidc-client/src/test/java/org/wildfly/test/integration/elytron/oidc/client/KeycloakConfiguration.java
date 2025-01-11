@@ -240,7 +240,7 @@ public class KeycloakConfiguration {
         if (multiTenancyRedirectUri != null) {
             client.setRedirectUris(Arrays.asList(multiTenancyRedirectUri));
         } else {
-           client.setRedirectUris(Arrays.asList("http://" + clientHostName + ":" + clientPort + "/" + clientApp + "/*"));
+            client.setRedirectUris(Arrays.asList("http://" + clientHostName + ":" + clientPort + "/" + clientApp + "/*"));
         }
         client.setEnabled(true);
 

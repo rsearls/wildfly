@@ -42,7 +42,7 @@ import static org.junit.Assume.assumeTrue;
 /*  Implementation of classes declared in the @ServerSetup stmt of the root
     test class.
  */
-public class OidcLogoutEnvSetup {
+public class EnvSetupUtils extends AbstractSystemPropertiesUtil {
 
     public static KeycloakContainer KEYCLOAK_CONTAINER;
 
@@ -66,12 +66,16 @@ public class OidcLogoutEnvSetup {
         public static void setKeycloakClients(Map<String, KeycloakConfiguration.ClientAppType> appNames) {
             APP_NAMES = appNames;
         }
+
         public static void setLogoutUrlPaths(Map<String, LogoutChannelPaths> appLogout) {
             APP_LOGOUT = appLogout;
         }
 
+        public static ManagementClient mgtClient = null;
+
         @Override
         public void setup(ManagementClient managementClient, String containerId) throws Exception {
+            mgtClient = managementClient;
             super.setup(managementClient, containerId);
 
             RealmRepresentation realm = getRealmRepresentation(TEST_REALM,
@@ -106,6 +110,74 @@ public class OidcLogoutEnvSetup {
             operation = createOpNode("system-property=" + OIDC_REQUEST_OBJECT_SIGNING_KEYSTORE_FILE, ModelDescriptionConstants.REMOVE);
             Utils.applyUpdate(operation, client);
         }
+
+        /* register rpInitiated, backchannel, frontchannel, postLogoutRedirectUris with Keycloak
+         */
+        public static void setOidcLogoutUrls(RealmRepresentation realm,
+                                             Map<String, KeycloakConfiguration.ClientAppType> clientApps,
+                                             Map<String, LogoutChannelPaths> appLogout) throws Exception {
+
+            for (ClientRepresentation client : realm.getClients()) {
+                KeycloakConfiguration.ClientAppType value = clientApps.get(client.getClientId());
+                if (value == KeycloakConfiguration.ClientAppType.OIDC_CLIENT) {
+                    List<String> redirectUris = new ArrayList<>(client.getRedirectUris());
+                    String redirectUri = redirectUris.get(0);
+                    redirectUris.add("*");
+                    client.setRedirectUris(redirectUris);
+
+                    int indx = redirectUri.lastIndexOf("/*");
+                    String tmpRedirectUri = redirectUri.substring(0, indx);
+
+                    LogoutChannelPaths logoutChannelUrls = appLogout.get(client.getClientId());
+                    if (logoutChannelUrls != null) {
+                        if (logoutChannelUrls.backChannelPath != null) {
+                            KeycloakConfiguration.setBackchannelLogoutSessionRequired(
+                                    client, true);
+                            KeycloakConfiguration.setBackchannelLogoutUrl(client,
+                                    tmpRedirectUri + logoutChannelUrls.backChannelPath);
+                        }
+                        if (logoutChannelUrls.frontChannelPath != null) {
+                            KeycloakConfiguration.setBackchannelLogoutSessionRequired(
+                                    client, false);
+                            KeycloakConfiguration.setFrontChannelLogoutSessionRequired(
+                                    client, true);
+                            KeycloakConfiguration.setFrontChannelLogoutUrl(client,
+                                    tmpRedirectUri + logoutChannelUrls.frontChannelPath);
+                        }
+                        if (logoutChannelUrls.postLogoutRedirectPaths != null) {
+                            List<String> tmpList = new ArrayList<>();
+                            for (String redirectPath : logoutChannelUrls.postLogoutRedirectPaths) {
+                                if (redirectPath.startsWith("http")) {
+                                    tmpList.add(redirectPath);
+                                } else {
+                                    tmpList.add("http://" + CLIENT_HOST_NAME + ":" + CLIENT_PORT
+                                            + "/" + client.getClientId() + redirectPath);
+                                }
+                            }
+
+                            KeycloakConfiguration.setPostLogoutRedirectUris(client, tmpList);
+                        }
+                    }
+                }
+            }
+        }
+
+        public static void sendRealmCreationRequest(RealmRepresentation realm) {
+            try {
+                String adminAccessToken = KeycloakConfiguration.getAdminAccessToken(KEYCLOAK_CONTAINER.getAuthServerUrl());
+                assertNotNull(adminAccessToken);
+                RestAssured
+                        .given()
+                        .auth().oauth2(adminAccessToken)
+                        .contentType("application/json")
+                        .body(JsonSerialization.writeValueAsBytes(realm))
+                        .when()
+                        .post(KEYCLOAK_CONTAINER.getAuthServerUrl() + "/admin/realms").then()
+                        .statusCode(201);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     public static class KeycloakSetup implements ServerSetupTask {
@@ -127,77 +199,15 @@ public class OidcLogoutEnvSetup {
         }
     }
 
-   /* register rpInitiated, backchannel, frontchannel, postLogoutRedirectUris with Keycloak
-    */
-   public static void setOidcLogoutUrls(RealmRepresentation realm,
-                                        Map<String, KeycloakConfiguration.ClientAppType> clientApps,
-                                        Map<String, LogoutChannelPaths> appLogout) throws Exception {
-
-       for (ClientRepresentation client : realm.getClients()) {
-           KeycloakConfiguration.ClientAppType value = clientApps.get(client.getClientId());
-           if (value == KeycloakConfiguration.ClientAppType.OIDC_CLIENT) {
-               List<String> redirectUris = new ArrayList<>(client.getRedirectUris());
-               String redirectUri = redirectUris.get(0);
-               redirectUris.add("*");
-               client.setRedirectUris(redirectUris);
-
-               int indx = redirectUri.lastIndexOf("/*");
-               String tmpRedirectUri = redirectUri.substring(0,indx);
-
-               LogoutChannelPaths logoutChannelUrls = appLogout.get(client.getClientId());
-               if (logoutChannelUrls != null) {
-                   if (logoutChannelUrls.backChannelPath != null) {
-                       KeycloakConfiguration.setBackchannelLogoutSessionRequired(
-                               client,true);
-                       KeycloakConfiguration.setBackchannelLogoutUrl(client,
-                               tmpRedirectUri + logoutChannelUrls.backChannelPath);
-                   }
-                   if (logoutChannelUrls.frontChannelPath != null) {
-                       KeycloakConfiguration.setBackchannelLogoutSessionRequired(
-                               client,false);
-                       KeycloakConfiguration.setFrontChannelLogoutSessionRequired(
-                               client,true);
-                       KeycloakConfiguration.setFrontChannelLogoutUrl(client,
-                               tmpRedirectUri + logoutChannelUrls.frontChannelPath);
-                   }
-                   if (logoutChannelUrls.postLogoutRedirectPaths != null) {
-                       List<String> tmpList = new ArrayList<>();
-                       for (String s : logoutChannelUrls.postLogoutRedirectPaths) {
-                           tmpList.add("http://" + CLIENT_HOST_NAME + ":" + CLIENT_PORT
-                                   + "/" + client.getClientId() + s);
-                       }
-
-                       KeycloakConfiguration.setPostLogoutRedirectUris(client, tmpList);
-                   }
-               }
-           }
-       }
-   }
-
-    public static void sendRealmCreationRequest(RealmRepresentation realm) {
-        try {
-            String adminAccessToken = KeycloakConfiguration.getAdminAccessToken(KEYCLOAK_CONTAINER.getAuthServerUrl());
-            assertNotNull(adminAccessToken);
-            RestAssured
-                    .given()
-                    .auth().oauth2(adminAccessToken)
-                    .contentType("application/json")
-                    .body(JsonSerialization.writeValueAsBytes(realm))
-                    .when()
-                    .post(KEYCLOAK_CONTAINER.getAuthServerUrl() + "/admin/realms").then()
-                    .statusCode(201);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     // This class generates all CLI cmds that set the system properties.
     static class WildFlySystemPropertiesSetupTask extends AbstractSystemPropertiesServerSetupTask {
         private static SystemProperty[] sysProps;
 
-        public static void setLogoutSysProps(Map<String,String> map) {
-            sysProps =  mapToSystemProperties(map);
+        public static void setLogoutSysProps(Map<String, String> map) {
+            sysProps = mapToSystemProperties(map);
         }
+
         protected SystemProperty[] getSystemProperties() {
             return sysProps;
         }

@@ -81,11 +81,6 @@ public class FrontChannelSysPropTest extends LoginLogoutBasics {
     //-------------- test configuration data ---------------
     private static final String LOGOUT_PATH_SYS_PROP = "/mylogout";
     private static final String LOGOUT_CALLBACK_PATH_SYS_PROP = "/more/myCallback";
-    /* rls
-    private static final String POST_LOGOUT_PATH_SYS_PROP = "http://" + EnvSetupUtils.CLIENT_HOST_NAME + ":"
-            + EnvSetupUtils.CLIENT_PORT + "/" + FRONT_CHANNEL_LOGOUT_APP
-            + SimplePostLogoutServlet.POST_LOGOUT_PATH;
-    -- rls */
 
     // These are the oidc logout attribute names and corresponding values that
     // are created as system properties.

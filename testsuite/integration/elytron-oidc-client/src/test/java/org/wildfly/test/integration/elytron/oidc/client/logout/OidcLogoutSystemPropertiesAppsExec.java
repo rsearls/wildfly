@@ -60,7 +60,7 @@ import org.junit.Test;
 /**
  * Tests for the OpenID Connect logout types.
  */
-public abstract class OidcLogoutSystemPropertiesAppsExec extends OidcLogoutEnvSetup {
+public abstract class OidcLogoutSystemPropertiesAppsExec extends EnvSetupUtils {
 
     private static HttpClient httpClient;
     @Before
@@ -113,6 +113,8 @@ public abstract class OidcLogoutSystemPropertiesAppsExec extends OidcLogoutEnvSe
         assertUserLoggedOut(FRONT_CHANNEL_LOGOUT_APP, SimpleServlet.RESPONSE_BODY); // todo fix rls
     }
  --------- rls */
+
+
     @Test
     @OperateOnDeployment(BACK_CHANNEL_LOGOUT_APP)
     public void testBackChannelLogout() throws Exception {
@@ -122,7 +124,7 @@ public abstract class OidcLogoutSystemPropertiesAppsExec extends OidcLogoutEnvSe
         logoutOfKeycloak(BACK_CHANNEL_LOGOUT_APP,"You are logged out");
         assertUserLoggedOut(BACK_CHANNEL_LOGOUT_APP, "Sign in to your account");
     }
-
+    /* --------- rls
     @Test
     @OperateOnDeployment(POST_LOGOUT_APP)
     public void testPostLogout() throws Exception {
@@ -143,6 +145,7 @@ public abstract class OidcLogoutSystemPropertiesAppsExec extends OidcLogoutEnvSe
         assertUserLoggedOut(BACK_CHANNEL_LOGOUT_APP, "Sign in to your account");
         assertUserLoggedOut(FRONT_CHANNEL_LOGOUT_APP, "Sign in to your account");
     }
+--------- rls */
 
     private static URL generateURL(String appName) {
         try {

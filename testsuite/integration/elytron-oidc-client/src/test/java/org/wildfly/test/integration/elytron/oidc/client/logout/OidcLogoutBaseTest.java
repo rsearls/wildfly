@@ -104,6 +104,8 @@ public abstract class OidcLogoutBaseTest {
     public static final String FRONT_CHANNEL_LOGOUT_APP = "FrontChannelLogoutApp";
     public static final String BACK_CHANNEL_LOGOUT_APP = "BackChannelLogoutApp";
     public static final String POST_LOGOUT_APP = "PostLogoutApp";
+    private final String SIGN_IN_TO_YOUR_ACCOUNT = "Sign in to your account";
+    private final String YOU_ARE_LOGGED_OUT = "You are logged out";
 
     private final Stability desiredStability;
 
@@ -116,9 +118,9 @@ public abstract class OidcLogoutBaseTest {
     public void testRpInitiatedLogout() throws Exception {
 
         loginToApp(RP_INITIATED_LOGOUT_APP);
-        assertUserLoggedIn(RP_INITIATED_LOGOUT_APP, "GOOD");
-        logoutOfKeycloak(RP_INITIATED_LOGOUT_APP, "You are logged out");
-        assertUserLoggedOut(RP_INITIATED_LOGOUT_APP, "GOOD");
+        assertUserLoggedIn(RP_INITIATED_LOGOUT_APP, SimpleServlet.RESPONSE_BODY);
+        logoutOfKeycloak(RP_INITIATED_LOGOUT_APP, YOU_ARE_LOGGED_OUT);
+        assertUserLoggedOut(RP_INITIATED_LOGOUT_APP, SimpleServlet.RESPONSE_BODY);
     }
 
     @Test
@@ -126,9 +128,9 @@ public abstract class OidcLogoutBaseTest {
     public void testFrontChannelLogout() throws Exception {
 
         loginToApp(FRONT_CHANNEL_LOGOUT_APP);
-        assertUserLoggedIn(FRONT_CHANNEL_LOGOUT_APP, "GOOD");
+        assertUserLoggedIn(FRONT_CHANNEL_LOGOUT_APP, SimpleServlet.RESPONSE_BODY);
         logoutOfKeycloak(FRONT_CHANNEL_LOGOUT_APP, "You are logging out from following apps");
-        assertUserLoggedOut(FRONT_CHANNEL_LOGOUT_APP, "GOOD");
+        assertUserLoggedOut(FRONT_CHANNEL_LOGOUT_APP, SimpleServlet.RESPONSE_BODY);
     }
 
     @Test
@@ -136,9 +138,9 @@ public abstract class OidcLogoutBaseTest {
     public void testBackChannelLogout() throws Exception {
 
         loginToApp(BACK_CHANNEL_LOGOUT_APP);
-        assertUserLoggedIn(BACK_CHANNEL_LOGOUT_APP, "GOOD");
-        logoutOfKeycloak(BACK_CHANNEL_LOGOUT_APP,"You are logged out");
-        assertUserLoggedOut(BACK_CHANNEL_LOGOUT_APP, "Sign in to your account");
+        assertUserLoggedIn(BACK_CHANNEL_LOGOUT_APP, SimpleServlet.RESPONSE_BODY);
+        logoutOfKeycloak(BACK_CHANNEL_LOGOUT_APP,YOU_ARE_LOGGED_OUT);
+        assertUserLoggedOut(BACK_CHANNEL_LOGOUT_APP, SIGN_IN_TO_YOUR_ACCOUNT);
     }
 
     @Test
@@ -146,20 +148,20 @@ public abstract class OidcLogoutBaseTest {
     public void testPostLogout() throws Exception {
 
         loginToApp(POST_LOGOUT_APP);
-        assertUserLoggedIn(POST_LOGOUT_APP, "GOOD");
-        logoutOfKeycloak(POST_LOGOUT_APP, "You are logged out");
-        assertUserLoggedOut(POST_LOGOUT_APP, "GOOD");
+        assertUserLoggedIn(POST_LOGOUT_APP, SimpleServlet.RESPONSE_BODY);
+        logoutOfKeycloak(POST_LOGOUT_APP, YOU_ARE_LOGGED_OUT);
+        assertUserLoggedOut(POST_LOGOUT_APP, SimpleServlet.RESPONSE_BODY);
     }
 
     @Test
     public void testBackChannelLogoutTwo() throws Exception {
         loginToApp(BACK_CHANNEL_LOGOUT_APP);
         loginToApp(FRONT_CHANNEL_LOGOUT_APP);
-        assertUserLoggedIn(BACK_CHANNEL_LOGOUT_APP, "GOOD");
-        assertUserLoggedIn(FRONT_CHANNEL_LOGOUT_APP, "GOOD");
-        logoutOfKeycloak(BACK_CHANNEL_LOGOUT_APP,"You are logged out");
-        assertUserLoggedOut(BACK_CHANNEL_LOGOUT_APP, "Sign in to your account");
-        assertUserLoggedOut(FRONT_CHANNEL_LOGOUT_APP, "Sign in to your account");
+        assertUserLoggedIn(BACK_CHANNEL_LOGOUT_APP, SimpleServlet.RESPONSE_BODY);
+        assertUserLoggedIn(FRONT_CHANNEL_LOGOUT_APP, SimpleServlet.RESPONSE_BODY);
+        logoutOfKeycloak(BACK_CHANNEL_LOGOUT_APP,YOU_ARE_LOGGED_OUT);
+        assertUserLoggedOut(BACK_CHANNEL_LOGOUT_APP, SIGN_IN_TO_YOUR_ACCOUNT);
+        assertUserLoggedOut(FRONT_CHANNEL_LOGOUT_APP, SIGN_IN_TO_YOUR_ACCOUNT);
     }
 
     private static URL generateURL(String appName) {

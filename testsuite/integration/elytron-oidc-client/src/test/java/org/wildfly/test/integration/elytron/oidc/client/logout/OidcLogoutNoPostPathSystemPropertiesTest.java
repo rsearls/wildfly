@@ -35,9 +35,9 @@ import org.wildfly.test.stabilitylevel.StabilityServerSetupSnapshotRestoreTasks;
 @RunWith(Arquillian.class)
 @RunAsClient
 @ServerSetup({ OidcLogoutNoPostPathSystemPropertiesTest.PreviewStabilitySetupTask.class,
-        OidcLogoutEnvSetup.KeycloakAndSystemPropertySetup.class,
-        OidcLogoutEnvSetup.WildFlySystemPropertiesSetupTask.class,
-        OidcLogoutEnvSetup.WildFlyServerSetupTask.class})
+        EnvSetupUtils.KeycloakAndSystemPropertySetup.class,
+        EnvSetupUtils.WildFlySystemPropertiesSetupTask.class,
+        EnvSetupUtils.WildFlyServerSetupTask.class})
 public class OidcLogoutNoPostPathSystemPropertiesTest extends OidcLogoutSystemPropertiesAppsSetUp{
 
     private static final String LOGOUT_PATH_SYS_PROP = "/mylogout";
@@ -54,7 +54,7 @@ public class OidcLogoutNoPostPathSystemPropertiesTest extends OidcLogoutSystemPr
         LOGOUT_SYS_PROPS.put(Oidc.LOGOUT_PATH, LOGOUT_PATH_SYS_PROP);
         LOGOUT_SYS_PROPS.put(Oidc.LOGOUT_CALLBACK_PATH, LOGOUT_CALLBACK_PATH_SYS_PROP);
         //LOGOUT_SYS_PROPS.put(Oidc.POST_LOGOUT_PATH, POST_LOGOUT_PATH_SYS_PROP);
-        OidcLogoutEnvSetup.WildFlySystemPropertiesSetupTask.setLogoutSysProps(LOGOUT_SYS_PROPS);
+        EnvSetupUtils.WildFlySystemPropertiesSetupTask.setLogoutSysProps(LOGOUT_SYS_PROPS);
     }
 
     // These are the oidc logout URL paths that are registered with Keycloak.
@@ -75,7 +75,7 @@ public class OidcLogoutNoPostPathSystemPropertiesTest extends OidcLogoutSystemPr
         APP_LOGOUT.put(POST_LOGOUT_APP, new OidcLogoutBaseTest.LogoutChannelPaths(
                 null,null, List.of(POST_LOGOUT_PATH_SYS_PROP)) );
 
-        OidcLogoutEnvSetup.KeycloakAndSystemPropertySetup.setLogoutUrlPaths(APP_LOGOUT);
+        EnvSetupUtils.KeycloakAndSystemPropertySetup.setLogoutUrlPaths(APP_LOGOUT);
     }
 
     // These are the application names registered as Keycloak clients.
@@ -89,7 +89,7 @@ public class OidcLogoutNoPostPathSystemPropertiesTest extends OidcLogoutSystemPr
         APP_NAMES.put(BACK_CHANNEL_LOGOUT_APP, KeycloakConfiguration.ClientAppType.OIDC_CLIENT);
         APP_NAMES.put(POST_LOGOUT_APP, KeycloakConfiguration.ClientAppType.OIDC_CLIENT);
 
-        OidcLogoutEnvSetup.KeycloakAndSystemPropertySetup.setKeycloakClients(APP_NAMES);
+        EnvSetupUtils.KeycloakAndSystemPropertySetup.setKeycloakClients(APP_NAMES);
     }
 
     public OidcLogoutNoPostPathSystemPropertiesTest() {

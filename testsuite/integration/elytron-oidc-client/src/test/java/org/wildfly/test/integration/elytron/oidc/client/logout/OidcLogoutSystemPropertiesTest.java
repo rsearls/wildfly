@@ -35,15 +35,17 @@ import org.wildfly.test.stabilitylevel.StabilityServerSetupSnapshotRestoreTasks;
 @RunWith(Arquillian.class)
 @RunAsClient
 @ServerSetup({ OidcLogoutSystemPropertiesTest.PreviewStabilitySetupTask.class,
-        OidcLogoutEnvSetup.KeycloakAndSystemPropertySetup.class,
-        OidcLogoutEnvSetup.WildFlySystemPropertiesSetupTask.class,
-        OidcLogoutEnvSetup.WildFlyServerSetupTask.class})
+        EnvSetupUtils.KeycloakAndSystemPropertySetup.class,
+        EnvSetupUtils.WildFlyServerSetupTask.class})
+// rls      EnvSetupUtils.WildFlySystemPropertiesSetupTask.class,
 public class OidcLogoutSystemPropertiesTest extends OidcLogoutSystemPropertiesAppsSetUp{
 
     private static final String LOGOUT_PATH_SYS_PROP = "/mylogout";
     private static final String LOGOUT_CALLBACK_PATH_SYS_PROP = "/more/myCallback";
-    private static final String POST_LOGOUT_PATH_SYS_PROP = SimplePostLogoutServlet.SERVLET_PATH;
-
+    private static final String POST_LOGOUT_PATH_SYS_PROP = SimplePostLogoutServlet.POST_LOGOUT_PATH;
+    private static final String TEST_POST_LOGOUT_PATH_SYS_PROP = "http://" + EnvSetupUtils.CLIENT_HOST_NAME + ":"
+            + EnvSetupUtils.CLIENT_PORT + "/" + RP_INITIATED_LOGOUT_APP
+            + POST_LOGOUT_PATH_SYS_PROP;        // rls debug
     // These are the oidc logout attribute names and corresponding values that
     // are created as system properties.
     // The values MUST be the same that are register for Keycloak. (see
@@ -53,8 +55,8 @@ public class OidcLogoutSystemPropertiesTest extends OidcLogoutSystemPropertiesAp
         LOGOUT_SYS_PROPS = new HashMap<>();
         LOGOUT_SYS_PROPS.put(Oidc.LOGOUT_PATH, LOGOUT_PATH_SYS_PROP);
         LOGOUT_SYS_PROPS.put(Oidc.LOGOUT_CALLBACK_PATH, LOGOUT_CALLBACK_PATH_SYS_PROP);
-        LOGOUT_SYS_PROPS.put(Oidc.POST_LOGOUT_PATH, POST_LOGOUT_PATH_SYS_PROP);
-        OidcLogoutEnvSetup.WildFlySystemPropertiesSetupTask.setLogoutSysProps(LOGOUT_SYS_PROPS);
+        LOGOUT_SYS_PROPS.put(Oidc.POST_LOGOUT_PATH, TEST_POST_LOGOUT_PATH_SYS_PROP);
+        // rls EnvSetupUtils.WildFlySystemPropertiesSetupTask.setLogoutSysProps(LOGOUT_SYS_PROPS);
     }
 
     // These are the oidc logout URL paths that are registered with Keycloak.
@@ -63,19 +65,17 @@ public class OidcLogoutSystemPropertiesTest extends OidcLogoutSystemPropertiesAp
     static {
         APP_LOGOUT= new HashMap<>();
         APP_LOGOUT.put(RP_INITIATED_LOGOUT_APP, new OidcLogoutBaseTest.LogoutChannelPaths(
-                null,null, List.of(POST_LOGOUT_PATH_SYS_PROP)) );
+                null,null, List.of(TEST_POST_LOGOUT_PATH_SYS_PROP)) );
         APP_LOGOUT.put(FRONT_CHANNEL_LOGOUT_APP, new OidcLogoutBaseTest.LogoutChannelPaths(null,
-                SimpleSecuredServlet.SERVLET_PATH +
-                        LOGOUT_CALLBACK_PATH_SYS_PROP,
+                SimpleSecuredServlet.SERVLET_PATH + LOGOUT_CALLBACK_PATH_SYS_PROP,
                 List.of(POST_LOGOUT_PATH_SYS_PROP)) );
         APP_LOGOUT.put(BACK_CHANNEL_LOGOUT_APP, new OidcLogoutBaseTest.LogoutChannelPaths(
-                SimpleSecuredServlet.SERVLET_PATH
-                        + LOGOUT_CALLBACK_PATH_SYS_PROP,
+                SimpleSecuredServlet.SERVLET_PATH + LOGOUT_CALLBACK_PATH_SYS_PROP,
                 null, List.of(POST_LOGOUT_PATH_SYS_PROP)) );
         APP_LOGOUT.put(POST_LOGOUT_APP, new OidcLogoutBaseTest.LogoutChannelPaths(
                 null,null, List.of(POST_LOGOUT_PATH_SYS_PROP)) );
 
-        OidcLogoutEnvSetup.KeycloakAndSystemPropertySetup.setLogoutUrlPaths(APP_LOGOUT);
+        EnvSetupUtils.KeycloakAndSystemPropertySetup.setLogoutUrlPaths(APP_LOGOUT);
     }
 
     // These are the application names registered as Keycloak clients.
@@ -89,7 +89,7 @@ public class OidcLogoutSystemPropertiesTest extends OidcLogoutSystemPropertiesAp
         APP_NAMES.put(BACK_CHANNEL_LOGOUT_APP, KeycloakConfiguration.ClientAppType.OIDC_CLIENT);
         APP_NAMES.put(POST_LOGOUT_APP, KeycloakConfiguration.ClientAppType.OIDC_CLIENT);
 
-        OidcLogoutEnvSetup.KeycloakAndSystemPropertySetup.setKeycloakClients(APP_NAMES);
+        EnvSetupUtils.KeycloakAndSystemPropertySetup.setKeycloakClients(APP_NAMES);
     }
 
     public OidcLogoutSystemPropertiesTest() {

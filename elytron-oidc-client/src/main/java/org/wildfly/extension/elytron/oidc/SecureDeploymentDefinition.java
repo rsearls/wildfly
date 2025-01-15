@@ -176,9 +176,10 @@ class SecureDeploymentDefinition extends SimpleResourceDefinition {
                     .setAllowExpression(true)
                     .build();
     protected static final SimpleAttributeDefinition LOGOUT_SESSION_REQUIRED =
-            new SimpleAttributeDefinitionBuilder(ElytronOidcDescriptionConstants.LOGOUT_SESSION_REQUIRED, ModelType.BOOLEAN, true)
+            new SimpleAttributeDefinitionBuilder(ElytronOidcDescriptionConstants.LOGOUT_SESSION_REQUIRED, ModelType.STRING, true)
+                    .setValidator(new StringLengthValidator(0, 5, true, false))
+                    .setStability(Stability.PREVIEW)
                     .setAllowExpression(true)
-                    .setDefaultValue(ModelNode.TRUE)
                     .build();
 
     static final List<SimpleAttributeDefinition> ALL_ATTRIBUTES = new ArrayList();

@@ -6,7 +6,7 @@
     "ssl-required" : "EXTERNAL",
     "logout-path" : "/mylogout",
     "logout-callback-path" : "/more/myCallback",
-    "post-logout-path" : "http://localhost:8080/RpInitiatedLogoutApp//SimplePostLogoutServlet",
+    "post-logout-uri" : "http://127.0.0.1:8080/RpInitiatedLogoutApp/SimplePostLogoutServlet",
     "credentials" : {
         "secret" : "longerclientsecretthatisstleast256bitslong"
     }

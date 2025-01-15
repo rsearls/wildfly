@@ -55,7 +55,7 @@ public class OidcLogoutSystemPropertiesTest extends OidcLogoutSystemPropertiesAp
         LOGOUT_SYS_PROPS = new HashMap<>();
         LOGOUT_SYS_PROPS.put(Oidc.LOGOUT_PATH, LOGOUT_PATH_SYS_PROP);
         LOGOUT_SYS_PROPS.put(Oidc.LOGOUT_CALLBACK_PATH, LOGOUT_CALLBACK_PATH_SYS_PROP);
-        LOGOUT_SYS_PROPS.put(Oidc.POST_LOGOUT_PATH, TEST_POST_LOGOUT_PATH_SYS_PROP);
+        LOGOUT_SYS_PROPS.put(Oidc.POST_LOGOUT_URI, TEST_POST_LOGOUT_PATH_SYS_PROP);
         // rls EnvSetupUtils.WildFlySystemPropertiesSetupTask.setLogoutSysProps(LOGOUT_SYS_PROPS);
     }
 

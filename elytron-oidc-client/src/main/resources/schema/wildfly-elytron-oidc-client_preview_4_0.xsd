@@ -323,11 +323,11 @@
             </xs:element>
 
             <xs:element name="logout-session-required"
-                        type="xs:boolean" minOccurs="0" default="true">
+                        type="xs:string" minOccurs="0">
                 <xs:annotation>
                     <xs:documentation>
                         <![CDATA[
-                    A boolean value that indicates whether `elytron-oidc-client` should enforce
+                    A boolean string (e.g. true or false) that indicates whether `elytron-oidc-client` should enforce
                     both `sid` and `iss` parameters when processing front-channel logout requests and should enforce the `sid`
                     parameter when processing back-channel requests. If set to false, for front-channel logout, there will
                     be no check and any authenticated request is going to invalidate the local user session. To make use of back-channel

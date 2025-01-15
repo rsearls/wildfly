@@ -95,14 +95,14 @@ public class OidcLogoutSystemPropertiesAppsSetUp extends OidcLogoutSystemPropert
         Map<String,String> LOGOUT_SYS_PROPS = new HashMap<>();
         LOGOUT_SYS_PROPS.put(Oidc.LOGOUT_PATH, "/mylogout");
         LOGOUT_SYS_PROPS.put(Oidc.LOGOUT_CALLBACK_PATH, "/more/myCallback");
-        LOGOUT_SYS_PROPS.put(Oidc.POST_LOGOUT_PATH, "http://" + EnvSetupUtils.CLIENT_HOST_NAME + ":"
+        LOGOUT_SYS_PROPS.put(Oidc.POST_LOGOUT_URI, "http://" + EnvSetupUtils.CLIENT_HOST_NAME + ":"
                 + EnvSetupUtils.CLIENT_PORT + "/" + RP_INITIATED_LOGOUT_APP
                 + SimplePostLogoutServlet.POST_LOGOUT_PATH);
         -- rls */
         /* -- rls
         System.setProperty(Oidc.LOGOUT_PATH, "/mylogout");
         System.setProperty(Oidc.LOGOUT_CALLBACK_PATH, "/more/myCallback");
-        System.setProperty(Oidc.POST_LOGOUT_PATH, "http://" + EnvSetupUtils.CLIENT_HOST_NAME + ":"
+        System.setProperty(Oidc.POST_LOGOUT_URI, "http://" + EnvSetupUtils.CLIENT_HOST_NAME + ":"
                 + EnvSetupUtils.CLIENT_PORT + "/" + RP_INITIATED_LOGOUT_APP
                 + SimplePostLogoutServlet.POST_LOGOUT_PATH);
         -- rls */
@@ -113,7 +113,7 @@ public class OidcLogoutSystemPropertiesAppsSetUp extends OidcLogoutSystemPropert
             /* -- rls
             System.clearProperty(Oidc.LOGOUT_PATH);
             System.clearProperty(Oidc.LOGOUT_CALLBACK_PATH);
-            System.clearProperty(Oidc.POST_LOGOUT_PATH);
+            System.clearProperty(Oidc.POST_LOGOUT_URI);
             -- rls */
             //clearSystemProperties(EnvSetupUtils.KeycloakAndSystemPropertySetup.mgtClient);
             deployer.undeploy(RP_INITIATED_LOGOUT_APP);
@@ -142,12 +142,12 @@ public class OidcLogoutSystemPropertiesAppsSetUp extends OidcLogoutSystemPropert
         Map<String,String> LOGOUT_SYS_PROPS = new HashMap<>();
         LOGOUT_SYS_PROPS.put(Oidc.LOGOUT_PATH, "/XXmylogout");
         LOGOUT_SYS_PROPS.put(Oidc.LOGOUT_CALLBACK_PATH, "/more/XXmyCallback");
-        LOGOUT_SYS_PROPS.put(Oidc.POST_LOGOUT_PATH, "/XXpostRedirect");
+        LOGOUT_SYS_PROPS.put(Oidc.POST_LOGOUT_URI, "/XXpostRedirect");
         --- rls */
         /* -- rls
         System.setProperty(Oidc.LOGOUT_PATH, "/XXmylogout");
         System.setProperty(Oidc.LOGOUT_CALLBACK_PATH, "/more/XXmyCallback");
-        System.setProperty(Oidc.POST_LOGOUT_PATH, "/XXpostRedirect");
+        System.setProperty(Oidc.POST_LOGOUT_URI, "/XXpostRedirect");
         -- rls */
         try {
             deployer.deploy(BACK_CHANNEL_LOGOUT_APP);
@@ -156,7 +156,7 @@ public class OidcLogoutSystemPropertiesAppsSetUp extends OidcLogoutSystemPropert
             /* -- rls
             System.clearProperty(Oidc.LOGOUT_PATH);
             System.clearProperty(Oidc.LOGOUT_CALLBACK_PATH);
-            System.clearProperty(Oidc.POST_LOGOUT_PATH);
+            System.clearProperty(Oidc.POST_LOGOUT_URI);
             -- rls */
             //clearSystemProperties(EnvSetupUtils.KeycloakAndSystemPropertySetup.mgtClient);
             deployer.undeploy(BACK_CHANNEL_LOGOUT_APP);

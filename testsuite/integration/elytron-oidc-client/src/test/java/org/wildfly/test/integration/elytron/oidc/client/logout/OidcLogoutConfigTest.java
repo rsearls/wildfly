@@ -70,7 +70,7 @@ public class OidcLogoutConfigTest extends OidcLogoutBaseTest {
         LOGOUT_SYS_PROPS = new HashMap<>();
         LOGOUT_SYS_PROPS.put(Oidc.LOGOUT_PATH, OidcLogoutConfigTest.LOGOUT_PATH_SYS_PROP);
         LOGOUT_SYS_PROPS.put(Oidc.LOGOUT_CALLBACK_PATH, OidcLogoutConfigTest.LOGOUT_CALLBACK_PATH_SYS_PROP);
-      //rls  LOGOUT_SYS_PROPS.put(Oidc.POST_LOGOUT_PATH, OidcLogoutConfigTest.POST_LOGOUT_PATH_SYS_PROP);
+      //rls  LOGOUT_SYS_PROPS.put(Oidc.POST_LOGOUT_URI, OidcLogoutConfigTest.POST_LOGOUT_PATH_SYS_PROP);
 
         WildFlySystemPropertiesSetupTask.setLogoutSysProps(LOGOUT_SYS_PROPS);
     }

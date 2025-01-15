@@ -425,7 +425,7 @@ public abstract class OidcLogoutBaseTest {
                             -- rls */
                             /* -- rls
                             .add(String.format("/system-property=%s:add(value=%s)",
-                                            Oidc.POST_LOGOUT_PATH, OidcLogoutConfigTest.POST_LOGOUT_PATH_SYS_PROP))
+                                            Oidc.POST_LOGOUT_URI, OidcLogoutConfigTest.POST_LOGOUT_PATH_SYS_PROP))
                             -- rls */
                             .endBatch()
                             .build())
@@ -437,7 +437,7 @@ public abstract class OidcLogoutBaseTest {
                             .add(String.format("/system-property=%s:remove()", Oidc.LOGOUT_CALLBACK_PATH))
                              -- rls */
                             /* -- rls
-                            .add(String.format("/system-property=%s:remove()", Oidc.POST_LOGOUT_PATH))
+                            .add(String.format("/system-property=%s:remove()", Oidc.POST_LOGOUT_URI))
                             -- rls */
                             .endBatch()
                             .build())

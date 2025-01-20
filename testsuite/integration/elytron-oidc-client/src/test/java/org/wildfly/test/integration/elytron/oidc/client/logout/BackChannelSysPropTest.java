@@ -36,6 +36,7 @@ import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 
 import org.wildfly.security.http.oidc.Oidc;
+import org.wildfly.test.integration.elytron.oidc.client.logout.LoginLogoutBasics.LogoutChannelPaths;
 import org.wildfly.test.integration.elytron.oidc.client.KeycloakConfiguration;
 import org.wildfly.test.stabilitylevel.StabilityServerSetupSnapshotRestoreTasks;
 
@@ -78,13 +79,10 @@ public class BackChannelSysPropTest extends LoginLogoutBasics {
     }
 
     //-------------- test configuration data ---------------
-    private static final String LOGOUT_PATH_SYS_PROP = "/mylogout";
-    private static final String LOGOUT_CALLBACK_PATH_SYS_PROP = "/more/myCallback";
-
     private static final String BACK_CHANNEL_LOGOUT_URL = "http://"
             + EnvSetupUtils.CLIENT_HOST_NAME + ":"
             + EnvSetupUtils.CLIENT_PORT + "/" + BACK_CHANNEL_LOGOUT_APP
-            + SimpleSecuredServlet.SERVLET_PATH + LOGOUT_CALLBACK_PATH_SYS_PROP;
+            + SimpleSecuredServlet.SERVLET_PATH + Constants.LOGOUT_CALLBACK_PATH_SYS_PROP;
 
     // These are the oidc logout attribute names and corresponding values that
     // are created as system properties.
@@ -93,18 +91,18 @@ public class BackChannelSysPropTest extends LoginLogoutBasics {
     private static Map<String,String> LOGOUT_SYS_PROPS;
     static {
         LOGOUT_SYS_PROPS = new HashMap<>();
-        LOGOUT_SYS_PROPS.put(Oidc.LOGOUT_PATH, LOGOUT_PATH_SYS_PROP);
-        LOGOUT_SYS_PROPS.put(Oidc.LOGOUT_CALLBACK_PATH, LOGOUT_CALLBACK_PATH_SYS_PROP);
+        LOGOUT_SYS_PROPS.put(Oidc.LOGOUT_PATH, Constants.LOGOUT_PATH_SYS_PROP);
+        LOGOUT_SYS_PROPS.put(Oidc.LOGOUT_CALLBACK_PATH, Constants.LOGOUT_CALLBACK_PATH_SYS_PROP);
      //rls   LOGOUT_SYS_PROPS.put(Oidc.POST_LOGOUT_URI, BACK_CHANNEL_LOGOUT_URL);
         EnvSetupUtils.WildFlySystemPropertiesSetupTask.setLogoutSysProps(LOGOUT_SYS_PROPS);
     }
 
     // These are the oidc logout URL paths that are registered with Keycloak.
     // The path of the URL must be the same as the system properties registered above.
-    private static Map<String, OidcLogoutBaseTest.LogoutChannelPaths> APP_LOGOUT;
+    private static Map<String, LogoutChannelPaths> APP_LOGOUT;
     static {
-        APP_LOGOUT= new HashMap<String, OidcLogoutBaseTest.LogoutChannelPaths>();
-        APP_LOGOUT.put(BACK_CHANNEL_LOGOUT_APP, new OidcLogoutBaseTest.LogoutChannelPaths(
+        APP_LOGOUT= new HashMap<String, LogoutChannelPaths>();
+        APP_LOGOUT.put(BACK_CHANNEL_LOGOUT_APP, new LogoutChannelPaths(
                 BACK_CHANNEL_LOGOUT_URL,null,  null /* rls List.of(BACK_CHANNEL_LOGOUT_URL) */ ) );
         EnvSetupUtils.KeycloakAndSystemPropertySetup.setLogoutUrlPaths(APP_LOGOUT);
     }

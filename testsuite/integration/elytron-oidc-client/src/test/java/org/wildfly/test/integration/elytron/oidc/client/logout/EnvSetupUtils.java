@@ -30,7 +30,7 @@ import org.jboss.as.test.shared.util.AssumeTestGroupUtil;
 import org.keycloak.representations.idm.ClientRepresentation;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.wildfly.security.jose.util.JsonSerialization;
-import org.wildfly.test.integration.elytron.oidc.client.logout.OidcLogoutBaseTest.LogoutChannelPaths;
+import org.wildfly.test.integration.elytron.oidc.client.logout.LoginLogoutBasics.LogoutChannelPaths;
 import org.wildfly.test.integration.elytron.oidc.client.KeycloakConfiguration;
 import org.wildfly.test.integration.elytron.oidc.client.KeycloakContainer;
 import org.jboss.as.test.integration.security.common.Utils;
@@ -130,16 +130,18 @@ public class EnvSetupUtils extends AbstractSystemPropertiesUtil {
                     LogoutChannelPaths logoutChannelUrls = appLogout.get(client.getClientId());
                     if (logoutChannelUrls != null) {
                         if (logoutChannelUrls.backChannelPath != null) {
+                            KeycloakConfiguration.setFrontChannelLogoutSessionRequired(
+                                    client, false);
                             KeycloakConfiguration.setBackchannelLogoutSessionRequired(
                                     client, true);
                             KeycloakConfiguration.setBackchannelLogoutUrl(client,
                                     /*tmpRedirectUri +*/ logoutChannelUrls.backChannelPath);
-                            // rls test start
+                            /* // rls test start
                             if (logoutChannelUrls.backChannelPath.startsWith("http:")) {
                                 // flag client to be defined as confidential
                                 client.setPublicClient(false);
                             }
-                            // rls test end
+                            // rls test end */
                         }
                         if (logoutChannelUrls.frontChannelPath != null) {
                             KeycloakConfiguration.setBackchannelLogoutSessionRequired(

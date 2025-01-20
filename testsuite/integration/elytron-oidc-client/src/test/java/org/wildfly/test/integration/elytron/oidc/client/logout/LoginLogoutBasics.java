@@ -76,10 +76,10 @@ public class LoginLogoutBasics extends EnvSetupUtils {
         return null;
     }
 
-	public void setHttpClient(HttpClient httpClient) {
-		this.httpClient = httpClient;
-	}
-	
+    public void setHttpClient(HttpClient httpClient) {
+        this.httpClient = httpClient;
+    }
+
     public void loginToApp(String appName) throws Exception {
         loginToApp(appName, ALICE, ALICE_PASSWORD, HttpURLConnection.HTTP_OK,
                 SimpleServlet.RESPONSE_BODY);
@@ -127,7 +127,7 @@ public class LoginLogoutBasics extends EnvSetupUtils {
         URI requestUri = new URL("http", TestSuiteEnvironment.getHttpAddress(),
                 TestSuiteEnvironment.getHttpPort(),
                 "/" + appName + SimpleSecuredServlet.SERVLET_PATH
-                        + OidcLogoutConfigTest.LOGOUT_PATH_SYS_PROP).toURI();
+                        + Constants.LOGOUT_PATH_SYS_PROP).toURI();
         logoutOfKeycloak(requestUri, HttpURLConnection.HTTP_OK, expectedText, true);
     }
 
@@ -273,7 +273,7 @@ public class LoginLogoutBasics extends EnvSetupUtils {
     /* Data structure containing the URL path text to be registered with keycloak
        for logout support.
     */
-    public class LogoutChannelPaths {
+    public static class LogoutChannelPaths {
         public String backChannelPath = null;
         public String frontChannelPath = null;
         public List<String> postLogoutRedirectPaths = null;
@@ -304,9 +304,12 @@ public class LoginLogoutBasics extends EnvSetupUtils {
         Add a call to this method after the login, logout action of interest.
      */
     public void dumpKeycloakLog() {
+        dumpKeycloakLog("x-keycloak-logout.log");
+    }
+    public void dumpKeycloakLog(String filename) {
 
         String console = KEYCLOAK_CONTAINER.getLogs();
-        String fileName = "/tmp/x-keycloak-logout.log";
+        String fileName = "/tmp/"+filename;
         java.io.PrintWriter outLog = null;
         try {
             java.io.File file = new java.io.File(fileName);

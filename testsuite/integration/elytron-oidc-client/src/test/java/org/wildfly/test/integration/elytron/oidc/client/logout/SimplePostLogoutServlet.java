@@ -14,15 +14,12 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.jboss.as.test.integration.security.common.servlets.SimpleSecuredServlet;
 
 @WebServlet(urlPatterns = { SimplePostLogoutServlet.POST_LOGOUT_PATH })
 public class SimplePostLogoutServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
     public static final String POST_LOGOUT_PATH = "/SimplePostLogoutServlet";
-    // rls public static final String SERVLET_PATH = SimpleSecuredServlet.SERVLET_PATH+POST_LOGOUT_PATH;
-    /** The String returned in the HTTP response body. */
     public static final String RESPONSE_BODY = "Post logout success.";
 
     /**

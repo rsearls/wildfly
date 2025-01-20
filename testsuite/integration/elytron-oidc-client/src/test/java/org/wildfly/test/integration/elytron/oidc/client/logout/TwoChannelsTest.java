@@ -96,12 +96,12 @@ public class TwoChannelsTest extends LoginLogoutBasics {
 
     // These are the oidc logout URL paths that are registered with Keycloak.
     // The path of the URL must be the same as the system properties registered above.
-    private static Map<String, OidcLogoutBaseTest.LogoutChannelPaths> APP_LOGOUT;
+    private static Map<String, LoginLogoutBasics.LogoutChannelPaths> APP_LOGOUT;
     static {
-        APP_LOGOUT= new HashMap<String, OidcLogoutBaseTest.LogoutChannelPaths>();
-        APP_LOGOUT.put(BACK_CHANNEL_LOGOUT_APP, new OidcLogoutBaseTest.LogoutChannelPaths(
+        APP_LOGOUT= new HashMap<String, LoginLogoutBasics.LogoutChannelPaths>();
+        APP_LOGOUT.put(BACK_CHANNEL_LOGOUT_APP, new LoginLogoutBasics.LogoutChannelPaths(
                 null,null, /* rls List.of(POST_LOGOUT_PATH_SYS_PROP) */ null) );
-        APP_LOGOUT.put(FRONT_CHANNEL_LOGOUT_APP, new OidcLogoutBaseTest.LogoutChannelPaths(
+        APP_LOGOUT.put(FRONT_CHANNEL_LOGOUT_APP, new LoginLogoutBasics.LogoutChannelPaths(
                 null,null, /* rls List.of(POST_LOGOUT_PATH_SYS_PROP) */ null) );
         EnvSetupUtils.KeycloakAndSystemPropertySetup.setLogoutUrlPaths(APP_LOGOUT);
     }

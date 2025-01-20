@@ -31,7 +31,7 @@ import org.jboss.as.test.shared.util.AssumeTestGroupUtil;
 import org.keycloak.representations.idm.ClientRepresentation;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.wildfly.security.jose.util.JsonSerialization;
-import org.wildfly.test.integration.elytron.oidc.client.logout.OidcLogoutBaseTest.LogoutChannelPaths;
+import org.wildfly.test.integration.elytron.oidc.client.logout.LoginLogoutBasics.LogoutChannelPaths;
 import org.wildfly.test.integration.elytron.oidc.client.KeycloakConfiguration;
 import org.wildfly.test.integration.elytron.oidc.client.KeycloakContainer;
 import org.jboss.as.test.integration.security.common.Utils;
@@ -42,7 +42,7 @@ import static org.junit.Assume.assumeTrue;
 /*  Implementation of classes declared in the @ServerSetup stmt of the root
     test class.
  */
-public class EnvSetupUtils extends AbstractSystemPropertiesUtil {
+public class EnvSetupUtils {
 
     public static KeycloakContainer KEYCLOAK_CONTAINER;
 
@@ -131,10 +131,18 @@ public class EnvSetupUtils extends AbstractSystemPropertiesUtil {
                     LogoutChannelPaths logoutChannelUrls = appLogout.get(client.getClientId());
                     if (logoutChannelUrls != null) {
                         if (logoutChannelUrls.backChannelPath != null) {
+                            KeycloakConfiguration.setFrontChannelLogoutSessionRequired(
+                                    client, false); //rls test
                             KeycloakConfiguration.setBackchannelLogoutSessionRequired(
                                     client, true);
                             KeycloakConfiguration.setBackchannelLogoutUrl(client,
-                                    tmpRedirectUri + logoutChannelUrls.backChannelPath);
+                                    /*tmpRedirectUri +*/ logoutChannelUrls.backChannelPath);
+                            /*// rls test start
+                            if (logoutChannelUrls.backChannelPath.startsWith("http:")) {
+                                // flag client to be defined as confidential
+                                client.setPublicClient(false);
+                            }
+                            // rls test end */
                         }
                         if (logoutChannelUrls.frontChannelPath != null) {
                             KeycloakConfiguration.setBackchannelLogoutSessionRequired(

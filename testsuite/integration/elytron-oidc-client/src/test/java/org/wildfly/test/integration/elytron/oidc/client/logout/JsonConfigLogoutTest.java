@@ -37,7 +37,6 @@ import org.jboss.as.version.Stability;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 
-import org.wildfly.security.http.oidc.Oidc;
 import org.wildfly.test.integration.elytron.oidc.client.KeycloakConfiguration;
 import org.wildfly.test.stabilitylevel.StabilityServerSetupSnapshotRestoreTasks;
 
@@ -46,8 +45,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-/*  Test OIDC Rp-Initiated logout.  Logout configuration attributes
-    are passed to Elytron via system properties.
+/*  Test OIDC logout.  Logout configuration attributes
+    are passed to Elytron via oidc.json file attributes.
  */
 @RunWith(Arquillian.class)
 @RunAsClient
@@ -85,14 +84,14 @@ public class JsonConfigLogoutTest extends LoginLogoutBasics {
 
     // These are the oidc logout URL paths that are registered with Keycloak.
     // The path of the URL must be the same as the system properties registered above.
-    private static Map<String, OidcLogoutBaseTest.LogoutChannelPaths> APP_LOGOUT;
+    private static Map<String, LoginLogoutBasics.LogoutChannelPaths> APP_LOGOUT;
     static {
-        APP_LOGOUT= new HashMap<String, OidcLogoutBaseTest.LogoutChannelPaths>();
-        APP_LOGOUT.put(RP_INITIATED_LOGOUT_APP, new OidcLogoutBaseTest.LogoutChannelPaths(
+        APP_LOGOUT= new HashMap<String, LoginLogoutBasics.LogoutChannelPaths>();
+        APP_LOGOUT.put(RP_INITIATED_LOGOUT_APP, new LoginLogoutBasics.LogoutChannelPaths(
                 null,null, List.of(POST_LOGOUT_PATH_SYS_PROP)) );
-        APP_LOGOUT.put(BACK_CHANNEL_LOGOUT_APP, new OidcLogoutBaseTest.LogoutChannelPaths(
+        APP_LOGOUT.put(BACK_CHANNEL_LOGOUT_APP, new LoginLogoutBasics.LogoutChannelPaths(
                 null,null, null) );
-        APP_LOGOUT.put(FRONT_CHANNEL_LOGOUT_APP, new OidcLogoutBaseTest.LogoutChannelPaths(
+        APP_LOGOUT.put(FRONT_CHANNEL_LOGOUT_APP, new LoginLogoutBasics.LogoutChannelPaths(
                 null,null, null) );
         EnvSetupUtils.KeycloakAndSystemPropertySetup.setLogoutUrlPaths(APP_LOGOUT);
     }

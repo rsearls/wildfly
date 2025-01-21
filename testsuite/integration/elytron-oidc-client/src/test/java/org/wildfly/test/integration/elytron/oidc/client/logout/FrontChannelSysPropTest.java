@@ -89,7 +89,6 @@ public class FrontChannelSysPropTest extends LoginLogoutBasics {
         LOGOUT_SYS_PROPS = new HashMap<>();
         LOGOUT_SYS_PROPS.put(Oidc.LOGOUT_PATH, Constants.LOGOUT_PATH_SYS_PROP);
         LOGOUT_SYS_PROPS.put(Oidc.LOGOUT_CALLBACK_PATH, Constants.LOGOUT_CALLBACK_PATH_SYS_PROP);
-    // rls     LOGOUT_SYS_PROPS.put(Oidc.POST_LOGOUT_URI, POST_LOGOUT_PATH_SYS_PROP);
         EnvSetupUtils.WildFlySystemPropertiesSetupTask.setLogoutSysProps(LOGOUT_SYS_PROPS);
     }
 
@@ -99,7 +98,7 @@ public class FrontChannelSysPropTest extends LoginLogoutBasics {
     static {
         APP_LOGOUT= new HashMap<String, LogoutChannelPaths>();
         APP_LOGOUT.put(FRONT_CHANNEL_LOGOUT_APP, new LogoutChannelPaths(
-                null,null, /* rls List.of(POST_LOGOUT_PATH_SYS_PROP) */ null) );
+                null,null, null) );
         EnvSetupUtils.KeycloakAndSystemPropertySetup.setLogoutUrlPaths(APP_LOGOUT);
     }
 

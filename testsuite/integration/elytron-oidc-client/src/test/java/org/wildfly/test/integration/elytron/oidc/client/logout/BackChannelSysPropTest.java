@@ -80,7 +80,7 @@ public class BackChannelSysPropTest extends LoginLogoutBasics {
 
     //-------------- test configuration data ---------------
     private static final String BACK_CHANNEL_LOGOUT_URL = "http://"
-            + EnvSetupUtils.CLIENT_HOST_NAME + ":"
+            + EnvSetupUtils.HOST_TESTCONTAINERS_INTERNAL + ":"
             + EnvSetupUtils.CLIENT_PORT + "/" + BACK_CHANNEL_LOGOUT_APP
             + SimpleSecuredServlet.SERVLET_PATH + Constants.LOGOUT_CALLBACK_PATH_SYS_PROP;
 
@@ -93,7 +93,6 @@ public class BackChannelSysPropTest extends LoginLogoutBasics {
         LOGOUT_SYS_PROPS = new HashMap<>();
         LOGOUT_SYS_PROPS.put(Oidc.LOGOUT_PATH, Constants.LOGOUT_PATH_SYS_PROP);
         LOGOUT_SYS_PROPS.put(Oidc.LOGOUT_CALLBACK_PATH, Constants.LOGOUT_CALLBACK_PATH_SYS_PROP);
-     //rls   LOGOUT_SYS_PROPS.put(Oidc.POST_LOGOUT_URI, BACK_CHANNEL_LOGOUT_URL);
         EnvSetupUtils.WildFlySystemPropertiesSetupTask.setLogoutSysProps(LOGOUT_SYS_PROPS);
     }
 
@@ -103,7 +102,7 @@ public class BackChannelSysPropTest extends LoginLogoutBasics {
     static {
         APP_LOGOUT= new HashMap<String, LogoutChannelPaths>();
         APP_LOGOUT.put(BACK_CHANNEL_LOGOUT_APP, new LogoutChannelPaths(
-                BACK_CHANNEL_LOGOUT_URL,null,  null /* rls List.of(BACK_CHANNEL_LOGOUT_URL) */ ) );
+                BACK_CHANNEL_LOGOUT_URL,null,  null) );
         EnvSetupUtils.KeycloakAndSystemPropertySetup.setLogoutUrlPaths(APP_LOGOUT);
     }
 
@@ -138,7 +137,7 @@ public class BackChannelSysPropTest extends LoginLogoutBasics {
     public void testBackChannelLogout() throws Exception {
         try {
             deployer.deploy(BACK_CHANNEL_LOGOUT_APP);
-            assertUserLoggedOut(BACK_CHANNEL_LOGOUT_APP, SIGN_IN_TO_YOUR_ACCOUNT); //todo rls test
+            assertUserLoggedOut(BACK_CHANNEL_LOGOUT_APP, SIGN_IN_TO_YOUR_ACCOUNT);
             loginToApp(BACK_CHANNEL_LOGOUT_APP);
             assertUserLoggedIn(BACK_CHANNEL_LOGOUT_APP, SimpleServlet.RESPONSE_BODY);
             logoutOfKeycloak(BACK_CHANNEL_LOGOUT_APP, YOU_ARE_LOGGED_OUT);

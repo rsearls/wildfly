@@ -135,13 +135,7 @@ public class EnvSetupUtils extends AbstractSystemPropertiesUtil {
                             KeycloakConfiguration.setBackchannelLogoutSessionRequired(
                                     client, true);
                             KeycloakConfiguration.setBackchannelLogoutUrl(client,
-                                    /*tmpRedirectUri +*/ logoutChannelUrls.backChannelPath);
-                            /* // rls test start
-                            if (logoutChannelUrls.backChannelPath.startsWith("http:")) {
-                                // flag client to be defined as confidential
-                                client.setPublicClient(false);
-                            }
-                            // rls test end */
+                                    logoutChannelUrls.backChannelPath);
                         }
                         if (logoutChannelUrls.frontChannelPath != null) {
                             KeycloakConfiguration.setBackchannelLogoutSessionRequired(

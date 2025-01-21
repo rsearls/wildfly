@@ -152,6 +152,7 @@ public class LoginLogoutBasics extends EnvSetupUtils {
             }
         } finally {
             HttpClientUtils.closeQuietly(response);
+            Thread.sleep(2000);  // give a slow CI time to fully process the logout
         }
     }
 

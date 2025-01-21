@@ -50,7 +50,7 @@ import org.junit.runner.RunWith;
 @RunWith(Arquillian.class)
 @RunAsClient
 @ServerSetup({ TwoChannelsTest.PreviewStabilitySetupTask.class,
-        EnvSetupUtils.KeycloakAndSystemPropertySetup.class,
+        EnvSetupUtils.KeycloakAndSubsystemSetup.class,
         EnvSetupUtils.WildFlySystemPropertiesSetupTask.class,
         EnvSetupUtils.WildFlyServerSetupTask.class})
 public class TwoChannelsTest extends LoginLogoutBasics {
@@ -103,7 +103,7 @@ public class TwoChannelsTest extends LoginLogoutBasics {
                 null,null, /* rls List.of(POST_LOGOUT_PATH_SYS_PROP) */ null) );
         APP_LOGOUT.put(FRONT_CHANNEL_LOGOUT_APP, new LoginLogoutBasics.LogoutChannelPaths(
                 null,null, /* rls List.of(POST_LOGOUT_PATH_SYS_PROP) */ null) );
-        EnvSetupUtils.KeycloakAndSystemPropertySetup.setLogoutUrlPaths(APP_LOGOUT);
+        EnvSetupUtils.KeycloakAndSubsystemSetup.setLogoutUrlPaths(APP_LOGOUT);
     }
 
     // These are the application names registered as Keycloak clients.
@@ -114,7 +114,7 @@ public class TwoChannelsTest extends LoginLogoutBasics {
         APP_NAMES = new HashMap<>();
         APP_NAMES.put(BACK_CHANNEL_LOGOUT_APP, KeycloakConfiguration.ClientAppType.OIDC_CLIENT);
         APP_NAMES.put(FRONT_CHANNEL_LOGOUT_APP, KeycloakConfiguration.ClientAppType.OIDC_CLIENT);
-        EnvSetupUtils.KeycloakAndSystemPropertySetup.setKeycloakClients(APP_NAMES);
+        EnvSetupUtils.KeycloakAndSubsystemSetup.setKeycloakClients(APP_NAMES);
     }
 
     //-------------- Test components ---------------------

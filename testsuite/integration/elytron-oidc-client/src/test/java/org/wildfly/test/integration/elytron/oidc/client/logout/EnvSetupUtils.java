@@ -58,7 +58,7 @@ public class EnvSetupUtils {
     private static final String OIDC_REQUEST_OBJECT_SIGNING_KEYSTORE_FILE = "oidc.request.object.signing.keystore.file";
 
 
-    public static class KeycloakAndSystemPropertySetup extends KeycloakSetup {
+    public static class KeycloakAndSubsystemSetup extends KeycloakSetup {
 
         private static Map<String, KeycloakConfiguration.ClientAppType> APP_NAMES;
         private static Map<String, LogoutChannelPaths> APP_LOGOUT;

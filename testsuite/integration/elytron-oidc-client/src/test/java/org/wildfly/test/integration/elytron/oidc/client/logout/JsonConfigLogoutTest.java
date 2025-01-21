@@ -51,7 +51,7 @@ import org.junit.runner.RunWith;
 @RunWith(Arquillian.class)
 @RunAsClient
 @ServerSetup({ JsonConfigLogoutTest.PreviewStabilitySetupTask.class,
-        EnvSetupUtils.KeycloakAndSystemPropertySetup.class,
+        EnvSetupUtils.KeycloakAndSubsystemSetup.class,
         EnvSetupUtils.WildFlyServerSetupTask.class})
 public class JsonConfigLogoutTest extends LoginLogoutBasics {
 
@@ -93,7 +93,7 @@ public class JsonConfigLogoutTest extends LoginLogoutBasics {
                 null,null, null) );
         APP_LOGOUT.put(FRONT_CHANNEL_LOGOUT_APP, new LoginLogoutBasics.LogoutChannelPaths(
                 null,null, null) );
-        EnvSetupUtils.KeycloakAndSystemPropertySetup.setLogoutUrlPaths(APP_LOGOUT);
+        EnvSetupUtils.KeycloakAndSubsystemSetup.setLogoutUrlPaths(APP_LOGOUT);
     }
 
     // These are the application names registered as Keycloak clients.
@@ -105,7 +105,7 @@ public class JsonConfigLogoutTest extends LoginLogoutBasics {
         APP_NAMES.put(RP_INITIATED_LOGOUT_APP, KeycloakConfiguration.ClientAppType.OIDC_CLIENT);
         APP_NAMES.put(BACK_CHANNEL_LOGOUT_APP, KeycloakConfiguration.ClientAppType.OIDC_CLIENT);
         APP_NAMES.put(FRONT_CHANNEL_LOGOUT_APP, KeycloakConfiguration.ClientAppType.OIDC_CLIENT);
-        EnvSetupUtils.KeycloakAndSystemPropertySetup.setKeycloakClients(APP_NAMES);
+        EnvSetupUtils.KeycloakAndSubsystemSetup.setKeycloakClients(APP_NAMES);
     }
 
     //-------------- Test components ---------------------

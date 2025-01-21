@@ -82,7 +82,7 @@ public class BackChannelSysPropTest extends LoginLogoutBasics {
     private static final String BACK_CHANNEL_LOGOUT_URL = "http://"
             + EnvSetupUtils.HOST_TESTCONTAINERS_INTERNAL + ":"
             + EnvSetupUtils.CLIENT_PORT + "/" + BACK_CHANNEL_LOGOUT_APP
-            + SimpleSecuredServlet.SERVLET_PATH + Constants.LOGOUT_CALLBACK_PATH_SYS_PROP;
+            + SimpleSecuredServlet.SERVLET_PATH + Constants.LOGOUT_CALLBACK_PATH_VALUE;
 
     // These are the oidc logout attribute names and corresponding values that
     // are created as system properties.
@@ -91,8 +91,8 @@ public class BackChannelSysPropTest extends LoginLogoutBasics {
     private static Map<String,String> LOGOUT_SYS_PROPS;
     static {
         LOGOUT_SYS_PROPS = new HashMap<>();
-        LOGOUT_SYS_PROPS.put(Oidc.LOGOUT_PATH, Constants.LOGOUT_PATH_SYS_PROP);
-        LOGOUT_SYS_PROPS.put(Oidc.LOGOUT_CALLBACK_PATH, Constants.LOGOUT_CALLBACK_PATH_SYS_PROP);
+        LOGOUT_SYS_PROPS.put(Oidc.LOGOUT_PATH, Constants.LOGOUT_PATH_VALUE);
+        LOGOUT_SYS_PROPS.put(Oidc.LOGOUT_CALLBACK_PATH, Constants.LOGOUT_CALLBACK_PATH_VALUE);
         EnvSetupUtils.WildFlySystemPropertiesSetupTask.setLogoutSysProps(LOGOUT_SYS_PROPS);
     }
 

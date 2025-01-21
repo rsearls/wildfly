@@ -78,8 +78,6 @@ public class TwoChannelsTest extends LoginLogoutBasics {
     }
 
     //-------------- test configuration data ---------------
-    private static final String LOGOUT_PATH_SYS_PROP = "/mylogout";
-    private static final String LOGOUT_CALLBACK_PATH_SYS_PROP = "/more/myCallback";
 
     // These are the oidc logout attribute names and corresponding values that
     // are created as system properties.
@@ -88,8 +86,8 @@ public class TwoChannelsTest extends LoginLogoutBasics {
     private static Map<String,String> LOGOUT_SYS_PROPS;
     static {
         LOGOUT_SYS_PROPS = new HashMap<>();
-        LOGOUT_SYS_PROPS.put(Oidc.LOGOUT_PATH, LOGOUT_PATH_SYS_PROP);
-        LOGOUT_SYS_PROPS.put(Oidc.LOGOUT_CALLBACK_PATH, LOGOUT_CALLBACK_PATH_SYS_PROP);
+        LOGOUT_SYS_PROPS.put(Oidc.LOGOUT_PATH, Constants.LOGOUT_PATH_VALUE);
+        LOGOUT_SYS_PROPS.put(Oidc.LOGOUT_CALLBACK_PATH, Constants.LOGOUT_CALLBACK_PATH_VALUE);
     // rls     LOGOUT_SYS_PROPS.put(Oidc.POST_LOGOUT_URI, POST_LOGOUT_PATH_SYS_PROP);
         EnvSetupUtils.WildFlySystemPropertiesSetupTask.setLogoutSysProps(LOGOUT_SYS_PROPS);
     }

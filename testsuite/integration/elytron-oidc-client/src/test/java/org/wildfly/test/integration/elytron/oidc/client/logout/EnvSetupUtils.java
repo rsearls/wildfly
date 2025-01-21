@@ -132,7 +132,7 @@ public class EnvSetupUtils {
                     if (logoutChannelUrls != null) {
                         if (logoutChannelUrls.backChannelPath != null) {
                             KeycloakConfiguration.setFrontChannelLogoutSessionRequired(
-                                    client, false); //rls test
+                                    client, false);
                             KeycloakConfiguration.setBackchannelLogoutSessionRequired(
                                     client, true);
                             KeycloakConfiguration.setBackchannelLogoutUrl(client,

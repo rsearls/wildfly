@@ -78,9 +78,15 @@ public class JsonConfigLogoutTest extends LoginLogoutBasics {
     }
 
     //-------------- test configuration data ---------------
-    private static final String POST_LOGOUT_PATH_SYS_PROP = "http://" + EnvSetupUtils.CLIENT_HOST_NAME + ":"
+    private static final String POST_LOGOUT_PATH_VALUE = "http://"
+            + EnvSetupUtils.CLIENT_HOST_NAME + ":"
             + EnvSetupUtils.CLIENT_PORT + "/" + RP_INITIATED_LOGOUT_APP
             + SimplePostLogoutServlet.POST_LOGOUT_PATH;
+
+    private static final String BACK_CHANNEL_LOGOUT_URL = "http://"
+            + EnvSetupUtils.HOST_TESTCONTAINERS_INTERNAL + ":"
+            + EnvSetupUtils.CLIENT_PORT + "/" + BACK_CHANNEL_LOGOUT_APP
+            + SimpleSecuredServlet.SERVLET_PATH + Constants.LOGOUT_CALLBACK_PATH_VALUE;
 
     // These are the oidc logout URL paths that are registered with Keycloak.
     // The path of the URL must be the same as the system properties registered above.
@@ -88,9 +94,9 @@ public class JsonConfigLogoutTest extends LoginLogoutBasics {
     static {
         APP_LOGOUT= new HashMap<String, LoginLogoutBasics.LogoutChannelPaths>();
         APP_LOGOUT.put(RP_INITIATED_LOGOUT_APP, new LoginLogoutBasics.LogoutChannelPaths(
-                null,null, List.of(POST_LOGOUT_PATH_SYS_PROP)) );
+                null,null, List.of(POST_LOGOUT_PATH_VALUE)) );
         APP_LOGOUT.put(BACK_CHANNEL_LOGOUT_APP, new LoginLogoutBasics.LogoutChannelPaths(
-                null,null, null) );
+                BACK_CHANNEL_LOGOUT_URL,null, null) );
         APP_LOGOUT.put(FRONT_CHANNEL_LOGOUT_APP, new LoginLogoutBasics.LogoutChannelPaths(
                 null,null, null) );
         EnvSetupUtils.KeycloakAndSubsystemSetup.setLogoutUrlPaths(APP_LOGOUT);

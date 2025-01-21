@@ -127,7 +127,7 @@ public class LoginLogoutBasics extends EnvSetupUtils {
         URI requestUri = new URL("http", TestSuiteEnvironment.getHttpAddress(),
                 TestSuiteEnvironment.getHttpPort(),
                 "/" + appName + SimpleSecuredServlet.SERVLET_PATH
-                        + Constants.LOGOUT_PATH_SYS_PROP).toURI();
+                        + Constants.LOGOUT_PATH_VALUE).toURI();
         logoutOfKeycloak(requestUri, HttpURLConnection.HTTP_OK, expectedText, true);
     }
 
@@ -152,6 +152,7 @@ public class LoginLogoutBasics extends EnvSetupUtils {
             }
         } finally {
             HttpClientUtils.closeQuietly(response);
+            Thread.sleep(2000);  // give a slow CI time to fully process the logout
         }
     }
 

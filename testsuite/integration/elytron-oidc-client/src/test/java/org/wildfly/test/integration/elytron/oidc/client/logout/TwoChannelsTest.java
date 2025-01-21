@@ -100,9 +100,9 @@ public class TwoChannelsTest extends LoginLogoutBasics {
     static {
         APP_LOGOUT= new HashMap<String, LoginLogoutBasics.LogoutChannelPaths>();
         APP_LOGOUT.put(BACK_CHANNEL_LOGOUT_APP, new LoginLogoutBasics.LogoutChannelPaths(
-                null,null, /* rls List.of(POST_LOGOUT_PATH_SYS_PROP) */ null) );
+                null,null, null) );
         APP_LOGOUT.put(FRONT_CHANNEL_LOGOUT_APP, new LoginLogoutBasics.LogoutChannelPaths(
-                null,null, /* rls List.of(POST_LOGOUT_PATH_SYS_PROP) */ null) );
+                null,null, null) );
         EnvSetupUtils.KeycloakAndSubsystemSetup.setLogoutUrlPaths(APP_LOGOUT);
     }
 

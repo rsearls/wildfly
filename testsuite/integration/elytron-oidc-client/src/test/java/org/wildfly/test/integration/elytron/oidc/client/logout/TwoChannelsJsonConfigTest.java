@@ -35,7 +35,6 @@ import org.jboss.as.version.Stability;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 
-import org.wildfly.security.http.oidc.Oidc;
 import org.wildfly.test.integration.elytron.oidc.client.KeycloakConfiguration;
 import org.wildfly.test.stabilitylevel.StabilityServerSetupSnapshotRestoreTasks;
 
@@ -49,11 +48,11 @@ import org.junit.runner.RunWith;
  */
 @RunWith(Arquillian.class)
 @RunAsClient
-@ServerSetup({ TwoChannelsTest.PreviewStabilitySetupTask.class,
+@ServerSetup({ TwoChannelsJsonConfigTest.PreviewStabilitySetupTask.class,
         EnvSetupUtils.KeycloakAndSubsystemSetup.class,
         EnvSetupUtils.WildFlySystemPropertiesSetupTask.class,
         EnvSetupUtils.WildFlyServerSetupTask.class})
-public class TwoChannelsTest extends LoginLogoutBasics {
+public class TwoChannelsJsonConfigTest extends LoginLogoutBasics {
 
     @ArquillianResource
     protected static Deployer deployer;
@@ -73,32 +72,36 @@ public class TwoChannelsTest extends LoginLogoutBasics {
         super.setHttpClient(httpClient);
     }
 
-    public TwoChannelsTest() {
+    public TwoChannelsJsonConfigTest() {
         super(Stability.PREVIEW);
     }
 
     //-------------- test configuration data ---------------
+    private static final String BACK_CHANNEL_LOGOUT_URL = "http://"
+            + EnvSetupUtils.HOST_TESTCONTAINERS_INTERNAL + ":"
+            + EnvSetupUtils.CLIENT_PORT + "/" + BACK_CHANNEL_LOGOUT_APP
+            + SimpleSecuredServlet.SERVLET_PATH + Constants.LOGOUT_CALLBACK_PATH_VALUE;
 
     // These are the oidc logout attribute names and corresponding values that
     // are created as system properties.
     // The values MUST be the same that are register for Keycloak. (see
     // APP_LOGOUT below)
+    /* ---- rls
     private static Map<String,String> LOGOUT_SYS_PROPS;
     static {
         LOGOUT_SYS_PROPS = new HashMap<>();
         LOGOUT_SYS_PROPS.put(Oidc.LOGOUT_PATH, Constants.LOGOUT_PATH_VALUE);
         LOGOUT_SYS_PROPS.put(Oidc.LOGOUT_CALLBACK_PATH, Constants.LOGOUT_CALLBACK_PATH_VALUE);
-    // rls     LOGOUT_SYS_PROPS.put(Oidc.POST_LOGOUT_URI, POST_LOGOUT_PATH_SYS_PROP);
         EnvSetupUtils.WildFlySystemPropertiesSetupTask.setLogoutSysProps(LOGOUT_SYS_PROPS);
     }
-
+    ---- rls */
     // These are the oidc logout URL paths that are registered with Keycloak.
     // The path of the URL must be the same as the system properties registered above.
     private static Map<String, LoginLogoutBasics.LogoutChannelPaths> APP_LOGOUT;
     static {
         APP_LOGOUT= new HashMap<String, LoginLogoutBasics.LogoutChannelPaths>();
         APP_LOGOUT.put(BACK_CHANNEL_LOGOUT_APP, new LoginLogoutBasics.LogoutChannelPaths(
-                null,null, null) );
+                BACK_CHANNEL_LOGOUT_URL,null, null) );
         APP_LOGOUT.put(FRONT_CHANNEL_LOGOUT_APP, new LoginLogoutBasics.LogoutChannelPaths(
                 null,null, null) );
         EnvSetupUtils.KeycloakAndSubsystemSetup.setLogoutUrlPaths(APP_LOGOUT);
@@ -117,7 +120,7 @@ public class TwoChannelsTest extends LoginLogoutBasics {
 
     //-------------- Test components ---------------------
 
-    private static final Package packageName = TwoChannelsTest.class.getPackage();
+    private static final Package packageName = TwoChannelsJsonConfigTest.class.getPackage();
 
     @Deployment(name = BACK_CHANNEL_LOGOUT_APP, managed = false, testable = false)
     public static WebArchive createBackChannelAuthServerUrlDeployment() {
@@ -174,7 +177,7 @@ public class TwoChannelsTest extends LoginLogoutBasics {
         protected void doSetup(ManagementClient managementClient) throws Exception {
             // Write a system property so the model gets stored with a lower stability level.
             // This is to make sure we can reload back to the higher level from the snapshot
-            LoginLogoutBasics.addSystemProperty(managementClient, TwoChannelsTest.class);
+            LoginLogoutBasics.addSystemProperty(managementClient, TwoChannelsJsonConfigTest.class);
         }
     }
 }

@@ -117,7 +117,6 @@ public class JsonConfigLogoutTest extends LoginLogoutBasics {
     //-------------- Test components ---------------------
 
     private static final Package packageName = JsonConfigLogoutTest.class.getPackage();
-    private static final String PREFIX = JsonConfigLogoutTest.class.getSimpleName()+"-";
 
     @Deployment(name = RP_INITIATED_LOGOUT_APP, managed = false, testable = false)
     public static WebArchive createRpInitiatedAuthServerUrlDeployment() {
@@ -127,7 +126,7 @@ public class JsonConfigLogoutTest extends LoginLogoutBasics {
                 .addClasses(SimplePostLogoutServlet.class)
                 .addAsWebInfResource(packageName, WEB_XML, "web.xml")
                 .addAsWebInfResource(packageName,
-                        PREFIX+RP_INITIATED_LOGOUT_APP+"-oidc.json", "oidc.json")
+                        Constants.PREFIX+RP_INITIATED_LOGOUT_APP+"-oidc.json", "oidc.json")
                 ;
     }
 
@@ -138,7 +137,7 @@ public class JsonConfigLogoutTest extends LoginLogoutBasics {
                 .addClasses(SimpleSecuredServlet.class)
                 .addAsWebInfResource(packageName, WEB_XML, "web.xml")
                 .addAsWebInfResource(packageName,
-                        PREFIX+BACK_CHANNEL_LOGOUT_APP+"-oidc.json", "oidc.json")
+                        Constants.PREFIX+BACK_CHANNEL_LOGOUT_APP+"-oidc.json", "oidc.json")
                 ;
         return war;
     }
@@ -150,7 +149,7 @@ public class JsonConfigLogoutTest extends LoginLogoutBasics {
                 .addClasses(SimpleSecuredServlet.class)
                 .addAsWebInfResource(packageName, WEB_XML, "web.xml")
                 .addAsWebInfResource(packageName,
-                        PREFIX+FRONT_CHANNEL_LOGOUT_APP+"-oidc.json", "oidc.json")
+                        Constants.PREFIX+FRONT_CHANNEL_LOGOUT_APP+"-oidc.json", "oidc.json")
                 ;
     }
 
